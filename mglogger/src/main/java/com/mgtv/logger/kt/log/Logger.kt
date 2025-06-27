@@ -13,35 +13,35 @@ import kotlin.coroutines.CoroutineContext
  * Date： 2025/6/26
  * Time： 14:36
  */
-object Logger : CoroutineScope {
+public object Logger : CoroutineScope {
     private val job = SupervisorJob()
-    override val coroutineContext: CoroutineContext = Dispatchers.IO + job
+    public override val coroutineContext: CoroutineContext = Dispatchers.IO + job
 
     private lateinit var cfg: LoggerConfig
     private var worker: LoggerActor? = null
 
-    val isReady: Boolean get() = worker != null
+    public val isReady: Boolean get() = worker != null
 
-    fun init(config: LoggerConfig) {
+    public fun init(config: LoggerConfig) {
         cfg = config
         worker = LoggerActor(cfg, this)
     }
 
-    fun init(block: LoggerConfig.Builder.() -> Unit) {
+    public fun init(block: LoggerConfig.Builder.() -> Unit) {
         init(LoggerConfig.Builder().apply(block).build())
     }
 
-    fun w(log: String, type: Int) {
+    public fun w(log: String, type: Int) {
         ensureReady()
         worker!!.offer(LogTask.Write(log, type))
     }
 
-    fun flush() {
+    public fun flush() {
         ensureReady()
         worker!!.offer(LogTask.Flush)
     }
 
-    fun send(
+    public fun send(
         dates: List<String>,
         strategy: SendLogStrategy,
         callback: ISendLogCallback? = null
@@ -50,16 +50,16 @@ object Logger : CoroutineScope {
         dates.forEach { worker!!.offer(LogTask.Send(it, strategy, callback)) }
     }
 
-    fun getAllFilesInfo(): Map<String, Long> =
+    public fun getAllFilesInfo(): Map<String, Long> =
         worker?.collectFileInfo() ?: emptyMap()
 
-    fun setDebug(enable: Boolean) { sDebug = enable }
+    public fun setDebug(enable: Boolean) { sDebug = enable }
 
-    fun setStatusListener(listener: ILoggerStatus?): Unit {
+    public fun setStatusListener(listener: ILoggerStatus?): Unit {
         statusListener = listener
     }
 
-    fun close() {
+    public fun close() {
         if (isReady) {
             worker?.close()
             worker = null

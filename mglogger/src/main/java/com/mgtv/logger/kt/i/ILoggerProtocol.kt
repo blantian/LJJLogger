@@ -6,12 +6,12 @@ package com.mgtv.logger.kt.i
  * Date： 2025/6/25
  * Time： 18:44
  */
-interface ILoggerProtocol {
+public interface ILoggerProtocol {
 
     /**
      * Flush the logger cache to disk.
      */
-    fun logger_flush()
+    public fun logger_flush()
 
     /**
      * Write a log entry to the logger.
@@ -23,7 +23,7 @@ interface ILoggerProtocol {
      * @param is_main Indicates whether the log was generated from the main thread. If true, it will be treated as a main thread log.
      * If false, it will be treated as a background thread log.
      */
-    fun logger_write(
+    public fun logger_write(
         flag: Int,
         log: String?,
         local_time: Long,
@@ -36,7 +36,7 @@ interface ILoggerProtocol {
      * Open a logger file with the specified name.
      * @param file_name The name of the log file to open. If null, a default file will be used.
      */
-    fun logger_open(file_name: String?)
+    public fun logger_open(file_name: String?)
 
     /**
      * Initialize the logger with the specified parameters.
@@ -46,7 +46,7 @@ interface ILoggerProtocol {
      * @param encrypt_key_16 The encryption key (16 characters).
      * @param encrypt_iv_16 The initialization vector for encryption (16 characters).
      */
-    fun logger_init(
+    public fun logger_init(
         cache_path: String?,
         dir_path: String?,
         max_file: Int,
@@ -58,11 +58,11 @@ interface ILoggerProtocol {
      * Set the debug mode for the logger.
      * @param debug If true, enables debug mode; otherwise, disables it.
      */
-    fun logger_debug(debug: Boolean)
+    public fun logger_debug(debug: Boolean)
 
     /**
      * Set a listener for logger status updates.
      * @param listener The listener to be notified of logger status changes.
      */
-    fun setOnLoggerStatus(listener: ILoggerStatus)
+    public fun setOnLoggerStatus(listener: ILoggerStatus)
 }

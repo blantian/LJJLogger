@@ -8,10 +8,10 @@ import com.mgtv.logger.kt.i.ISendLogCallback
  * Time： 14:21
  */
 
-sealed class LogTask {
-    data class Write(val log: String, val type: Int) : LogTask()
-    object Flush : LogTask()
-    data class Send(
+internal sealed class LogTask {
+    internal data class Write(val log: String, val type: Int) : LogTask()
+    internal object Flush : LogTask()
+    internal data class Send(
         val date: String,
         val strategy: SendLogStrategy,
         val callback: ISendLogCallback?
