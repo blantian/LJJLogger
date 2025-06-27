@@ -33,7 +33,7 @@ class LoggerActor(
     private val dateFmt = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
     private val long24h = 24 * 60 * 60 * 1000L
 
-    // protocol 策略
+
     private val protocol: ILoggerProtocol = MGLoggerJni.also {
         it.setOnLoggerStatus(object : ILoggerStatus {
             override fun loggerStatus(cmd: String, code: Int) {

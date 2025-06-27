@@ -5,9 +5,12 @@ import android.os.Environment;
 import android.util.Log;
 
 
+import androidx.annotation.NonNull;
+
 import com.mgtv.logger.java.Logan;
 import com.mgtv.logger.java.LoganConfig;
 import com.mgtv.logger.java.OnLoganProtocolStatus;
+import com.mgtv.logger.kt.i.ILoggerStatus;
 import com.mgtv.logger.kt.log.LoggerConfig;
 import com.mgtv.logger.kt.log.MGLogger;
 
@@ -28,9 +31,12 @@ public class MyApplication extends Application {
         path = Environment.getExternalStorageDirectory().getAbsolutePath()
                 + File.separator + "mgtv" + File.separator + FILE_NAME;
         initLogan();
-        Logan.w("MyApplication onCreate", 3);
-        Logan.w("MyApplication onCreate", 3);
-        Logan.w("MyApplication onCreate", 3);
+        MGLogger.INSTANCE.w("MyApplication onCreate", 3);
+        MGLogger.INSTANCE.w("MyApplication onCreate", 3);
+        MGLogger.INSTANCE.w("MyApplication onCreate", 3);
+//        Logan.w("MyApplication onCreate", 3);
+//        Logan.w("MyApplication onCreate", 3);
+//        Logan.w("MyApplication onCreate", 3);
     }
 
     private void initLogan() {
@@ -46,21 +52,23 @@ public class MyApplication extends Application {
                 .putCachePath(internalDir.getAbsolutePath())
                 .putLogDir(internalDir.getAbsolutePath() + File.separator + FILE_NAME)
                 .build();
-        MGLogger.INSTANCE.init(loggerConfig);
-
-        LoganConfig config = new LoganConfig.Builder()
-                .setCachePath(internalDir.getAbsolutePath())
-                .setPath(internalDir.getAbsolutePath() + File.separator + FILE_NAME)
-                .setEncryptKey16("0123456789012345".getBytes())
-                .setEncryptIV16("0123456789012345".getBytes())
-                .build();
-        Logan.init(config);
-        Logan.setDebug(true);
-        Logan.setOnLoganProtocolStatus(new OnLoganProtocolStatus() {
-            @Override
-            public void loganProtocolStatus(String cmd, int code) {
-                Log.d(TAG, "clogan > cmd : " + cmd + " | " + "code : " + code);
-            }
+        MGLogger.INSTANCE.init(loggerConfig, (cmd, code) -> {
+            Log.i(TAG, "clogan > cmd : " + cmd + " | " + "code : " + code);
         });
+
+//        LoganConfig config = new LoganConfig.Builder()
+//                .setCachePath(internalDir.getAbsolutePath())
+//                .setPath(internalDir.getAbsolutePath() + File.separator + FILE_NAME)
+//                .setEncryptKey16("0123456789012345".getBytes())
+//                .setEncryptIV16("0123456789012345".getBytes())
+//                .build();
+//        Logan.init(config);
+//        Logan.setDebug(true);
+//        Logan.setOnLoganProtocolStatus(new OnLoganProtocolStatus() {
+//            @Override
+//            public void loganProtocolStatus(String cmd, int code) {
+//                Log.d(TAG, "clogan > cmd : " + cmd + " | " + "code : " + code);
+//            }
+//        });
     }
 }

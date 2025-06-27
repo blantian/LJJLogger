@@ -19,7 +19,7 @@ import javax.net.ssl.SSLSession
  */
 class DefaultSendLogStrategy(
     private val uploadUrl: String,
-    private val headers: Map<String, String> = emptyMap()
+    private val headers: Map<String, String> ? = emptyMap()
 ) : SendLogStrategy {
     override suspend fun send(logFile: File): Pair<Int, ByteArray?> = withContext(Dispatchers.IO) {
         var conn: HttpURLConnection? = null
@@ -30,7 +30,7 @@ class DefaultSendLogStrategy(
                 if (this is HttpsURLConnection) {
                     hostnameVerifier = HostnameVerifier { _: String?, _: SSLSession? -> true }
                 }
-                headers.forEach { (k, v) -> addRequestProperty(k, v) }
+                headers?.forEach { (k, v) -> addRequestProperty(k, v) }
                 readTimeout = 15000
                 connectTimeout = 15000
                 doInput = true
