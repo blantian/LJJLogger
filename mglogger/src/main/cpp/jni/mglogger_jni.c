@@ -69,7 +69,7 @@ Java_com_mgtv_logger_CLoganProtocol_clogan_1debug(JNIEnv *env, jobject instance,
 
 
 JNIEXPORT jint JNICALL
-Java_com_mgtv_logger_kt_log_MGLoogerJni_mglogger_1init(JNIEnv *env,
+Java_com_mgtv_logger_kt_log_MGLoggerJni_mglogger_1init(JNIEnv *env,
                                                        jobject thiz,
                                                        jstring cache_path,
                                                        jstring dir_path,
@@ -91,7 +91,7 @@ Java_com_mgtv_logger_kt_log_MGLoogerJni_mglogger_1init(JNIEnv *env,
 }
 
 JNIEXPORT jint JNICALL
-Java_com_mgtv_logger_kt_log_MGLoogerJni_mglogger_1open(JNIEnv *env,
+Java_com_mgtv_logger_kt_log_MGLoggerJni_mglogger_1open(JNIEnv *env,
                                                        jobject thiz,
                                                        jstring file_name) {
     const char *file_name_ = (*env)->GetStringUTFChars(env, file_name, 0);
@@ -103,7 +103,7 @@ Java_com_mgtv_logger_kt_log_MGLoogerJni_mglogger_1open(JNIEnv *env,
 }
 
 JNIEXPORT void JNICALL
-Java_com_mgtv_logger_kt_log_MGLoogerJni_mglogger_1debug(JNIEnv *env, jobject thiz,
+Java_com_mgtv_logger_kt_log_MGLoggerJni_mglogger_1debug(JNIEnv *env, jobject thiz,
                                                         jboolean is_debug) {
     int i = 1;
     if (!is_debug) {
@@ -114,7 +114,7 @@ Java_com_mgtv_logger_kt_log_MGLoogerJni_mglogger_1debug(JNIEnv *env, jobject thi
 
 
 JNIEXPORT jint JNICALL
-Java_com_mgtv_logger_kt_log_MGLoogerJni_mglogger_1write(JNIEnv *env,
+Java_com_mgtv_logger_kt_log_MGLoggerJni_mglogger_1write(JNIEnv *env,
                                                         jobject thiz,
                                                         jint flag,
                                                         jstring log,
@@ -138,6 +138,6 @@ Java_com_mgtv_logger_kt_log_MGLoogerJni_mglogger_1write(JNIEnv *env,
 }
 
 JNIEXPORT void JNICALL
-Java_com_mgtv_logger_kt_log_MGLoogerJni_mglogger_1flush(JNIEnv *env, jobject thiz) {
+Java_com_mgtv_logger_kt_log_MGLoggerJni_mglogger_1flush(JNIEnv *env, jobject thiz) {
     clogan_flush();
 }

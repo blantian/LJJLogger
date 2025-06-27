@@ -52,7 +52,7 @@ object Logger : CoroutineScope {
     fun close() { job.cancel() }
 
     private fun ensureReady() {
-        check(isReady) { "Please initialize MGLooger first" }
+        check(isReady) { "Please initialize MGLogger first" }
     }
 
 

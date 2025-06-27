@@ -12,7 +12,7 @@ import java.util.Collections
  * Date： 2025/6/26
  * Time： 09:20
  */
-object MGLoogerJni : ILoggerProtocol {
+object MGLoggerJni : ILoggerProtocol {
 
     @Volatile
     private var isMGLoggerOk = false
@@ -28,9 +28,9 @@ object MGLoogerJni : ILoggerProtocol {
         }
     }
 
-    fun isMGLoogerSuccess(): Boolean = isMGLoggerOk
+    fun isMGLoggerSuccess(): Boolean = isMGLoggerOk
 
-    fun newInstance(): MGLoogerJni = this
+    fun newInstance(): MGLoggerJni = this
 
     private var isLoganInit = false
     private var isLoganOpen = false
