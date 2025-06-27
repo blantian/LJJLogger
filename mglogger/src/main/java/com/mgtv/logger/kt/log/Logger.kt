@@ -49,7 +49,13 @@ object Logger : CoroutineScope {
         if (isReady) worker.collectFileInfo() else emptyMap()
 
     fun setDebug(enable: Boolean) { sDebug = enable }
-    fun close() { job.cancel() }
+
+    fun close() {
+        if (isReady) {
+            worker.close()
+        }
+        job.cancel()
+    }
 
     private fun ensureReady() {
         check(isReady) { "Please initialize MGLogger first" }
