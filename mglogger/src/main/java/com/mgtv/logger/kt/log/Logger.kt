@@ -50,6 +50,10 @@ object Logger : CoroutineScope {
 
     fun setDebug(enable: Boolean) { sDebug = enable }
 
+    fun setStatusListener(listener: ILoggerStatus): Unit {
+        statusListener = listener
+    }
+
     fun close() {
         if (isReady) {
             worker.close()
