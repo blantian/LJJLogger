@@ -1,0 +1,52 @@
+// Top-level build file where you can add configuration options common to all sub-projects/modules.
+
+buildscript {
+    repositories {
+        maven { url 'https://maven.aliyun.com/repository/public' }
+        maven { url 'https://maven.aliyun.com/repository/google' }
+        maven { url 'https://maven.aliyun.com/repository/gradle-plugin' }
+        google()
+        mavenCentral()
+    }
+    dependencies {
+        classpath 'com.android.tools.build:gradle:4.1.3'
+//        classpath 'com.github.dcendents:android-maven-gradle-plugin:1.5'
+//        classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.8.4'
+
+        // NOTE: Do not place your application dependencies here; they belong
+        // in the individual module build.gradle files
+        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:1.4.30")
+    }
+}
+
+allprojects {
+    repositories {
+        maven { url 'https://maven.aliyun.com/repository/public' }
+        maven { url 'https://maven.aliyun.com/repository/google' }
+        maven { url 'https://maven.aliyun.com/repository/gradle-plugin' }
+        google()
+        mavenCentral()
+    }
+}
+
+// Define versions in a single place
+ext {
+
+    // SDK And Tools
+    minSdkVersion = 14 // <-- 保持 16
+    // 更新 target 和 compile SDK 版本
+    targetSdkVersion = 33 // <-- 从 28 更新
+    compileSdkVersion = 33 // <-- 从 28 更新
+    buildToolsVersion = '33.0.2' // <-- 建议更新，或移除让 AGP 自动选择
+    //Dependencies
+    gsonComponentVersion = "2.10.1"
+    androidxVersion = '1.1.0'
+    koinVersion = "2.1.6"
+    kotlin_version = '1.4.30'
+    kotlin_coroutines_version = '1.4.3'
+}
+
+task clean(type: Delete) {
+    delete rootProject.buildDir
+}
+
