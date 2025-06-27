@@ -7,7 +7,6 @@ import com.mgtv.logger.kt.i.ILoggerProtocol
 import com.mgtv.logger.kt.i.ILoggerStatus
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.channels.trySend
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
@@ -61,7 +60,7 @@ class LoggerActor(
      * @param task 日志任务
      */
     fun offer(task: LogTask): Boolean {
-        return channel.trySend(task).isSuccess
+        return channel.offer(task)
     }
 
     fun close() {
