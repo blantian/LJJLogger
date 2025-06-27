@@ -48,30 +48,30 @@ Java_com_mgtv_logger_CLoganProtocol_clogan_1debug(JNIEnv *env, jobject thiz, jbo
  * JNI mglogger write interface
  */
 JNIEXPORT jint JNICALL
-Java_com_mgtv_logger_kt_log_MGLoogerJni_mglogger_1init(JNIEnv *env, jobject thiz,
+Java_com_mgtv_logger_kt_log_MGLoggerJni_mglogger_1init(JNIEnv *env, jobject thiz,
                                                        jstring cache_path, jstring dir_path,
                                                        jint max_file, jstring encrypt_key16,
                                                        jstring encrypt_iv16);
 
 
 JNIEXPORT jint JNICALL
-Java_com_mgtv_logger_kt_log_MGLoogerJni_mglogger_1open(JNIEnv *env, jobject thiz,
+Java_com_mgtv_logger_kt_log_MGLoggerJni_mglogger_1open(JNIEnv *env, jobject thiz,
                                                                jstring file_name);
 
 JNIEXPORT void JNICALL
-Java_com_mgtv_logger_kt_log_MGLoogerJni_mglogger_1debug(JNIEnv *env, jobject thiz,
+Java_com_mgtv_logger_kt_log_MGLoggerJni_mglogger_1debug(JNIEnv *env, jobject thiz,
                                                         jboolean is_debug);
 
 
 JNIEXPORT jint JNICALL
-Java_com_mgtv_logger_kt_log_MGLoogerJni_mglogger_1write(JNIEnv *env, jobject thiz, jint flag,
+Java_com_mgtv_logger_kt_log_MGLoggerJni_mglogger_1write(JNIEnv *env, jobject thiz, jint flag,
                                                         jstring log, jlong local_time,
                                                         jstring thread_name, jlong thread_id,
                                                         jint is_main);
 
 
 JNIEXPORT void JNICALL
-Java_com_mgtv_logger_kt_log_MGLoogerJni_mglogger_1flush(JNIEnv *env, jobject thiz);
+Java_com_mgtv_logger_kt_log_MGLoggerJni_mglogger_1flush(JNIEnv *env, jobject thiz);
 
 #ifdef __cplusplus
 }
