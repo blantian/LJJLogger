@@ -1,6 +1,7 @@
 package com.mgtv.logger.kt.log
 
 import com.mgtv.logger.kt.i.ILoggerStatus
+import com.mgtv.logger.kt.i.ISendLogCallback
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -43,7 +44,7 @@ object Logger : CoroutineScope {
     fun send(
         dates: List<String>,
         strategy: SendLogStrategy,
-        callback: ((Int, ByteArray?) -> Unit)? = null
+        callback: ISendLogCallback? = null
     ) {
         ensureReady()
         dates.forEach { worker!!.offer(LogTask.Send(it, strategy, callback)) }
