@@ -3,6 +3,7 @@ package com.mgtv.logger.kt.log
 import com.mgtv.logger.kt.di.createLoggerModule
 import com.mgtv.logger.kt.i.ILoggerStatus
 import org.koin.core.context.startKoin
+import com.mgtv.logger.kt.i.ISendLogCallback
 import com.mgtv.logger.kt.log.Logger
 import com.mgtv.logger.kt.log.SendLogStrategy
 
@@ -48,7 +49,7 @@ object MGLogger {
     fun send(
         dates: List<String>,
         strategy: SendLogStrategy,
-        callback: ((Int, ByteArray?) -> Unit)? = null
+        callback: ISendLogCallback? = null
     ) {
         Logger.send(dates, strategy, callback)
     }

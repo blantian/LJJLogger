@@ -5,6 +5,7 @@ import android.os.StatFs
 import com.mgtv.logger.java.Util
 import com.mgtv.logger.kt.i.ILoggerProtocol
 import com.mgtv.logger.kt.i.ILoggerStatus
+import com.mgtv.logger.kt.i.ISendLogCallback
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.collect
@@ -163,7 +164,7 @@ class LoggerActor(
         if (dateMillis == currentDay) protocol.logger_flush()
 
         val (status, body) = t.strategy.send(file)
-        t.callback?.invoke(status, body)
+        t.callback?.onLogSendCompleted(status, body)
     }
 
     /**

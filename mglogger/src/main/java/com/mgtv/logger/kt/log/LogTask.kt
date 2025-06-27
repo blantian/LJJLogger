@@ -1,4 +1,6 @@
 package com.mgtv.logger.kt.log
+
+import com.mgtv.logger.kt.i.ISendLogCallback
 /**
  * Description:
  * Created by lantian
@@ -12,6 +14,6 @@ sealed class LogTask {
     data class Send(
         val date: String,
         val strategy: SendLogStrategy,
-        val callback: ((Int, ByteArray?) -> Unit)?
+        val callback: ISendLogCallback?
     ) : LogTask()
 }
