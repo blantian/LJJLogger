@@ -1,7 +1,7 @@
 #include "mglogger_jni.h"
 
 JNIEXPORT jint JNICALL
-Java_com_mgtv_logger_CLoganProtocol_clogan_1write(JNIEnv *env, jobject instance, jint flag,
+Java_com_mgtv_logger_java_CLoganProtocol_clogan_1write(JNIEnv *env, jobject instance, jint flag,
                                                   jstring log_, jlong local_time,
                                                   jstring thread_name_, jlong thread_id,
                                                   jint is_main) {
@@ -18,7 +18,7 @@ Java_com_mgtv_logger_CLoganProtocol_clogan_1write(JNIEnv *env, jobject instance,
 }
 
 JNIEXPORT jint JNICALL
-Java_com_mgtv_logger_CLoganProtocol_clogan_1init(JNIEnv *env, jobject instance,
+Java_com_mgtv_logger_java_CLoganProtocol_clogan_1init(JNIEnv *env, jobject instance,
                                                  jstring cache_path_,
                                                  jstring dir_path_, jint max_file,
                                                  jstring encrypt_key16_, jstring encrypt_iv16_) {
@@ -37,7 +37,7 @@ Java_com_mgtv_logger_CLoganProtocol_clogan_1init(JNIEnv *env, jobject instance,
 }
 
 JNIEXPORT jint JNICALL
-Java_com_mgtv_logger_CLoganProtocol_clogan_1open(JNIEnv *env, jobject instance,
+Java_com_mgtv_logger_java_CLoganProtocol_clogan_1open(JNIEnv *env, jobject instance,
                                                  jstring file_name_) {
     const char *file_name = (*env)->GetStringUTFChars(env, file_name_, 0);
 
@@ -48,12 +48,12 @@ Java_com_mgtv_logger_CLoganProtocol_clogan_1open(JNIEnv *env, jobject instance,
 }
 
 JNIEXPORT void JNICALL
-Java_com_mgtv_logger_CLoganProtocol_clogan_1flush(JNIEnv *env, jobject instance) {
+Java_com_mgtv_logger_java_CLoganProtocol_clogan_1flush(JNIEnv *env, jobject instance) {
     clogan_flush();
 }
 
 JNIEXPORT void JNICALL
-Java_com_mgtv_logger_CLoganProtocol_clogan_1debug(JNIEnv *env, jobject instance,
+Java_com_mgtv_logger_java_CLoganProtocol_clogan_1debug(JNIEnv *env, jobject instance,
                                                   jboolean is_debug) {
     int i = 1;
     if (!is_debug) {

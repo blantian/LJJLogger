@@ -20,7 +20,7 @@
  * THE SOFTWARE.
  */
 
-package com.mgtv.logger;
+package com.mgtv.logger.java;
 
 import java.io.File;
 import java.util.HashMap;

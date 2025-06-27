@@ -5,9 +5,9 @@ import android.os.Environment;
 import android.util.Log;
 
 
-import com.mgtv.logger.Logan;
-import com.mgtv.logger.LoganConfig;
-import com.mgtv.logger.OnLoganProtocolStatus;
+import com.mgtv.logger.java.Logan;
+import com.mgtv.logger.java.LoganConfig;
+import com.mgtv.logger.java.OnLoganProtocolStatus;
 
 import java.io.File;
 

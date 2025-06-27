@@ -20,30 +20,28 @@
  * THE SOFTWARE.
  */
 
-package com.mgtv.logger;
+package com.mgtv.logger.java;
 
-class LoganModel {
+import android.text.TextUtils;
 
-    enum Action {
-        WRITE, SEND, FLUSH
-    }
+class WriteAction {
 
-    Action action;
+    String log; //日志
 
-    WriteAction writeAction;
+    boolean isMainThread;
 
-    SendAction sendAction;
+    long threadId;
+
+    String threadName = "";
+
+    long localTime;
+
+    int flag;
 
     boolean isValid() {
         boolean valid = false;
-        if (action != null) {
-            if (action == Action.SEND && sendAction != null && sendAction.isValid()) {
-                valid = true;
-            } else if (action == Action.WRITE && writeAction != null && writeAction.isValid()) {
-                valid = true;
-            } else if (action == Action.FLUSH) {
-                valid = true;
-            }
+        if (!TextUtils.isEmpty(log)) {
+            valid = true;
         }
         return valid;
     }

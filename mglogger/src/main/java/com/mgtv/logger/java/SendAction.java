@@ -20,27 +20,23 @@
  * THE SOFTWARE.
  */
 
-package com.mgtv.logger;
+package com.mgtv.logger.java;
 
-import android.text.TextUtils;
+class SendAction {
 
-class WriteAction {
+    long fileSize; //文件大小
 
-    String log; //日志
+    String date; //日期
 
-    boolean isMainThread;
+    String uploadPath;
 
-    long threadId;
-
-    String threadName = "";
-
-    long localTime;
-
-    int flag;
+    SendLogRunnable sendLogRunnable;
 
     boolean isValid() {
         boolean valid = false;
-        if (!TextUtils.isEmpty(log)) {
+        if (sendLogRunnable != null) {
+            valid = true;
+        } else if (fileSize > 0) {
             valid = true;
         }
         return valid;

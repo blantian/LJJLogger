@@ -1,4 +1,4 @@
-package com.mgtv.logger;
+package com.mgtv.logger.java;
 
 /**
  * Create by luoheng on 2019-11-20.

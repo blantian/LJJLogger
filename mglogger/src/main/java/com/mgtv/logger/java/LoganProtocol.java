@@ -20,7 +20,7 @@
  * THE SOFTWARE.
  */
 
-package com.mgtv.logger;
+package com.mgtv.logger.java;
 
 class LoganProtocol implements LoganProtocolHandler {
 

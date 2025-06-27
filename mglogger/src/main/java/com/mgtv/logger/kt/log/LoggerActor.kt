@@ -2,7 +2,7 @@ package com.mgtv.logger.kt.log
 
 import android.os.Looper
 import android.os.StatFs
-import com.mgtv.logger.Util
+import com.mgtv.logger.java.Util
 import com.mgtv.logger.kt.i.ILoggerProtocol
 import com.mgtv.logger.kt.i.ILoggerStatus
 import kotlinx.coroutines.CoroutineScope

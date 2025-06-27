@@ -46,7 +46,7 @@ ext {
     kotlin_coroutines_version = '1.5.2'
 }
 
-task clean(type: Delete) {
+tasks.register('clean', Delete) {
     delete rootProject.buildDir
 }
 

@@ -20,25 +20,21 @@
  * THE SOFTWARE.
  */
 
-package com.mgtv.logger;
+package com.mgtv.logger.java;
 
-class SendAction {
+public interface LoganProtocolHandler {
 
-    long fileSize; //文件大小
+    void logan_flush();
 
-    String date; //日期
+    void logan_write(int flag, String log, long local_time, String thread_name,
+            long thread_id, boolean is_main);
 
-    String uploadPath;
+    void logan_open(String file_name);
 
-    SendLogRunnable sendLogRunnable;
+    void logan_init(String cache_path, String dir_path, int max_file, String encrypt_key_16,
+            String encrypt_iv_16);
 
-    boolean isValid() {
-        boolean valid = false;
-        if (sendLogRunnable != null) {
-            valid = true;
-        } else if (fileSize > 0) {
-            valid = true;
-        }
-        return valid;
-    }
+    void logan_debug(boolean debug);
+
+    void setOnLoganProtocolStatus(OnLoganProtocolStatus listener);
 }

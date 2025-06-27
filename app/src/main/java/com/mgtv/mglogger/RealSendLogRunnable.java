@@ -25,7 +25,7 @@ package com.mgtv.mglogger;
 import android.text.TextUtils;
 import android.util.Log;
 
-import com.mgtv.logger.SendLogRunnable;
+import com.mgtv.logger.java.SendLogRunnable;
 
 import org.json.JSONException;
 import org.json.JSONObject;

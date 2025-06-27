@@ -20,28 +20,31 @@
  * THE SOFTWARE.
  */
 
-package com.mgtv.logger;
+package com.mgtv.logger.java;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
+class LoganModel {
 
-public class Util {
-
-    private static final SimpleDateFormat sDateFormat = new SimpleDateFormat("yyyy-MM-dd");
-
-    public static long getCurrentTime() {
-        long currentTime = System.currentTimeMillis();
-        long tempTime = 0;
-        try {
-            String dataStr = sDateFormat.format(new Date(currentTime));
-            tempTime = sDateFormat.parse(dataStr).getTime();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return tempTime;
+    enum Action {
+        WRITE, SEND, FLUSH
     }
 
-    public static String getDateStr(long time) {
-        return sDateFormat.format(new Date(time));
+    Action action;
+
+    WriteAction writeAction;
+
+    SendAction sendAction;
+
+    boolean isValid() {
+        boolean valid = false;
+        if (action != null) {
+            if (action == Action.SEND && sendAction != null && sendAction.isValid()) {
+                valid = true;
+            } else if (action == Action.WRITE && writeAction != null && writeAction.isValid()) {
+                valid = true;
+            } else if (action == Action.FLUSH) {
+                valid = true;
+            }
+        }
+        return valid;
     }
 }

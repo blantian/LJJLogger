@@ -1,6 +1,5 @@
 package com.mgtv.logger.kt.log
 
-import com.mgtv.logger.OnLoganProtocolStatus
 import com.mgtv.logger.kt.common.MGLoggerStatus
 import com.mgtv.logger.kt.i.ILoggerProtocol
 import com.mgtv.logger.kt.i.ILoggerStatus
