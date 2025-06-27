@@ -21,9 +21,13 @@ object Logger : CoroutineScope {
 
     val isReady: Boolean get() = this::worker.isInitialized
 
-    fun init(block: LoggerConfig.Builder.() -> Unit) {
-        cfg = LoggerConfig.Builder().apply(block).build()
+    fun init(config: LoggerConfig) {
+        cfg = config
         worker = LoggerActor(cfg, this)
+    }
+
+    fun init(block: LoggerConfig.Builder.() -> Unit) {
+        init(LoggerConfig.Builder().apply(block).build())
     }
 
     fun w(log: String, type: Int) {

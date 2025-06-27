@@ -32,6 +32,13 @@ android {
         targetCompatibility JavaVersion.VERSION_1_8
     }
 
+    tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).configureEach {
+        kotlinOptions {
+            jvmTarget = "1.8"
+            freeCompilerArgs += "-Xexplicit-api=strict"
+        }
+    }
+
     ndkVersion "16.1.4479499"
 }
 
