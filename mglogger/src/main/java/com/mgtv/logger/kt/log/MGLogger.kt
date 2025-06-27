@@ -13,9 +13,9 @@ import com.mgtv.logger.kt.log.SendLogStrategy
  * Date： 2025/6/27
  * Time： 22:38
  */
-object MGLogger {
+public object MGLogger {
 
-    fun init(
+    public fun init(
         config: LoggerConfig,
         loggerStatus: ILoggerStatus? = null
     ) {
@@ -38,15 +38,15 @@ object MGLogger {
         }
     }
 
-    fun w(log: String, type: Int) {
+    public fun w(log: String, type: Int) {
         Logger.w(log, type)
     }
 
-    fun flush() {
+    public fun flush() {
         Logger.flush()
     }
 
-    fun send(
+    public fun send(
         dates: List<String>,
         strategy: SendLogStrategy,
         callback: ISendLogCallback? = null
@@ -54,17 +54,17 @@ object MGLogger {
         Logger.send(dates, strategy, callback)
     }
 
-    fun getAllFilesInfo(): Map<String, Long> = Logger.getAllFilesInfo()
+    public fun getAllFilesInfo(): Map<String, Long> = Logger.getAllFilesInfo()
 
-    fun setDebug(enable: Boolean) {
+    public fun setDebug(enable: Boolean) {
         Logger.setDebug(enable)
     }
 
-    fun setStatusListener(listener: ILoggerStatus?) {
+    public fun setStatusListener(listener: ILoggerStatus?) {
         Logger.setStatusListener(listener)
     }
 
-    fun close() {
+    public fun close() {
         Logger.close()
     }
 

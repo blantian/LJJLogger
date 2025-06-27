@@ -9,7 +9,7 @@ import org.koin.dsl.module
 /**
  * Provides Koin module for MGLogger.
  */
-fun createLoggerModule(
+public fun createLoggerModule(
     block: LoggerConfig.Builder.() -> Unit,
     loggerStatus: ILoggerStatus? = null
 ): Module {

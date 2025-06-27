@@ -8,9 +8,9 @@ import java.io.File
  * Date： 2025/6/26
  * Time： 15:10
  */
-interface SendLogStrategy {
+public interface SendLogStrategy {
     /**
      * @return Pair<HTTP StatusCode, ResponseBody?>
      */
-    suspend fun send(logFile: File): Pair<Int, ByteArray?>
+    public suspend fun send(logFile: File): Pair<Int, ByteArray?>
 }

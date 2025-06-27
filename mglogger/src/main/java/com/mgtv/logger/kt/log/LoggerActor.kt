@@ -24,7 +24,7 @@ import java.util.concurrent.atomic.AtomicBoolean
  * Time： 14:25
  */
 
-class LoggerActor(
+internal class LoggerActor(
     private val cfg: LoggerConfig,
     parentScope: CoroutineScope
 ) {
@@ -60,11 +60,11 @@ class LoggerActor(
      * 向 Actor 提交日志任务
      * @param task 日志任务
      */
-    fun offer(task: LogTask): Boolean {
+    internal fun offer(task: LogTask): Boolean {
         return channel.trySend(task).isSuccess
     }
 
-    fun close() {
+    internal fun close() {
         channel.close()
     }
 
@@ -72,7 +72,7 @@ class LoggerActor(
      * 收集日志文件信息
      * @return 返回日志文件名和大小的映射
      */
-    fun collectFileInfo(): Map<String, Long> {
+    internal fun collectFileInfo(): Map<String, Long> {
         val dir = File(cfg.logDir)
         return dir.listFiles()?.associate {
             Util.getDateStr(it.name.toLong()) to it.length()
