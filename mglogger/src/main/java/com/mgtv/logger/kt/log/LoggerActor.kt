@@ -60,7 +60,7 @@ class LoggerActor(
      * @param task 日志任务
      */
     fun offer(task: LogTask): Boolean {
-        return channel.offer(task)
+        return channel.trySend(task).isSuccess
     }
 
     fun close() {
