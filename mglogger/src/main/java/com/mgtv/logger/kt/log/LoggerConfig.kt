@@ -25,14 +25,14 @@ data class LoggerConfig(
         var maxQueue: Int = 10_000
         var key16: String = "1234567890abcdef"
         var iv16: String = "abcdef1234567890"
-        fun setCachePath(path: String): Builder = apply { cachePath = path }
-        fun setLogDir(dir: String): Builder = apply { logDir = dir }
-        fun setKeepDays(days: Long): Builder = apply { keepDays = days }
-        fun setMaxFile(value: Long): Builder = apply { maxFile = value }
-        fun setMinSdCard(value: Long): Builder = apply { minSdCard = value }
-        fun setMaxQueue(value: Int): Builder = apply { maxQueue = value }
-        fun setKey16(key: String): Builder = apply { this.key16 = key }
-        fun setIv16(iv: String): Builder = apply { this.iv16 = iv }
+        fun putCachePath(path: String): Builder = apply { cachePath = path }
+        fun putLogDir(dir: String): Builder = apply { logDir = dir }
+        fun putKeepDays(days: Long): Builder = apply { keepDays = days }
+        fun putMaxFile(value: Long): Builder = apply { maxFile = value }
+        fun putMinSdCard(value: Long): Builder = apply { minSdCard = value }
+        fun putMaxQueue(value: Int): Builder = apply { maxQueue = value }
+        fun putKey16(key: String): Builder = apply { this.key16 = key }
+        fun putIv16(iv: String): Builder = apply { this.iv16 = iv }
         fun build() =
             LoggerConfig(cachePath, logDir, keepDays, maxFile, minSdCard, maxQueue, key16, iv16)
     }

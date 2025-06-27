@@ -8,6 +8,8 @@ import android.util.Log;
 import com.mgtv.logger.java.Logan;
 import com.mgtv.logger.java.LoganConfig;
 import com.mgtv.logger.java.OnLoganProtocolStatus;
+import com.mgtv.logger.kt.log.LoggerConfig;
+import com.mgtv.logger.kt.log.MGLogger;
 
 import java.io.File;
 
@@ -39,6 +41,12 @@ public class MyApplication extends Application {
                 Log.e("Logan", "Failed to create directory: " + internalDir.getAbsolutePath());
             }
         }
+
+        LoggerConfig loggerConfig = new LoggerConfig.Builder()
+                .putCachePath(internalDir.getAbsolutePath())
+                .putLogDir(internalDir.getAbsolutePath() + File.separator + FILE_NAME)
+                .build();
+        MGLogger.INSTANCE.init(loggerConfig);
 
         LoganConfig config = new LoganConfig.Builder()
                 .setCachePath(internalDir.getAbsolutePath())

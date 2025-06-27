@@ -54,7 +54,7 @@ object Logger : CoroutineScope {
 
     fun setDebug(enable: Boolean) { sDebug = enable }
 
-    fun setStatusListener(listener: ILoggerStatus): Unit {
+    fun setStatusListener(listener: ILoggerStatus?): Unit {
         statusListener = listener
     }
 
