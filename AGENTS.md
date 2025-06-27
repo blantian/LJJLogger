@@ -4,7 +4,7 @@
 ---
 ## ☕️ JDK & Android SDK
 - JDK 1.8
-- Android Gradle Plugin 4.1.3 (必须是 4.1.x 系列，因为要适配低版本设备)
+- Android Gradle Plugin 4.1.3 (可以适当升级，但跨度不能太大，因为要适配低版本Android 设备 API(14-28))
 - compileSdk = 33, minSdk = 14
 - Android NDK 16.1.4479499（由 `mglogger/build.gradle → ndkVersion` 指定）
 
