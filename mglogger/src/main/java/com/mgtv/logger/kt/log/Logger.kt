@@ -17,9 +17,9 @@ object Logger : CoroutineScope {
     override val coroutineContext: CoroutineContext = Dispatchers.IO + job
 
     private lateinit var cfg: LoggerConfig
-    private lateinit var worker: LoggerActor
+    private var worker: LoggerActor? = null
 
-    val isReady: Boolean get() = this::worker.isInitialized
+    val isReady: Boolean get() = worker != null
 
     fun init(config: LoggerConfig) {
         cfg = config
@@ -32,12 +32,12 @@ object Logger : CoroutineScope {
 
     fun w(log: String, type: Int) {
         ensureReady()
-        worker.offer(LogTask.Write(log, type))
+        worker!!.offer(LogTask.Write(log, type))
     }
 
     fun flush() {
         ensureReady()
-        worker.offer(LogTask.Flush)
+        worker!!.offer(LogTask.Flush)
     }
 
     fun send(
@@ -46,11 +46,11 @@ object Logger : CoroutineScope {
         callback: ((Int, ByteArray?) -> Unit)? = null
     ) {
         ensureReady()
-        dates.forEach { worker.offer(LogTask.Send(it, strategy, callback)) }
+        dates.forEach { worker!!.offer(LogTask.Send(it, strategy, callback)) }
     }
 
     fun getAllFilesInfo(): Map<String, Long> =
-        if (isReady) worker.collectFileInfo() else emptyMap()
+        worker?.collectFileInfo() ?: emptyMap()
 
     fun setDebug(enable: Boolean) { sDebug = enable }
 
@@ -60,13 +60,14 @@ object Logger : CoroutineScope {
 
     fun close() {
         if (isReady) {
-            worker.close()
+            worker?.close()
+            worker = null
         }
         job.cancel()
     }
 
     private fun ensureReady() {
-        check(isReady) { "Please initialize MGLogger first" }
+        check(isReady) { "MGLogger is not initialized or has been closed" }
     }
 
 
