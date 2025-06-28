@@ -1,5 +1,6 @@
 package com.mgtv.logger.kt.log
 
+import android.os.Looper
 import com.mgtv.logger.kt.i.ILoggerStatus
 import com.mgtv.logger.kt.i.ISendLogCallback
 import kotlinx.coroutines.CoroutineScope
@@ -33,7 +34,10 @@ public object Logger : CoroutineScope {
 
     public fun w(log: String, type: Int) {
         ensureReady()
-        worker!!.offer(LogTask.Write(log, type))
+        val threadName = Thread.currentThread().name
+        val threadId = Thread.currentThread().id
+        val isMainThread = Looper.getMainLooper() == Looper.myLooper()
+        worker!!.offer(LogTask.Write(log, type, threadName, threadId, isMainThread))
     }
 
     public fun flush() {
