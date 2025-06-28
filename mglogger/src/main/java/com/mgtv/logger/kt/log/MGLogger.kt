@@ -13,10 +13,11 @@ import com.mgtv.logger.kt.log.SendLogStrategy
  * Date： 2025/6/27
  * Time： 22:38
  */
-object MGLogger {
+public object MGLogger {
 
     @JvmStatic
-    fun init(
+    @JvmOverloads
+    public fun init(
         config: LoggerConfig,
         loggerStatus: ILoggerStatus? = null
     ) {
@@ -40,37 +41,43 @@ object MGLogger {
     }
 
     @JvmStatic
-    fun w(log: String, type: Int) {
+    public fun w(log: String, type: Int) {
         Logger.w(log, type)
     }
 
-    fun flush() {
+    @JvmStatic
+    public fun flush() {
         Logger.flush()
     }
 
+
     @JvmStatic
-    fun send(
+    public fun send(
         url: String,
         header: Map<String, String>? = null,
         date: String,
         strategy: SendLogStrategy? = null,
         callback: ISendLogCallback? = null
     ) {
-        val strategy = strategy ?: DefaultSendLogStrategy(url,header)
+        val strategy = strategy ?: DefaultSendLogStrategy(url, header)
         Logger.send(listOf(date), strategy, callback)
     }
 
-    fun getAllFilesInfo(): Map<String, Long> = Logger.getAllFilesInfo()
+    @JvmStatic
+    public fun getAllFilesInfo(): Map<String, Long> = Logger.getAllFilesInfo()
 
-    fun setDebug(enable: Boolean) {
+    @JvmStatic
+    public fun setDebug(enable: Boolean) {
         Logger.setDebug(enable)
     }
 
-    fun setStatusListener(listener: ILoggerStatus?) {
+    @JvmStatic
+    public fun setStatusListener(listener: ILoggerStatus?) {
         Logger.setStatusListener(listener)
     }
 
-    fun close() {
+    @JvmStatic
+    public fun close() {
         Logger.close()
     }
 
