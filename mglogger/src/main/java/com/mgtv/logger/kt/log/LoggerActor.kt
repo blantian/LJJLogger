@@ -113,9 +113,9 @@ internal class LoggerActor(
             t.type,
             t.log,
             System.currentTimeMillis(),
-            Thread.currentThread().name,
-            Thread.currentThread().id,
-            Looper.getMainLooper() == Looper.myLooper()
+            t.threadName,
+            t.threadId,
+            t.isMainThread
         )
     }
 
