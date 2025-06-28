@@ -14,6 +14,8 @@ import com.mgtv.logger.kt.i.ILoggerStatus;
 import com.mgtv.logger.kt.log.LoggerConfig;
 import com.mgtv.logger.kt.log.MGLogger;
 
+import com.mgtv.mglogger.CrashHandler;
+
 import java.io.File;
 
 public class MyApplication extends Application {
@@ -29,6 +31,7 @@ public class MyApplication extends Application {
         path = Environment.getExternalStorageDirectory().getAbsolutePath()
                 + File.separator + "mgtv" + File.separator + FILE_NAME;
         initLogan();
+        CrashHandler.install();
     }
 
     private void initLogan() {
