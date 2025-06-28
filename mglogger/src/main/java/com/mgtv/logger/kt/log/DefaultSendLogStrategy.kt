@@ -17,11 +17,11 @@ import javax.net.ssl.SSLSession
  * Date： 2025/6/26
  * Time： 15:10
  */
-class DefaultSendLogStrategy(
+public class DefaultSendLogStrategy(
     private val uploadUrl: String,
     private val headers: Map<String, String> ? = emptyMap()
 ) : SendLogStrategy {
-    override suspend fun send(logFile: File): Pair<Int, ByteArray?> = withContext(Dispatchers.IO) {
+    public override suspend fun send(logFile: File): Pair<Int, ByteArray?> = withContext(Dispatchers.IO) {
         var conn: HttpURLConnection? = null
         var status = -1
         var body: ByteArray? = null

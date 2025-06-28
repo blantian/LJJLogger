@@ -11,7 +11,7 @@ import java.util.Collections
  * Date： 2025/6/26
  * Time： 09:20
  */
-object MGLoggerJni : ILoggerProtocol {
+public object MGLoggerJni : ILoggerProtocol {
 
     @Volatile
     private var isMGLoggerOk = false
@@ -27,9 +27,9 @@ object MGLoggerJni : ILoggerProtocol {
         }
     }
 
-    fun isMGLoggerSuccess(): Boolean = isMGLoggerOk
+    public fun isMGLoggerSuccess(): Boolean = isMGLoggerOk
 
-    fun newInstance(): MGLoggerJni = this
+    public fun newInstance(): MGLoggerJni = this
 
     private var isLoganInit = false
     private var isLoganOpen = false
@@ -67,7 +67,7 @@ object MGLoggerJni : ILoggerProtocol {
     // LoganProtocolHandler impl
     // ----------------------------
 
-    override fun logger_init(
+    public override fun logger_init(
         cachePath: String?,
         dirPath: String?,
         maxFile: Int,
@@ -96,7 +96,7 @@ object MGLoggerJni : ILoggerProtocol {
         }
     }
 
-    override fun logger_debug(debug: Boolean) {
+    public override fun logger_debug(debug: Boolean) {
         if (!isLoganInit || !isMGLoggerOk) return
         try {
             mglogger_debug(debug)
@@ -105,11 +105,11 @@ object MGLoggerJni : ILoggerProtocol {
         }
     }
 
-    override fun setOnLoggerStatus(listener: ILoggerStatus) {
+    public override fun setOnLoggerStatus(listener: ILoggerStatus) {
         loggerStatus = listener
     }
 
-    override fun logger_open(fileName: String?) {
+    public override fun logger_open(fileName: String?) {
         if (!isLoganInit || !isMGLoggerOk) return
         try {
             val code = mglogger_open(fileName)
@@ -124,7 +124,7 @@ object MGLoggerJni : ILoggerProtocol {
         }
     }
 
-    override fun logger_flush() {
+    public override fun logger_flush() {
         if (!isLoganOpen || !isMGLoggerOk) return
         try {
             mglogger_flush()
@@ -133,7 +133,7 @@ object MGLoggerJni : ILoggerProtocol {
         }
     }
 
-    override fun logger_write(
+    public override fun logger_write(
         flag: Int,
         log: String?,
         localTime: Long,
