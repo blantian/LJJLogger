@@ -26,17 +26,9 @@ public class MyApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-//        path = getApplicationContext().getExternalFilesDir(null).getAbsolutePath()
-//                + File.separator + FILE_NAME ;
         path = Environment.getExternalStorageDirectory().getAbsolutePath()
                 + File.separator + "mgtv" + File.separator + FILE_NAME;
         initLogan();
-        MGLogger.INSTANCE.w("MyApplication onCreate", 3);
-        MGLogger.INSTANCE.w("MyApplication onCreate", 3);
-        MGLogger.INSTANCE.w("MyApplication onCreate", 3);
-//        Logan.w("MyApplication onCreate", 3);
-//        Logan.w("MyApplication onCreate", 3);
-//        Logan.w("MyApplication onCreate", 3);
     }
 
     private void initLogan() {
@@ -52,7 +44,7 @@ public class MyApplication extends Application {
                 .putCachePath(internalDir.getAbsolutePath())
                 .putLogDir(internalDir.getAbsolutePath() + File.separator + FILE_NAME)
                 .build();
-        MGLogger.INSTANCE.init(loggerConfig, (cmd, code) -> {
+        MGLogger.init(loggerConfig, (cmd, code) -> {
             Log.i(TAG, "clogan > cmd : " + cmd + " | " + "code : " + code);
         });
 

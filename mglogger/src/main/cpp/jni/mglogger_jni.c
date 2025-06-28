@@ -126,9 +126,9 @@ Java_com_mgtv_logger_kt_log_MGLoggerJni_mglogger_1write(JNIEnv *env,
     const char *thread_name_ = (*env)->GetStringUTFChars(env, thread_name, 0);
 
     jint code = (jint) clogan_write(flag,
-                                    (char *) log,
+                                    (char *) log_,
                                     local_time,
-                                    (char *) thread_name,
+                                    (char *) thread_name_,
                                     thread_id,
                                     is_main);
 

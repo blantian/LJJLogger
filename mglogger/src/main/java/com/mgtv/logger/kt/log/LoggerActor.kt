@@ -2,6 +2,7 @@ package com.mgtv.logger.kt.log
 
 import android.os.Looper
 import android.os.StatFs
+import android.util.Log
 import com.mgtv.logger.java.Util
 import com.mgtv.logger.kt.i.ILoggerProtocol
 import com.mgtv.logger.kt.i.ILoggerStatus
@@ -84,6 +85,7 @@ internal class LoggerActor(
      * @param task 日志任务
      */
     private suspend fun handle(task: LogTask) {
+        Log.i("sky"," LoggerActor handle task: $task")
         when (task) {
             is LogTask.Write -> write(task)
             is LogTask.Flush -> protocol.logger_flush()
