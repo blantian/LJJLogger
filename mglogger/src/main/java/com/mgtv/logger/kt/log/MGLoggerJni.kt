@@ -63,7 +63,14 @@ public object MGLoggerJni : ILoggerProtocol {
 
     private external fun mglogger_flush()
 
-    private external fun getSystemLog(): String
+    private external fun nativeGetSystemLog(): String
+
+    public fun getSystemLog(): String = try {
+        nativeGetSystemLog()
+    } catch (e: UnsatisfiedLinkError) {
+        e.printStackTrace()
+        ""
+    }
 
     // ----------------------------
     // LoganProtocolHandler impl
