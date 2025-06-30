@@ -63,14 +63,22 @@ public object MGLoggerJni : ILoggerProtocol {
 
     private external fun mglogger_flush()
 
-    private external fun nativeGetSystemLog(maxLines: Int): String
-
-    public fun getSystemLog(maxLines: Int): String = try {
-        nativeGetSystemLog(maxLines)
-    } catch (e: UnsatisfiedLinkError) {
+    private fun readSystemLog(maxLines: Int): String = try {
+        val process = ProcessBuilder(
+            "logcat",
+            "-d",
+            "-t",
+            maxLines.toString()
+        )
+            .redirectErrorStream(true)
+            .start()
+        process.inputStream.bufferedReader().use { it.readText() }
+    } catch (e: Exception) {
         e.printStackTrace()
         ""
     }
+
+    public fun getSystemLog(maxLines: Int): String = readSystemLog(maxLines)
 
     // ----------------------------
     // LoganProtocolHandler impl
