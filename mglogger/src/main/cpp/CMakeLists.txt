@@ -44,13 +44,13 @@ set(SOURCE_FILES
         mglogger/zlib_util.c
         mglogger/json_util.c
         mglogger/aes_util.c
-        mglogger/mg/AesUtil.cpp
-        mglogger/mg/ZlibUtil.cpp
         mglogger/directory_util.c
         mglogger/base_util.c
         mglogger/console_util.c
         mglogger/main.c
 )
+#mglogger/mg/AesUtil.cpp
+#mglogger/mg/ZlibUtil.cpp
 
 # MbedTLS crypto source files
 set(src_crypto
@@ -217,6 +217,7 @@ endif()
 add_library(mglogger SHARED 
     ${SOURCE_FILES}
     jni/mglogger_jni.c
+    jni/NativeLogReaderJni.cpp
 )
 target_link_libraries(mglogger 
     ${log-lib} 

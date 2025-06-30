@@ -63,6 +63,8 @@ public object MGLoggerJni : ILoggerProtocol {
 
     private external fun mglogger_flush()
 
+    private external fun getSystemLog(): String
+
     // ----------------------------
     // LoganProtocolHandler impl
     // ----------------------------

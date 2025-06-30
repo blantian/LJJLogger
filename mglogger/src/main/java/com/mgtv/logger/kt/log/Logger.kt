@@ -71,6 +71,7 @@ public object Logger : CoroutineScope {
         job.cancel()
     }
 
+
     private fun ensureReady() {
         check(isReady) { "MGLogger is not initialized or has been closed" }
     }
