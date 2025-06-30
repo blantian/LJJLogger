@@ -10,8 +10,8 @@ public:
     void encrypt(const unsigned char *in, unsigned char *out, int length, unsigned char *iv);
     void copyIv(unsigned char *out) const;
 private:
-    unsigned char mKey[16];
-    unsigned char mIv[16];
+    unsigned char mKey[16]{0};
+    unsigned char mIv[16]{0};
 };
 
 #endif // MGLOGGER_MG_AESUTIL_H
