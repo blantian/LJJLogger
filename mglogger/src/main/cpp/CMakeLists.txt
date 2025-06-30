@@ -44,6 +44,7 @@ set(SOURCE_FILES
         mglogger/zlib_util.c
         mglogger/json_util.c
         mglogger/aes_util.c
+        mglogger/mg/AesUtil.cpp
         mglogger/directory_util.c
         mglogger/base_util.c
         mglogger/console_util.c
