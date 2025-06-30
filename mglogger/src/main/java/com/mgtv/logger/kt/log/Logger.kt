@@ -6,6 +6,8 @@ import com.mgtv.logger.kt.i.ISendLogCallback
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.CompletableDeferred
+import kotlinx.coroutines.runBlocking
 import kotlin.coroutines.CoroutineContext
 
 /**
@@ -38,6 +40,13 @@ public object Logger : CoroutineScope {
         val threadId = Thread.currentThread().id
         val isMainThread = Looper.getMainLooper() == Looper.myLooper()
         worker!!.offer(LogTask.Write(log, type, threadName, threadId, isMainThread))
+    }
+
+    public fun getSystemLogs(maxLines: Int = 200): String {
+        ensureReady()
+        val result = CompletableDeferred<String>()
+        worker!!.offer(LogTask.GetSysLog(maxLines, result))
+        return runBlocking { result.await() }
     }
 
     public fun flush() {

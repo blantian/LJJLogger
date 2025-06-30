@@ -7,7 +7,6 @@
 
 
 #include <jni.h>
-#include <thread>
 #include <string>
 #include <sstream>
 #include <stdio.h>
@@ -15,8 +14,9 @@
 
 static std::string g_system_log;
 
-static void read_system_log() {
-    FILE *pipe = popen("logcat -d", "r");
+static void read_system_log(int max_lines) {
+    std::string cmd = "logcat -d -t " + std::to_string(max_lines);
+    FILE *pipe = popen(cmd.c_str(), "r");
     if (pipe == nullptr) {
         return;
     }
@@ -32,9 +32,9 @@ static void read_system_log() {
 extern "C" JNIEXPORT jstring JNICALL
 Java_com_mgtv_logger_kt_log_MGLoggerJni_nativeGetSystemLog(
         JNIEnv *env,
-        jobject /* thiz */) {
+        jobject /* thiz */,
+        jint max_lines) {
     g_system_log.clear();
-    std::thread t(read_system_log);
-    t.join();
+    read_system_log(max_lines);
     return env->NewStringUTF(g_system_log.c_str());
 }

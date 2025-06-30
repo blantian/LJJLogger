@@ -9,7 +9,8 @@ extern "C" {
 
 JNIEXPORT jstring JNICALL
 Java_com_mgtv_logger_kt_log_MGLoggerJni_nativeGetSystemLog(JNIEnv *env,
-                                                           jobject thiz);
+                                                           jobject thiz,
+                                                           jint max_lines);
 
 #ifdef __cplusplus
 }

@@ -1,6 +1,7 @@
 package com.mgtv.logger.kt.log
 
 import com.mgtv.logger.kt.i.ISendLogCallback
+import kotlinx.coroutines.CompletableDeferred
 /**
  * Description:
  * Created by lantian
@@ -21,5 +22,9 @@ internal sealed class LogTask {
         val date: String,
         val strategy: SendLogStrategy,
         val callback: ISendLogCallback?
+    ) : LogTask()
+    internal data class GetSysLog(
+        val maxLines: Int,
+        val result: CompletableDeferred<String>
     ) : LogTask()
 }
