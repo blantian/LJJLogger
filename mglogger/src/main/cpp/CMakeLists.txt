@@ -136,49 +136,49 @@ set(src_tls
 )
 
 # Compiler flags
-if(CMAKE_COMPILER_IS_GNUCC)
+if (CMAKE_COMPILER_IS_GNUCC)
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wmissing-declarations -Wmissing-prototypes")
-endif(CMAKE_COMPILER_IS_GNUCC)
+endif (CMAKE_COMPILER_IS_GNUCC)
 
-if(CMAKE_COMPILER_IS_CLANG)
+if (CMAKE_COMPILER_IS_CLANG)
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wmissing-declarations -Wmissing-prototypes -Wdocumentation -Wno-documentation-deprecated-sync -Wunreachable-code")
-endif(CMAKE_COMPILER_IS_CLANG)
+endif (CMAKE_COMPILER_IS_CLANG)
 
 # Platform specific libraries
 set(libs "")
-if(WIN32)
+if (WIN32)
     set(libs ${libs} ws2_32)
-endif(WIN32)
+endif (WIN32)
 
-if(USE_PKCS11_HELPER_LIBRARY)
+if (USE_PKCS11_HELPER_LIBRARY)
     set(libs ${libs} pkcs11-helper)
-endif(USE_PKCS11_HELPER_LIBRARY)
+endif (USE_PKCS11_HELPER_LIBRARY)
 
-if(ENABLE_ZLIB_SUPPORT)
+if (ENABLE_ZLIB_SUPPORT)
     set(libs ${libs} ${ZLIB_LIBRARIES})
-endif(ENABLE_ZLIB_SUPPORT)
+endif (ENABLE_ZLIB_SUPPORT)
 
-if(LINK_WITH_PTHREAD)
+if (LINK_WITH_PTHREAD)
     set(libs ${libs} pthread)
-endif()
+endif ()
 
 # MbedTLS library configuration
 if (NOT USE_STATIC_MBEDTLS_LIBRARY AND NOT USE_SHARED_MBEDTLS_LIBRARY)
     message(FATAL_ERROR "Need to choose static or shared mbedtls build!")
-endif(NOT USE_STATIC_MBEDTLS_LIBRARY AND NOT USE_SHARED_MBEDTLS_LIBRARY)
+endif (NOT USE_STATIC_MBEDTLS_LIBRARY AND NOT USE_SHARED_MBEDTLS_LIBRARY)
 
-if(USE_STATIC_MBEDTLS_LIBRARY AND USE_SHARED_MBEDTLS_LIBRARY)
+if (USE_STATIC_MBEDTLS_LIBRARY AND USE_SHARED_MBEDTLS_LIBRARY)
     set(mbedtls_static_target "mbedtls_static")
     set(mbedx509_static_target "mbedx509_static")
     set(mbedcrypto_static_target "mbedcrypto_static")
-elseif(USE_STATIC_MBEDTLS_LIBRARY)
+elseif (USE_STATIC_MBEDTLS_LIBRARY)
     set(mbedtls_static_target "mbedtls")
     set(mbedx509_static_target "mbedx509")
     set(mbedcrypto_static_target "mbedcrypto")
-endif()
+endif ()
 
 # Build static MbedTLS libraries
-if(USE_STATIC_MBEDTLS_LIBRARY)
+if (USE_STATIC_MBEDTLS_LIBRARY)
     add_library(${mbedcrypto_static_target} STATIC ${src_crypto})
     set_target_properties(${mbedcrypto_static_target} PROPERTIES OUTPUT_NAME mbedcrypto)
     target_link_libraries(${mbedcrypto_static_target} ${libs})
@@ -190,10 +190,10 @@ if(USE_STATIC_MBEDTLS_LIBRARY)
     add_library(${mbedtls_static_target} STATIC ${src_tls})
     set_target_properties(${mbedtls_static_target} PROPERTIES OUTPUT_NAME mbedtls)
     target_link_libraries(${mbedtls_static_target} ${libs} ${mbedx509_static_target})
-endif(USE_STATIC_MBEDTLS_LIBRARY)
+endif (USE_STATIC_MBEDTLS_LIBRARY)
 
 # Build shared MbedTLS libraries
-if(USE_SHARED_MBEDTLS_LIBRARY)
+if (USE_SHARED_MBEDTLS_LIBRARY)
     add_library(mbedcrypto SHARED ${src_crypto})
     set_target_properties(mbedcrypto PROPERTIES VERSION 2.6.0 SOVERSION 0)
     target_link_libraries(mbedcrypto ${libs})
@@ -205,23 +205,22 @@ if(USE_SHARED_MBEDTLS_LIBRARY)
     add_library(mbedtls SHARED ${src_tls})
     set_target_properties(mbedtls PROPERTIES VERSION 2.6.0 SOVERSION 10)
     target_link_libraries(mbedtls ${libs} mbedx509)
-endif(USE_SHARED_MBEDTLS_LIBRARY)
+endif (USE_SHARED_MBEDTLS_LIBRARY)
 
 # Create custom target for MbedTLS libraries
 add_custom_target(lib DEPENDS mbedcrypto mbedx509 mbedtls)
-if(USE_STATIC_MBEDTLS_LIBRARY AND USE_SHARED_MBEDTLS_LIBRARY)
+if (USE_STATIC_MBEDTLS_LIBRARY AND USE_SHARED_MBEDTLS_LIBRARY)
     add_dependencies(lib mbedcrypto_static mbedx509_static mbedtls_static)
-endif()
+endif ()
 
 # Build main mglogger library
-add_library(mglogger SHARED 
-    ${SOURCE_FILES}
-    jni/mglogger_jni.c
-    jni/NativeLogReaderJni.cpp
-    compat/quick_exit_stub.cpp
+add_library(mglogger SHARED
+        ${SOURCE_FILES}
+        jni/mglogger_jni.c
+        jni/NativeLogReaderJni.cpp
 )
-target_link_libraries(mglogger 
-    ${log-lib} 
-    z 
-    ${mbedcrypto_static_target}
+target_link_libraries(mglogger
+        ${log-lib}
+        z
+        ${mbedcrypto_static_target}
 )
