@@ -62,23 +62,15 @@ public object MGLoggerJni : ILoggerProtocol {
     ): Int
 
     private external fun mglogger_flush()
+    private external fun nativeStartLogcatCollector(blackList: Array<String>)
 
-    private fun readSystemLog(maxLines: Int): String = try {
-        val process = ProcessBuilder(
-            "logcat",
-            "-d",
-            "-t",
-            maxLines.toString()
-        )
-            .redirectErrorStream(true)
-            .start()
-        process.inputStream.bufferedReader().use { it.readText() }
-    } catch (e: Exception) {
-        e.printStackTrace()
-        ""
+    public fun startLogcatCollector(blackList: Array<String>) {
+        try {
+            nativeStartLogcatCollector(blackList)
+        } catch (e: UnsatisfiedLinkError) {
+            e.printStackTrace()
+        }
     }
-
-    public fun getSystemLog(maxLines: Int): String = readSystemLog(maxLines)
 
     // ----------------------------
     // LoganProtocolHandler impl
@@ -184,5 +176,12 @@ public object MGLoggerJni : ILoggerProtocol {
             }
             loggerStatus?.loggerStatus(cmd, code)
         }
+    }
+
+    internal fun onLogcatCollectorFail() {
+        loggerStatusCode(
+            MGLoggerStatus.MGLOGGER_LOGCAT_COLLECTOR_STATUS,
+            MGLoggerStatus.MGLOGGER_LOGCAT_COLLECTOR_FAIL
+        )
     }
 }

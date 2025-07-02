@@ -217,6 +217,7 @@ endif ()
 add_library(mglogger SHARED
         ${SOURCE_FILES}
         jni/mglogger_jni.c
+        jni/LogcatCollector.cpp
 )
 target_link_libraries(mglogger
         ${log-lib}
