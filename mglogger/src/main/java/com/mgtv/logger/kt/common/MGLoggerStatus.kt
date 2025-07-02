@@ -33,4 +33,7 @@ public object MGLoggerStatus {
     public val MGLOGGER_WRITE_FAIL_JNI: Int = -4060 //jni找不到对应C函数
     public const val MGLOGGER_LOAD_SO: String = "logan_loadso" //Logan装载So;
     public val MGLOGGER_LOAD_SO_FAIL: Int = -5020 //加载的SO失败
+
+    public const val MGLOGGER_LOGCAT_COLLECTOR_STATUS: String = "logcat_collector"
+    public val MGLOGGER_LOGCAT_COLLECTOR_FAIL: Int = -6010
 }
