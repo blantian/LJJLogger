@@ -17,9 +17,9 @@
 
 #define LOGAN_MMAP_HEADER_PROTOCOL '\15' //MMAP的头文件标识符
 #define LOGAN_MMAP_TAIL_PROTOCOL '\16' //MMAP尾文件标识符
-#define LOGAN_MMAP_TOTALLEN  3 //MMAP文件长度
+#define LOGAN_MMAP_TOTALLEN  3 // MMAP文件长度
 
-#define LOGAN_MAX_GZIP_UTIL 5 * 1024 //压缩单元的大小
+#define LOGAN_MAX_GZIP_UTIL 5 * 1024 // gzip的最大压缩单元,5k
 
 #define LOGAN_WRITEPROTOCOL_HEAER_LENGTH 5 //Logan写入协议的头和写入数据的总长度
 
@@ -27,9 +27,9 @@
 
 #define LOGAN_DIVIDE_SYMBOL "/"
 
-#define LOGAN_LOGFILE_MAXLENGTH 10 * 1024 * 1024
+#define LOGAN_LOGFILE_MAXLENGTH 10 * 1024 * 1024 // 日志文件最大长度,10M
 
-#define LOGAN_WRITE_SECTION 20 * 1024 //多大长度做分片
+#define LOGAN_WRITE_SECTION 20 * 1024 // 写入分片的大小,20k
 
 #define LOGAN_RETURN_SYMBOL "\n"
 

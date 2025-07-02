@@ -7,7 +7,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define LOGAN_CHUNK 16384
+#define LOGAN_CHUNK 16384 // 16k
 
 //定义Logan_zlib的状态类型
 

@@ -4,9 +4,6 @@ import android.util.Log;
 
 import com.mgtv.logger.kt.log.MGLogger;
 
-/**
- * Global crash handler that writes crash stack traces to MGLogger.
- */
 public class CrashHandler implements Thread.UncaughtExceptionHandler {
 
     private final Thread.UncaughtExceptionHandler defaultHandler;
@@ -15,7 +12,6 @@ public class CrashHandler implements Thread.UncaughtExceptionHandler {
         this.defaultHandler = Thread.getDefaultUncaughtExceptionHandler();
     }
 
-    /** Install this crash handler as the default handler. */
     public static void install() {
         Thread.setDefaultUncaughtExceptionHandler(new CrashHandler());
     }
@@ -23,7 +19,7 @@ public class CrashHandler implements Thread.UncaughtExceptionHandler {
     @Override
     public void uncaughtException(Thread t, Throwable e) {
         MGLogger.w(Log.getStackTraceString(e), 3);
-        String systemLog = MGLogger.getSystemLogs(200);
+        String systemLog = MGLogger.getSystemLogs(300);
         if (!systemLog.isEmpty()) {
             MGLogger.w(systemLog, 3);
         }

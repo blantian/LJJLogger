@@ -1,12 +1,10 @@
 package com.mgtv.logger.kt.log
 
-import android.os.Looper
 import android.os.StatFs
 import android.util.Log
 import com.mgtv.logger.java.Util
 import com.mgtv.logger.kt.i.ILoggerProtocol
 import com.mgtv.logger.kt.i.ILoggerStatus
-import com.mgtv.logger.kt.i.ISendLogCallback
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.collect
