@@ -88,8 +88,8 @@ internal class LoggerActor(
             is LogTask.Write -> write(task)
             is LogTask.Flush -> protocol.logger_flush()
             is LogTask.Send -> send(task)
-            is LogTask.GetSysLog ->
-                task.result.complete(MGLoggerJni.getSystemLog(task.maxLines))
+//            is LogTask.GetSysLog ->
+//                task.result.complete(MGLoggerJni.getSystemLog(task.maxLines))
         }
     }
 

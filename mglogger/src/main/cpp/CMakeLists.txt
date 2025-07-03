@@ -22,12 +22,9 @@ option(LINK_WITH_PTHREAD "Explicitly link mbed TLS library to pthread." OFF)
 
 include_directories(./)
 include_directories(mglogger)
+include_directories(mglogger/mg)
 include_directories(external/include)
 include_directories(external/include/mbedtls)
-include_directories(${ANDROID_NDK}/sources/cxx-stl/llvm-libc++/include)
-include_directories(${ANDROID_NDK}/sources/android/native_app_glue)
-include_directories(${ANDROID_NDK}/toolchains/llvm/prebuilt/${ANDROID_HOST_TAG}/sysroot/usr/include)
-include_directories(${ANDROID_NDK}/toolchains/llvm/prebuilt/${ANDROID_HOST_TAG}/sysroot/usr/include/${ANDROID_TOOLCHAIN_NAME})
 
 # Find Android log library
 find_library(
@@ -49,8 +46,6 @@ set(SOURCE_FILES
         mglogger/console_util.c
         mglogger/main.c
 )
-#mglogger/mg/AesUtil.cpp
-#mglogger/mg/ZlibUtil.cpp
 
 # MbedTLS crypto source files
 set(src_crypto
@@ -217,7 +212,6 @@ endif ()
 add_library(mglogger SHARED
         ${SOURCE_FILES}
         jni/mglogger_jni.c
-        jni/LogcatCollector.cpp
 )
 target_link_libraries(mglogger
         ${log-lib}
