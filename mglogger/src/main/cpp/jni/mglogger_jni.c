@@ -1,4 +1,7 @@
 #include "mglogger_jni.h"
+#include "mg/Logreader.h"
+
+static JavaVM *g_vm = NULL;
 
 JNIEXPORT jint JNICALL
 Java_com_mgtv_logger_java_CLoganProtocol_clogan_1write(JNIEnv *env, jobject instance, jint flag,
@@ -140,4 +143,56 @@ Java_com_mgtv_logger_kt_log_MGLoggerJni_mglogger_1write(JNIEnv *env,
 JNIEXPORT void JNICALL
 Java_com_mgtv_logger_kt_log_MGLoggerJni_mglogger_1flush(JNIEnv *env, jobject thiz) {
     clogan_flush();
+}
+
+JNIEXPORT jint JNICALL
+JNI_OnLoad(JavaVM *vm, void *reserved) {
+    g_vm = vm;
+    return JNI_VERSION_1_6;
+}
+
+static void on_logcat_fail_callback() {
+    if (g_vm == NULL) return;
+    JNIEnv *env = NULL;
+    if ((*g_vm)->AttachCurrentThread(g_vm, &env, NULL) != 0) return;
+    jclass cls = (*env)->FindClass(env, "com/mgtv/logger/kt/log/MGLoggerJni");
+    if (cls != NULL) {
+        jmethodID mid = (*env)->GetStaticMethodID(env, cls, "onLogcatCollectorFail", "()V");
+        if (mid != NULL) {
+            (*env)->CallStaticVoidMethod(env, cls, mid);
+        }
+        (*env)->DeleteLocalRef(env, cls);
+    }
+    (*g_vm)->DetachCurrentThread(g_vm);
+}
+
+JNIEXPORT void JNICALL
+Java_com_mgtv_logger_kt_log_MGLoggerJni_nativeStartLogcatCollector(JNIEnv *env,
+                                                                   jobject thiz,
+                                                                   jobjectArray blacklist) {
+    int count = 0;
+    if (blacklist != NULL) {
+        count = (*env)->GetArrayLength(env, blacklist);
+    }
+    const char **list = NULL;
+    if (count > 0) {
+        list = (const char **) malloc(sizeof(char *) * count);
+        for (int i = 0; i < count; ++i) {
+            jstring str = (jstring) (*env)->GetObjectArrayElement(env, blacklist, i);
+            const char *tmp = (*env)->GetStringUTFChars(env, str, 0);
+            list[i] = strdup(tmp);
+            (*env)->ReleaseStringUTFChars(env, str, tmp);
+            (*env)->DeleteLocalRef(env, str);
+        }
+    }
+    int ret = start_logreader(list, count, on_logcat_fail_callback);
+    if (ret < 0) {
+        on_logcat_fail_callback();
+    }
+    if (list) {
+        for (int i = 0; i < count; ++i) {
+            free((void *) list[i]);
+        }
+        free(list);
+    }
 }

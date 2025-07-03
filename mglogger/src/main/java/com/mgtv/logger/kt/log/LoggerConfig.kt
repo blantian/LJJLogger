@@ -14,7 +14,8 @@ public data class LoggerConfig(
     public val minSdCard: Long,
     public val maxQueue: Int,
     public val key16: String,
-    public val iv16: String
+    public val iv16: String,
+    public val logcatBlackList: List<String> = emptyList()
 ) {
     public class Builder {
         public var cachePath: String = ""
@@ -25,6 +26,7 @@ public data class LoggerConfig(
         public var maxQueue: Int = 10_000
         public var key16: String = "1234567890abcdef"
         public var iv16: String = "abcdef1234567890"
+        public var logcatBlackList: List<String> = emptyList()
         public fun putCachePath(path: String): Builder = apply { cachePath = path }
         public fun putLogDir(dir: String): Builder = apply { logDir = dir }
         public fun putKeepDays(days: Long): Builder = apply { keepDays = days }
@@ -33,7 +35,20 @@ public data class LoggerConfig(
         public fun putMaxQueue(value: Int): Builder = apply { maxQueue = value }
         public fun putKey16(key: String): Builder = apply { this.key16 = key }
         public fun putIv16(iv: String): Builder = apply { this.iv16 = iv }
+        public fun putLogcatBlackList(list: List<String>): Builder = apply {
+            this.logcatBlackList = list
+        }
         public fun build(): LoggerConfig =
-            LoggerConfig(cachePath, logDir, keepDays, maxFile, minSdCard, maxQueue, key16, iv16)
+            LoggerConfig(
+                cachePath,
+                logDir,
+                keepDays,
+                maxFile,
+                minSdCard,
+                maxQueue,
+                key16,
+                iv16,
+                logcatBlackList
+            )
     }
 }
