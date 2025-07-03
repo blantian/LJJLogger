@@ -44,8 +44,7 @@ public object MGLogger {
     }
 
     @JvmStatic
-    public fun getSystemLogs(maxLines: Int = 200): String =
-        Logger.getSystemLogs(maxLines)
+    public fun getSystemLogs() = Logger.getSystemLogs()
 
     @JvmStatic
     public fun flush() {

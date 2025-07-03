@@ -43,9 +43,16 @@ public class MyApplication extends Application {
             }
         }
 
+        // 获取sd卡路径
+        if (!Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState())) {
+            Log.e(TAG, "SD card is not mounted");
+            return;
+        }
+        File sdCardDir = new File(Environment.getExternalStorageDirectory(), "mgtv");
+
         LoggerConfig loggerConfig = new LoggerConfig.Builder()
-                .putCachePath(internalDir.getAbsolutePath())
-                .putLogDir(internalDir.getAbsolutePath() + File.separator + FILE_NAME)
+                .putCachePath(sdCardDir.getAbsolutePath())
+                .putLogDir(sdCardDir.getAbsolutePath() + File.separator + FILE_NAME)
                 .build();
         MGLogger.init(loggerConfig, (cmd, code) -> {
             Log.i(TAG, "clogan > cmd : " + cmd + " | " + "code : " + code);

@@ -42,11 +42,9 @@ public object Logger : CoroutineScope {
         worker!!.offer(LogTask.Write(log, type, threadName, threadId, isMainThread))
     }
 
-    public fun getSystemLogs(maxLines: Int = 200): String {
+    public fun getSystemLogs() {
         ensureReady()
-        val result = CompletableDeferred<String>()
-        worker!!.offer(LogTask.GetSysLog(maxLines, result))
-        return runBlocking { result.await() }
+        worker!!.offer(LogTask.GetSysLog)
     }
 
     public fun flush() {

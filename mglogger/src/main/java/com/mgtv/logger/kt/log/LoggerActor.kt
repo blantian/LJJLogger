@@ -41,7 +41,6 @@ internal class LoggerActor(
         })
         it.logger_init(cfg.cachePath, cfg.logDir, cfg.maxFile.toInt(), cfg.key16, cfg.iv16)
         it.logger_debug(Logger.sDebug)
-        it.startLogcatCollector(cfg.logcatBlackList.toTypedArray())
     }
 
     private val isSdWritable = AtomicBoolean(true)
@@ -89,8 +88,7 @@ internal class LoggerActor(
             is LogTask.Write -> write(task)
             is LogTask.Flush -> protocol.logger_flush()
             is LogTask.Send -> send(task)
-//            is LogTask.GetSysLog ->
-//                task.result.complete(MGLoggerJni.getSystemLog(task.maxLines))
+            is LogTask.GetSysLog -> MGLoggerJni.startLogcatCollector(cfg.logcatBlackList.toTypedArray())
         }
     }
 

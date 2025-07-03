@@ -23,8 +23,5 @@ internal sealed class LogTask {
         val strategy: SendLogStrategy,
         val callback: ISendLogCallback?
     ) : LogTask()
-    internal data class GetSysLog(
-        val maxLines: Int,
-        val result: CompletableDeferred<String>
-    ) : LogTask()
+    internal object GetSysLog : LogTask()
 }
