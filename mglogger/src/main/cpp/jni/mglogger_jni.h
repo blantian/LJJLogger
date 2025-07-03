@@ -73,6 +73,11 @@ Java_com_mgtv_logger_kt_log_MGLoggerJni_mglogger_1write(JNIEnv *env, jobject thi
 JNIEXPORT void JNICALL
 Java_com_mgtv_logger_kt_log_MGLoggerJni_mglogger_1flush(JNIEnv *env, jobject thiz);
 
+JNIEXPORT void JNICALL
+Java_com_mgtv_logger_kt_log_MGLoggerJni_nativeStartLogcatCollector(JNIEnv *env,
+                                                                   jobject thiz,
+                                                                   jobjectArray blacklist);
+
 
 #ifdef __cplusplus
 }

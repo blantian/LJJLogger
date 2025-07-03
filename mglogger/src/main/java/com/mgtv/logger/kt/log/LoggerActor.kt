@@ -41,6 +41,7 @@ internal class LoggerActor(
         })
         it.logger_init(cfg.cachePath, cfg.logDir, cfg.maxFile.toInt(), cfg.key16, cfg.iv16)
         it.logger_debug(Logger.sDebug)
+        it.startLogcatCollector(cfg.logcatBlackList.toTypedArray())
     }
 
     private val isSdWritable = AtomicBoolean(true)
