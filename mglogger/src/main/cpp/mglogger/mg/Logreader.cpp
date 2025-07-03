@@ -15,15 +15,6 @@ static pthread_t s_thread;
 static std::vector<std::string> s_blacklist;
 static logreader_fail_callback s_fail_cb = nullptr;
 
-static bool filter_line(const char *line) {
-    for (const auto &w : s_blacklist) {
-        if (!w.empty() && strstr(line, w.c_str()) != nullptr) {
-            return true;
-        }
-    }
-    return false;
-}
-
 static void *reader_thread(void *) {
     int pipe_fd[2];
     if (pipe(pipe_fd) == -1) {
@@ -44,7 +35,25 @@ static void *reader_thread(void *) {
         dup2(pipe_fd[1], STDOUT_FILENO);
         dup2(pipe_fd[1], STDERR_FILENO);
         close(pipe_fd[1]);
-        execlp("logcat", "logcat", "-v", "time", nullptr);
+
+        std::vector<std::string> args_str;
+        args_str.emplace_back("logcat");
+        args_str.emplace_back("-v");
+        args_str.emplace_back("time");
+        for (const auto &tag : s_blacklist) {
+            if (!tag.empty()) {
+                args_str.emplace_back(tag + ":S");
+            }
+        }
+        args_str.emplace_back("*:I");
+
+        std::vector<char *> argv;
+        for (auto &s : args_str) {
+            argv.push_back(const_cast<char *>(s.c_str()));
+        }
+        argv.push_back(nullptr);
+
+        execvp("logcat", argv.data());
         _exit(1);
     }
     // parent
@@ -58,10 +67,8 @@ static void *reader_thread(void *) {
     }
     char buffer[1024];
     while (s_running && fgets(buffer, sizeof(buffer), fp)) {
-        if (!filter_line(buffer)) {
-            long long ts = (long long)time(nullptr) * 1000LL;
-            clogan_write(0, buffer, ts, (char *)"logcat", (long long)gettid(), 0);
-        }
+        long long ts = (long long)time(nullptr) * 1000LL;
+        clogan_write(0, buffer, ts, (char *)"logcat", (long long)gettid(), 0);
     }
     fclose(fp);
     waitpid(s_child_pid, nullptr, 0);
