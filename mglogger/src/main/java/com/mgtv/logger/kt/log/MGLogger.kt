@@ -8,7 +8,7 @@ import com.mgtv.logger.kt.i.ISendLogCallback
 /**
  * Kotlin facade similar to [Logan] for easy access to [Logger].
  * Created by lantian
- * Date： 2025/6/27
+ * Date： 2025/7/3
  * Time： 22:38
  */
 public object MGLogger {

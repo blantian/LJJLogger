@@ -45,7 +45,6 @@ static void *reader_thread(void *) {
                 args_str.emplace_back(tag + ":S");
             }
         }
-        args_str.emplace_back("*:I");
 
         std::vector<char *> argv;
         for (auto &s : args_str) {

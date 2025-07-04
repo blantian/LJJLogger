@@ -3,8 +3,8 @@ package com.mgtv.logger.kt.log
 /**
  * Description:
  * Created by lantian
- * Date： 2025/6/26
- * Time： 14:23
+ * Date： 2025/7/3
+ * Time： 22:23
  */
 public data class LoggerConfig(
     public val cachePath: String,
