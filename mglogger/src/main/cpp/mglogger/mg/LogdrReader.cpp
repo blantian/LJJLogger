@@ -60,7 +60,7 @@ static void *logdr_thread(void *) {
         return nullptr;
     }
 
-    FILE *out = dr_output ? dr_output : stdout;
+    FILE *out = dr_output;
     char buffer[LOG_BUF_SIZE];
     while (dr_running) {
         ssize_t r = read(fd, buffer, sizeof(buffer));
@@ -75,9 +75,11 @@ static void *logdr_thread(void *) {
             logger_entry_v4 *entry = reinterpret_cast<logger_entry_v4 *>(buffer + off);
             if (off + entry->hdr_size + entry->len > (size_t)r) break;
             if (dr_pid_filter <= 0 || (int)entry->pid == dr_pid_filter) {
-                fwrite(entry->msg, 1, entry->len, out);
-                fwrite("\n", 1, 1, out);
-                fflush(out);
+                if (out) {
+                    fwrite(entry->msg, 1, entry->len, out);
+                    fwrite("\n", 1, 1, out);
+                    fflush(out);
+                }
                 long long ts = (long long)time(nullptr) * 1000LL;
                 clogan_write(0, entry->msg, ts, (char *)"logdr", (long long)gettid(), 0);
             }
@@ -85,7 +87,7 @@ static void *logdr_thread(void *) {
         }
     }
     close(fd);
-    if (dr_output && dr_output != stdout) {
+    if (dr_output) {
         fclose(dr_output);
         dr_output = nullptr;
     }
