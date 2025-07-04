@@ -11,7 +11,7 @@ int start_logreader(const char **blacklist, int count, logreader_fail_callback c
 void stop_logreader();
 
 // Start collecting logs directly from logd via logdr socket.
-// If output_path is nullptr, logs are printed to stdout.
+// If output_path is nullptr, logs are only written through CLogan.
 // If pid_filter > 0, only logs from this pid are forwarded.
 int start_logdr_reader(const char *output_path, int pid_filter, logreader_fail_callback cb);
 void stop_logdr_reader();
