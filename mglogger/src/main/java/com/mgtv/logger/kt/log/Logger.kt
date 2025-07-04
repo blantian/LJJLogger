@@ -47,6 +47,11 @@ public object Logger : CoroutineScope {
         worker!!.offer(LogTask.GetSysLog)
     }
 
+    public fun hookLogs() {
+        ensureReady()
+        worker!!.offer(LogTask.HookLogs)
+    }
+
     public fun flush() {
         ensureReady()
         worker!!.offer(LogTask.Flush)

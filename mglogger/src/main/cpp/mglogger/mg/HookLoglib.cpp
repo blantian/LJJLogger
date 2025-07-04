@@ -11,6 +11,10 @@
 #include <android/log.h>
 #include "xhook.h"
 #include "Logreader.h"
+#include "clogan_core.h"
+#include <sys/syscall.h>
+#include <unistd.h>
+#include <time.h>
 
 
 static int (*orig_log_print)(int, const char*, const char*, ...) = nullptr;
@@ -28,13 +32,8 @@ static int hook_log_print(int prio, const char* tag, const char* fmt, ...) {
     vsnprintf(msgBuf, sizeof(msgBuf), fmt, args);
     va_end(args);
 
-    char debugMsg[1150];
-    snprintf(debugMsg, sizeof(debugMsg),
-             "__android_log_print called: prio=%d, tag=%s, msg=%s",
-             prio, (tag ? tag : "(null)"), msgBuf);
-    if (orig_log_buf_write) {
-        orig_log_buf_write(/* LOG_ID_MAIN = */ 0, ANDROID_LOG_INFO, "DobbyHook", debugMsg);
-    }
+    long long ts = (long long)time(nullptr) * 1000LL;
+    clogan_write(0, msgBuf, ts, (char*)"hook_print", (long long)syscall(__NR_gettid), 0);
 
     int result = 0;
     if (orig_log_vprint) {
@@ -48,12 +47,9 @@ static int hook_log_print(int prio, const char* tag, const char* fmt, ...) {
 
 
 static int hook_log_write(int prio, const char* tag, const char* text) {
-    char debugMsg[1150];
-    snprintf(debugMsg, sizeof(debugMsg),
-             "__android_log_write called: prio=%d, tag=%s, text=%s",
-             prio, (tag ? tag : "(null)"), (text ? text : "(null)"));
-    if (orig_log_buf_write) {
-        orig_log_buf_write(0, ANDROID_LOG_INFO, "DobbyHook", debugMsg);
+    long long ts = (long long)time(nullptr) * 1000LL;
+    if (text) {
+        clogan_write(0, (char*)text, ts, (char*)"hook_write", (long long)syscall(__NR_gettid), 0);
     }
     int result = 0;
     if (orig_log_write) {
@@ -63,12 +59,9 @@ static int hook_log_write(int prio, const char* tag, const char* text) {
 }
 
 static int hook_log_buf_write(int bufID, int prio, const char* tag, const char* text) {
-    char debugMsg[1150];
-    snprintf(debugMsg, sizeof(debugMsg),
-             "__android_log_buf_write called: bufID=%d, prio=%d, tag=%s, text=%s",
-             bufID, prio, (tag ? tag : "(null)"), (text ? text : "(null)"));
-    if (orig_log_buf_write) {
-        orig_log_buf_write(0, ANDROID_LOG_INFO, "DobbyHook", debugMsg);
+    long long ts = (long long)time(nullptr) * 1000LL;
+    if (text) {
+        clogan_write(0, (char*)text, ts, (char*)"hook_buf", (long long)syscall(__NR_gettid), 0);
     }
     int result = 0;
     if (orig_log_buf_write) {
