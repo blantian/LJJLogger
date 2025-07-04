@@ -46,6 +46,7 @@ set(SOURCE_FILES
         mglogger/console_util.c
         mglogger/main.c
         mglogger/mg/Logreader.cpp
+        mglogger/mg/LogdrReader.cpp
 )
 
 # MbedTLS crypto source files
