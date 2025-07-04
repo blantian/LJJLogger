@@ -21,6 +21,7 @@ static int (*orig_log_print)(int, const char*, const char*, ...) = nullptr;
 static int (*orig_log_write)(int, const char*, const char*) = nullptr;
 static int (*orig_log_buf_write)(int, int, const char*, const char*) = nullptr;
 static int (*orig_log_vprint)(int, const char*, const char*, va_list) = nullptr;
+static void (*orig_log_assert)(const char*, const char*, const char*, ...) = nullptr;
 
 
 static int hook_log_print(int prio, const char* tag, const char* fmt, ...) {
@@ -70,10 +71,47 @@ static int hook_log_buf_write(int bufID, int prio, const char* tag, const char* 
     return result;
 }
 
+static int hook_log_vprint(int prio, const char* tag, const char* fmt, va_list ap) {
+    va_list args_copy;
+    va_copy(args_copy, ap);
+    char msgBuf[1024];
+    vsnprintf(msgBuf, sizeof(msgBuf), fmt, args_copy);
+    va_end(args_copy);
+
+    long long ts = (long long)time(nullptr) * 1000LL;
+    clogan_write(0, msgBuf, ts, (char*)"hook_vprint", (long long)syscall(__NR_gettid), 0);
+
+    int result = 0;
+    if (orig_log_vprint) {
+        result = orig_log_vprint(prio, tag, fmt, ap);
+    }
+    return result;
+}
+
+static void hook_log_assert(const char* cond, const char* tag, const char* fmt, ...) {
+    va_list args, args_copy;
+    va_start(args, fmt);
+    va_copy(args_copy, args);
+
+    char msgBuf[1024];
+    vsnprintf(msgBuf, sizeof(msgBuf), fmt, args);
+    va_end(args);
+
+    long long ts = (long long)time(nullptr) * 1000LL;
+    clogan_write(0, msgBuf, ts, (char*)"hook_assert", (long long)syscall(__NR_gettid), 0);
+
+    if (orig_log_assert) {
+        orig_log_assert(cond, tag, fmt, args_copy);
+    }
+    va_end(args_copy);
+}
+
 void hook_log(){
     // xHook 进行 PLT Hook，确保延迟加载的 so 中也能 hook 到
-    xhook_register(".*", "__android_log_print", (void*)hook_log_print, (void**)&orig_log_print);
-    xhook_register(".*", "__android_log_write", (void*)hook_log_write, (void**)&orig_log_write);
-    xhook_register(".*", "__android_log_buf_write", (void*)hook_log_buf_write, (void**)&orig_log_buf_write);
+    xhook_register(".*\.so$", "__android_log_write", (void*)hook_log_write, (void**)&orig_log_write);
+    xhook_register(".*\.so$", "__android_log_print", (void*)hook_log_print, (void**)&orig_log_print);
+    xhook_register(".*\.so$", "__android_log_vprint", (void*)hook_log_vprint, (void**)&orig_log_vprint);
+    xhook_register(".*\.so$", "__android_log_assert", (void*)hook_log_assert, (void**)&orig_log_assert);
+    xhook_register(".*\.so$", "__android_log_buf_write", (void*)hook_log_buf_write, (void**)&orig_log_buf_write);
     xhook_refresh(1);
 }
