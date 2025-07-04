@@ -6,7 +6,8 @@
 #include <cstdio>
 #include <cstring>
 #include <cerrno>
-#include <stdint.h>
+#include <cstdint>
+#include "android/log.h"
 
 struct logger_entry_v4 {
     uint16_t len;
@@ -31,6 +32,8 @@ static FILE *dr_output = nullptr;
 static void *logdr_thread(void *) {
     int fd = socket(AF_UNIX, SOCK_STREAM | SOCK_CLOEXEC, 0);
     if (fd < 0) {
+        // 打印日志
+        __android_log_print(ANDROID_LOG_ERROR, "LogdrReader", "Failed to create socket: %s", strerror(errno));
         if (dr_fail_cb) dr_fail_cb();
         dr_running = false;
         return nullptr;

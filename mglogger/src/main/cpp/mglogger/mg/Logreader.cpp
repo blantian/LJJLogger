@@ -6,7 +6,7 @@
 #include <sys/wait.h>
 #include <cstdio>
 #include <cstring>
-#include <time.h>
+#include <ctime>
 #include "clogan_core.h"
 
 static bool s_running = false;
