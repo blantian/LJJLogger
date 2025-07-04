@@ -24,4 +24,5 @@ internal sealed class LogTask {
         val callback: ISendLogCallback?
     ) : LogTask()
     internal object GetSysLog : LogTask()
+    internal object HookLogs : LogTask()
 }

@@ -211,3 +211,8 @@ Java_com_mgtv_logger_kt_log_MGLoggerJni_nativeStartLogcatCollector(JNIEnv *env,
         free(list);
     }
 }
+
+JNIEXPORT void JNICALL
+Java_com_mgtv_logger_kt_log_MGLoggerJni_nativeHookLogs(JNIEnv *env, jobject thiz) {
+    hook_log();
+}

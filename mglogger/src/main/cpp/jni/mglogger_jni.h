@@ -78,6 +78,9 @@ Java_com_mgtv_logger_kt_log_MGLoggerJni_nativeStartLogcatCollector(JNIEnv *env,
                                                                    jobject thiz,
                                                                    jobjectArray blacklist);
 
+JNIEXPORT void JNICALL
+Java_com_mgtv_logger_kt_log_MGLoggerJni_nativeHookLogs(JNIEnv *env, jobject thiz);
+
 
 #ifdef __cplusplus
 }
