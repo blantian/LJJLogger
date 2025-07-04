@@ -7,7 +7,9 @@
 #include <cstring>
 #include <cerrno>
 #include <cstdint>
+#include <ctime>
 #include "android/log.h"
+#include "clogan_core.h"
 
 struct logger_entry_v4 {
     uint16_t len;
@@ -32,7 +34,6 @@ static FILE *dr_output = nullptr;
 static void *logdr_thread(void *) {
     int fd = socket(AF_UNIX, SOCK_STREAM | SOCK_CLOEXEC, 0);
     if (fd < 0) {
-        // 打印日志
         __android_log_print(ANDROID_LOG_ERROR, "LogdrReader", "Failed to create socket: %s", strerror(errno));
         if (dr_fail_cb) dr_fail_cb();
         dr_running = false;
@@ -43,6 +44,7 @@ static void *logdr_thread(void *) {
     addr.sun_family = AF_UNIX;
     strncpy(addr.sun_path, "/dev/socket/logdr", sizeof(addr.sun_path) - 1);
     if (connect(fd, reinterpret_cast<struct sockaddr *>(&addr), sizeof(addr)) < 0) {
+        __android_log_print(ANDROID_LOG_ERROR, "LogdrReader", "Failed to connect socket: %s", strerror(errno));
         if (dr_fail_cb) dr_fail_cb();
         close(fd);
         dr_running = false;
@@ -51,6 +53,7 @@ static void *logdr_thread(void *) {
 
     const char cmd[] = "stream\0";
     if (write(fd, cmd, sizeof(cmd)) <= 0) {
+        __android_log_print(ANDROID_LOG_ERROR, "LogdrReader", "Failed to write command: %s", strerror(errno));
         if (dr_fail_cb) dr_fail_cb();
         close(fd);
         dr_running = false;
@@ -61,7 +64,12 @@ static void *logdr_thread(void *) {
     char buffer[LOG_BUF_SIZE];
     while (dr_running) {
         ssize_t r = read(fd, buffer, sizeof(buffer));
-        if (r <= 0) break;
+        if (r <= 0) {
+            if (r < 0) {
+                __android_log_print(ANDROID_LOG_ERROR, "LogdrReader", "Read error: %s", strerror(errno));
+            }
+            break;
+        }
         size_t off = 0;
         while (off + sizeof(logger_entry_v4) <= (size_t)r) {
             logger_entry_v4 *entry = reinterpret_cast<logger_entry_v4 *>(buffer + off);
@@ -70,6 +78,8 @@ static void *logdr_thread(void *) {
                 fwrite(entry->msg, 1, entry->len, out);
                 fwrite("\n", 1, 1, out);
                 fflush(out);
+                long long ts = (long long)time(nullptr) * 1000LL;
+                clogan_write(0, entry->msg, ts, (char *)"logdr", (long long)gettid(), 0);
             }
             off += entry->hdr_size + entry->len;
         }
@@ -92,12 +102,14 @@ int start_logdr_reader(const char *output_path, int pid_filter, logreader_fail_c
     if (output_path && *output_path) {
         dr_output = fopen(output_path, "w");
         if (!dr_output) {
+            __android_log_print(ANDROID_LOG_ERROR, "LogdrReader", "Failed to open output file %s: %s", output_path, strerror(errno));
             dr_running = false;
             if (dr_fail_cb) dr_fail_cb();
             return -1;
         }
     }
     if (pthread_create(&dr_thread, nullptr, logdr_thread, nullptr) != 0) {
+        __android_log_print(ANDROID_LOG_ERROR, "LogdrReader", "Failed to create thread: %s", strerror(errno));
         dr_running = false;
         if (dr_output) {
             fclose(dr_output);
