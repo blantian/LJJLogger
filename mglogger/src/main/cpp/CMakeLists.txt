@@ -46,7 +46,7 @@ set(SOURCE_FILES
         mglogger/console_util.c
         mglogger/main.c
         mglogger/mg/Logreader.cpp
-        mglogger/mg/LogdrReader.cpp
+        mglogger/mg/HookLoglib.cpp
 )
 
 # MbedTLS crypto source files
@@ -210,12 +210,21 @@ if (USE_STATIC_MBEDTLS_LIBRARY AND USE_SHARED_MBEDTLS_LIBRARY)
     add_dependencies(lib mbedcrypto_static mbedx509_static mbedtls_static)
 endif ()
 
+add_library(xhook SHARED IMPORTED)
+set_target_properties(xhook
+        PROPERTIES
+        IMPORTED_LOCATION
+        ${CMAKE_CURRENT_SOURCE_DIR}/../jniLibs/${CMAKE_ANDROID_ARCH_ABI}/libxhook.so
+        IMPORTED_NO_SONAME TRUE  # 禁止携带路径
+)
+
 # Build main mglogger library
 add_library(mglogger SHARED
         ${SOURCE_FILES}
         jni/mglogger_jni.c
 )
 target_link_libraries(mglogger
+        xhook
         ${log-lib}
         z
         ${mbedcrypto_static_target}

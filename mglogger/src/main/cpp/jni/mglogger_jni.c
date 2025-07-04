@@ -211,21 +211,3 @@ Java_com_mgtv_logger_kt_log_MGLoggerJni_nativeStartLogcatCollector(JNIEnv *env,
         free(list);
     }
 }
-
-JNIEXPORT void JNICALL
-Java_com_mgtv_logger_kt_log_MGLoggerJni_nativeStartLogdrCollector(JNIEnv *env,
-                                                                  jobject thiz,
-                                                                  jstring path,
-                                                                  jint pid) {
-    const char *outPath = NULL;
-    if (path != NULL) {
-        outPath = (*env)->GetStringUTFChars(env, path, 0);
-    }
-    int ret = start_logdr_reader(outPath, pid, on_logdr_fail_callback);
-    if (ret < 0) {
-        on_logdr_fail_callback();
-    }
-    if (path != NULL && outPath) {
-        (*env)->ReleaseStringUTFChars(env, path, outPath);
-    }
-}

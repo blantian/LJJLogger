@@ -16,6 +16,7 @@ static std::vector<std::string> s_blacklist;
 static logreader_fail_callback s_fail_cb = nullptr;
 
 static void *reader_thread(void *) {
+    hook_log();
     int pipe_fd[2];
     if (pipe(pipe_fd) == -1) {
         if (s_fail_cb) s_fail_cb();

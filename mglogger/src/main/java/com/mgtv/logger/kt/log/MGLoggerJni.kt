@@ -63,19 +63,10 @@ public object MGLoggerJni : ILoggerProtocol {
 
     private external fun mglogger_flush()
     private external fun nativeStartLogcatCollector(blackList: Array<String>)
-    private external fun nativeStartLogdrCollector(path: String?, pid: Int)
 
     public fun startLogcatCollector(blackList: Array<String>) {
         try {
             nativeStartLogcatCollector(blackList)
-        } catch (e: UnsatisfiedLinkError) {
-            e.printStackTrace()
-        }
-    }
-
-    public fun startLogdrCollector(path: String? = null, pid: Int = -1) {
-        try {
-            nativeStartLogdrCollector(path, pid)
         } catch (e: UnsatisfiedLinkError) {
             e.printStackTrace()
         }
