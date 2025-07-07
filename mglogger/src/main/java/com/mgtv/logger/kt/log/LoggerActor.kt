@@ -3,6 +3,7 @@ package com.mgtv.logger.kt.log
 import android.os.Build
 import android.os.StatFs
 import android.util.Log
+import android.os.Looper
 import com.mgtv.logger.java.Util
 import com.mgtv.logger.kt.i.ILoggerProtocol
 import com.mgtv.logger.kt.i.ILoggerStatus
@@ -11,6 +12,9 @@ import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import android.os.Process
+import kotlinx.coroutines.Dispatchers
 import java.io.File
 import java.text.ParseException
 import java.text.SimpleDateFormat
@@ -89,7 +93,13 @@ internal class LoggerActor(
             is LogTask.Write -> write(task)
             is LogTask.Flush -> protocol.logger_flush()
             is LogTask.Send -> send(task)
-            is LogTask.GetSysLog -> MGLoggerJni.startLogcatCollector(cfg.logcatBlackList.toTypedArray())
+            is LogTask.GetSysLog -> {
+                if (task.mode == 1) {
+                    MGLoggerJni.startLogcatCollector(cfg.logcatBlackList.toTypedArray())
+                } else {
+                    collectProcessLogcat()
+                }
+            }
             is LogTask.HookLogs -> MGLoggerJni.hookLogs()
         }
     }
@@ -180,6 +190,35 @@ internal class LoggerActor(
             available > cfg.minSdCard
         } catch (e: IllegalArgumentException) {
             false
+        }
+    }
+
+    private suspend fun collectProcessLogcat() = withContext(Dispatchers.IO) {
+        try {
+            val cmd = listOf(
+                "logcat",
+                "-d",
+                "--pid",
+                Process.myPid().toString()
+            )
+            val proc = ProcessBuilder(cmd)
+                .redirectErrorStream(true)
+                .start()
+            proc.inputStream.bufferedReader().useLines { lines ->
+                lines.forEach { line ->
+                    protocol.logger_write(
+                        0,
+                        line,
+                        System.currentTimeMillis(),
+                        "adb_logcat",
+                        Process.myTid().toLong(),
+                        Looper.getMainLooper() == Looper.myLooper()
+                    )
+                }
+            }
+            proc.waitFor()
+        } catch (e: Exception) {
+            e.printStackTrace()
         }
     }
 }

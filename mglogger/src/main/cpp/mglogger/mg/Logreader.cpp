@@ -5,6 +5,7 @@
 #include <unistd.h>
 #include <sys/wait.h>
 #include <cstdio>
+#include <errno.h>
 #include <cstring>
 #include <ctime>
 #include <android/log.h>
@@ -23,6 +24,7 @@ static void *reader_thread(void *) {
         s_running = false;
         return nullptr;
     }
+    __android_log_print(ANDROID_LOG_DEBUG, "Logreader", "pipe created");
     s_child_pid = fork();
     if (s_child_pid < 0) {
         if (s_fail_cb) s_fail_cb();
@@ -32,6 +34,7 @@ static void *reader_thread(void *) {
         return nullptr;
     } else if (s_child_pid == 0) {
         // child process
+        __android_log_print(ANDROID_LOG_DEBUG, "Logreader", "child process start");
         close(pipe_fd[0]);
         dup2(pipe_fd[1], STDOUT_FILENO);
         dup2(pipe_fd[1], STDERR_FILENO);
@@ -65,6 +68,7 @@ static void *reader_thread(void *) {
         _exit(1);
     }
     // parent
+    __android_log_print(ANDROID_LOG_DEBUG, "Logreader", "parent reading logs pid=%d", s_child_pid);
     close(pipe_fd[1]);
     FILE *fp = fdopen(pipe_fd[0], "r");
     if (!fp) {
@@ -82,6 +86,7 @@ static void *reader_thread(void *) {
     fclose(fp);
     int status = 0;
     waitpid(s_child_pid, &status, 0);
+    __android_log_print(ANDROID_LOG_DEBUG, "Logreader", "child process exit status=%d", status);
     if (WIFEXITED(status) && WEXITSTATUS(status) != 0) {
         if (s_fail_cb) s_fail_cb();
     }
@@ -92,6 +97,7 @@ static void *reader_thread(void *) {
 
 int start_logreader(const char **blacklist, int count, logreader_fail_callback cb) {
     if (s_running) return 0;
+    __android_log_print(ANDROID_LOG_DEBUG, "Logreader", "start_logreader count=%d", count);
     s_running = true;
     s_fail_cb = cb;
     s_blacklist.clear();
@@ -105,12 +111,14 @@ int start_logreader(const char **blacklist, int count, logreader_fail_callback c
         if (s_fail_cb) s_fail_cb();
         return -1;
     }
+    __android_log_print(ANDROID_LOG_DEBUG, "Logreader", "logcat reader thread started");
     pthread_detach(s_thread);
     return 0;
 }
 
 void stop_logreader() {
     if (!s_running) return;
+    __android_log_print(ANDROID_LOG_DEBUG, "Logreader", "stop_logreader");
     s_running = false;
     if (s_child_pid > 0) {
         kill(s_child_pid, SIGTERM);
