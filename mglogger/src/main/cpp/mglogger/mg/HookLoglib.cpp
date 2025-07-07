@@ -45,7 +45,7 @@ static int hook_log_print(int prio, const char* tag, const char* fmt, ...) {
     if (orig_log_vprint) {
         result = orig_log_vprint(prio, tag, fmt, args_copy);
     } else if (orig_log_print) {
-        result = orig_log_print(prio, tag, fmt, args_copy);
+        result = orig_log_print(prio, tag, "%s", msgBuf);
     }
     va_end(args_copy);
     return result;
