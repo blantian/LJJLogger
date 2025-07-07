@@ -180,7 +180,7 @@ public object MGLoggerJni : ILoggerProtocol {
         if (code < 0) {
             if (cmd.endsWith(MGLoggerStatus.MGLOGGER_WRITE_STATUS) &&
                 code != MGLoggerStatus.MGLOGGER_INIT_FAIL_JNI &&
-                !errorSet.add(code) /* already contained */
+                !errorSet.add(code)
             ) {
                 return
             }

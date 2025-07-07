@@ -6,7 +6,7 @@ import org.koin.core.context.startKoin
 import com.mgtv.logger.kt.i.ISendLogCallback
 
 /**
- * Kotlin facade similar to [Logan] for easy access to [Logger].
+ * Description:
  * Created by lantian
  * Date： 2025/7/3
  * Time： 22:38
