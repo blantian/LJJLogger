@@ -4,18 +4,8 @@ import android.app.Application;
 import android.os.Build;
 import android.os.Environment;
 import android.util.Log;
-
-
-import androidx.annotation.NonNull;
-
-import com.mgtv.logger.java.Logan;
-import com.mgtv.logger.java.LoganConfig;
-import com.mgtv.logger.java.OnLoganProtocolStatus;
-import com.mgtv.logger.kt.i.ILoggerStatus;
 import com.mgtv.logger.kt.log.LoggerConfig;
 import com.mgtv.logger.kt.log.MGLogger;
-
-import com.mgtv.mglogger.CrashHandler;
 
 import java.io.File;
 

@@ -19,6 +19,7 @@ public object MGLoggerJni : ILoggerProtocol {
 
     init {
         try {
+            System.loadLibrary("xhook")
             System.loadLibrary("mglogger")
             isMGLoggerOk = true
         } catch (t: Throwable) {

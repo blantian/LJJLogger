@@ -17,9 +17,9 @@ public class MainActivity extends AppCompatActivity {
         MGLogger.w("MainActivity onCreate", 3);
         new Thread(() -> {
             MGLogger.w("MainActivity onCreate", 1);
-            for (int i = 0; i < 100; i++) {
-                Log.w("Test", "Hello from Java " + i);
-            }
+//            for (int i = 0; i < 100; i++) {
+//                Log.w("Test", "Hello from Java " + i);
+//            }
         }).start();
 //        throw new RuntimeException("Test Crash");
         MGLogger.getSystemLogs();
