@@ -118,6 +118,7 @@ static void hook_log_assert(const char* cond, const char* tag, const char* fmt, 
 }
 
 void hook_log(){
+    __android_log_print(ANDROID_LOG_DEBUG, "HookLoglib", "start hook_log");
     // xHook 进行 PLT Hook，确保延迟加载的 so 中也能 hook 到
     xhook_register(".*liblog\\.so$", "__android_log_write", (void*)hook_log_write, (void**)&orig_log_write);
     xhook_register(".*liblog\\.so$", "__android_log_print", (void*)hook_log_print, (void**)&orig_log_print);
@@ -126,4 +127,5 @@ void hook_log(){
     xhook_register(".*\\.so$", "__android_log_buf_write", (void*)hook_log_buf_write, (void**)&orig_log_buf_write);
 
     xhook_refresh(1);
+    __android_log_print(ANDROID_LOG_DEBUG, "HookLoglib", "hook_log done");
 }
