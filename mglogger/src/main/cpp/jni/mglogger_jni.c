@@ -166,13 +166,13 @@ static void on_logcat_fail_callback() {
     (*g_vm)->DetachCurrentThread(g_vm);
 }
 
-static void on_logdr_fail_callback() {
+static void on_logcat_start_callback() {
     if (g_vm == NULL) return;
     JNIEnv *env = NULL;
     if ((*g_vm)->AttachCurrentThread(g_vm, &env, NULL) != 0) return;
     jclass cls = (*env)->FindClass(env, "com/mgtv/logger/kt/log/MGLoggerJni");
     if (cls != NULL) {
-        jmethodID mid = (*env)->GetStaticMethodID(env, cls, "onLogcatCollectorFail", "()V");
+        jmethodID mid = (*env)->GetStaticMethodID(env, cls, "onLogcatCollectorStarted", "()V");
         if (mid != NULL) {
             (*env)->CallStaticVoidMethod(env, cls, mid);
         }
@@ -180,6 +180,7 @@ static void on_logdr_fail_callback() {
     }
     (*g_vm)->DetachCurrentThread(g_vm);
 }
+
 
 JNIEXPORT void JNICALL
 Java_com_mgtv_logger_kt_log_MGLoggerJni_nativeStartLogcatCollector(JNIEnv *env,
@@ -203,6 +204,8 @@ Java_com_mgtv_logger_kt_log_MGLoggerJni_nativeStartLogcatCollector(JNIEnv *env,
     int ret = start_logreader(list, count, on_logcat_fail_callback);
     if (ret < 0) {
         on_logcat_fail_callback();
+    } else {
+        on_logcat_start_callback();
     }
     if (list) {
         for (int i = 0; i < count; ++i) {
