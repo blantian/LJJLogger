@@ -108,10 +108,11 @@ static void hook_log_assert(const char* cond, const char* tag, const char* fmt, 
 
 void hook_log(){
     // xHook 进行 PLT Hook，确保延迟加载的 so 中也能 hook 到
-    xhook_register(".*\.so$", "__android_log_write", (void*)hook_log_write, (void**)&orig_log_write);
-    xhook_register(".*\.so$", "__android_log_print", (void*)hook_log_print, (void**)&orig_log_print);
-    xhook_register(".*\.so$", "__android_log_vprint", (void*)hook_log_vprint, (void**)&orig_log_vprint);
-    xhook_register(".*\.so$", "__android_log_assert", (void*)hook_log_assert, (void**)&orig_log_assert);
-    xhook_register(".*\.so$", "__android_log_buf_write", (void*)hook_log_buf_write, (void**)&orig_log_buf_write);
+    xhook_register(".*\\.so$", "__android_log_write", (void*)hook_log_write, (void**)&orig_log_write);
+    xhook_register(".*\\.so$", "__android_log_print", (void*)hook_log_print, (void**)&orig_log_print);
+    xhook_register(".*\\.so$", "__android_log_vprint", (void*)hook_log_vprint, (void**)&orig_log_vprint);
+    xhook_register(".*\\.so$", "__android_log_assert", (void*)hook_log_assert, (void**)&orig_log_assert);
+    xhook_register(".*\\.so$", "__android_log_buf_write", (void*)hook_log_buf_write, (void**)&orig_log_buf_write);
+
     xhook_refresh(1);
 }

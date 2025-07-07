@@ -7,6 +7,7 @@
 #include <cstdio>
 #include <cstring>
 #include <ctime>
+#include <android/log.h>
 #include "clogan_core.h"
 
 static bool s_running = false;
@@ -59,6 +60,7 @@ static void *reader_thread(void *) {
     close(pipe_fd[1]);
     FILE *fp = fdopen(pipe_fd[0], "r");
     if (!fp) {
+        __android_log_print(ANDROID_LOG_ERROR, "Logreader", "Failed to open pipe for logcat");
         if (s_fail_cb) s_fail_cb();
         close(pipe_fd[0]);
         s_running = false;

@@ -1,6 +1,7 @@
 package com.mgtv.mglogger;
 
 import android.app.Application;
+import android.os.Build;
 import android.os.Environment;
 import android.util.Log;
 
@@ -31,11 +32,20 @@ public class MyApplication extends Application {
         path = Environment.getExternalStorageDirectory().getAbsolutePath()
                 + File.separator + "mgtv" + File.separator + FILE_NAME;
         initLogan();
+        MGLogger.hookLogs();
+        Log.i(TAG, "Logan path: " + path);
         CrashHandler.install();
     }
 
     private void initLogan() {
-        File internalDir = new File(getApplicationContext().getFilesDir(), "LoganLogs");
+
+        File internalDir ;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            internalDir = new File(getApplicationContext().getFilesDir(), "LoganLogs");
+        } else {
+            internalDir = new File(Environment.getExternalStorageDirectory(), "mgtv");
+        }
+
         if (!internalDir.exists()) {
             boolean isCreated = internalDir.mkdirs();
             if (!isCreated) {
@@ -43,16 +53,11 @@ public class MyApplication extends Application {
             }
         }
 
-        // 获取sd卡路径
-        if (!Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState())) {
-            Log.e(TAG, "SD card is not mounted");
-            return;
-        }
-        File sdCardDir = new File(Environment.getExternalStorageDirectory(), "mgtv");
+        Log.i(TAG, "save path: " + internalDir.getAbsolutePath());
 
         LoggerConfig loggerConfig = new LoggerConfig.Builder()
-                .putCachePath(sdCardDir.getAbsolutePath())
-                .putLogDir(sdCardDir.getAbsolutePath() + File.separator + FILE_NAME)
+                .putCachePath(internalDir.getAbsolutePath())
+                .putLogDir(internalDir.getAbsolutePath() + File.separator + FILE_NAME)
                 .build();
         MGLogger.init(loggerConfig, (cmd, code) -> {
             Log.i(TAG, "clogan > cmd : " + cmd + " | " + "code : " + code);
