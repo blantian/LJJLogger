@@ -16,12 +16,6 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         MGLogger.w("MainActivity onCreate", 3);
-        MGLogger.setStatusListener(new ILoggerStatus() {
-            @Override
-            public void loggerStatus(String cmd, int code) {
-                Log.i("MainActivity", cmd + "=" + code);
-            }
-        });
         new Thread(() -> {
             MGLogger.w("MainActivity onCreate", 1);
 //            for (int i = 0; i < 100; i++) {
@@ -30,10 +24,6 @@ public class MainActivity extends AppCompatActivity {
         }).start();
 //        throw new RuntimeException("Test Crash");
         MGLogger.getSystemLogs(1);
-//        Log.i("Test", "Hello from Java");
-//        for (int i = 0; i < 100; i++) {
-//            Log.w("Test", "Hello from Java " + i);
-//        }
         MGLogger.flush();
     }
 

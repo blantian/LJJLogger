@@ -50,7 +50,7 @@ public class MyApplication extends Application {
                 .putLogDir(internalDir.getAbsolutePath() + File.separator + FILE_NAME)
                 .build();
         MGLogger.init(loggerConfig, (cmd, code) -> {
-            Log.i(TAG, "clogan > cmd : " + cmd + " | " + "code : " + code);
+            Log.i(TAG, "Logger::" + cmd + " | " + "code : " + code);
         });
 
 //        LoganConfig config = new LoganConfig.Builder()

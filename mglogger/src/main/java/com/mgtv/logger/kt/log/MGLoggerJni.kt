@@ -194,11 +194,4 @@ public object MGLoggerJni : ILoggerProtocol {
             MGLoggerStatus.MGLOGGER_LOGCAT_COLLECTOR_FAIL
         )
     }
-
-    internal fun onLogcatCollectorStarted() {
-        loggerStatusCode(
-            MGLoggerStatus.MGLOGGER_LOGCAT_COLLECTOR_STATUS,
-            MGLoggerStatus.MGLOGGER_LOGCAT_COLLECTOR_SUCCESS
-        )
-    }
 }
