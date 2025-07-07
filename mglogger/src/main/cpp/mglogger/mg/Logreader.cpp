@@ -53,7 +53,15 @@ static void *reader_thread(void *) {
         }
         argv.push_back(nullptr);
 
+        const char *paths[] = {"/system/bin/logcat", "/system/xbin/logcat", nullptr};
+        for (int i = 0; paths[i] != nullptr; ++i) {
+            execv(paths[i], argv.data());
+        }
         execvp("logcat", argv.data());
+
+        __android_log_print(ANDROID_LOG_ERROR, "Logreader", "exec logcat failed: %s", strerror(errno));
+        long long ts = (long long)time(nullptr) * 1000LL;
+        clogan_write(0, (char *)"exec logcat failed", ts, (char *)"logcat", (long long)gettid(), 0);
         _exit(1);
     }
     // parent
@@ -72,7 +80,11 @@ static void *reader_thread(void *) {
         clogan_write(0, buffer, ts, (char *)"logcat", (long long)gettid(), 0);
     }
     fclose(fp);
-    waitpid(s_child_pid, nullptr, 0);
+    int status = 0;
+    waitpid(s_child_pid, &status, 0);
+    if (WIFEXITED(status) && WEXITSTATUS(status) != 0) {
+        if (s_fail_cb) s_fail_cb();
+    }
     s_child_pid = -1;
     s_running = false;
     return nullptr;
