@@ -97,7 +97,6 @@ internal class LoggerActor(
                 when (task.mode) {
                     1 -> MGLoggerJni.startLogcatCollector(cfg.logcatBlackList.toTypedArray())
                     2 -> collectProcessLogcat()
-                    else -> MGLoggerJni.collectLogByLoggerList()
                 }
             }
             is LogTask.HookLogs -> MGLoggerJni.hookLogs()

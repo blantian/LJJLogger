@@ -24,7 +24,6 @@ public class MyApplication extends Application {
         initLogan();
         MGLogger.hookLogs();
         Log.i(TAG, "Logan path: " + path);
-        CrashHandler.install();
     }
 
     private void initLogan() {

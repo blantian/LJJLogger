@@ -5,12 +5,10 @@
 #include <unistd.h>
 #include <sys/wait.h>
 #include <cstdio>
-#include <errno.h>
+#include <cerrno>
 #include <cstring>
 #include <ctime>
 #include <android/log.h>
-#include <log/log_read.h>
-#include <log/logger.h>
 #include "clogan_core.h"
 
 static bool s_running = false;
@@ -127,22 +125,4 @@ void stop_logreader() {
         waitpid(s_child_pid, nullptr, 0);
         s_child_pid = -1;
     }
-}
-
-void collect_log_by_loggerlist() {
-    __android_log_print(ANDROID_LOG_DEBUG, "Logreader", "collect_log_by_loggerlist");
-    struct logger_list *logger_list = android_logger_list_open(LOG_ID_MAIN, ANDROID_LOG_RDONLY, 0, getpid());
-    if (!logger_list) {
-        __android_log_print(ANDROID_LOG_ERROR, "Logreader", "android_logger_list_open failed");
-        return;
-    }
-    android_logger_open(logger_list, LOG_ID_SYSTEM);
-
-    struct log_msg log_entry;
-    while (android_logger_list_read(logger_list, &log_entry) > 0) {
-        if (log_entry.entry.pid != getpid()) continue;
-        long long ts = (long long)time(nullptr) * 1000LL;
-        clogan_write(0, log_entry.msg, ts, (char *)"logcat", (long long)gettid(), 0);
-    }
-    android_logger_list_close(logger_list);
 }
