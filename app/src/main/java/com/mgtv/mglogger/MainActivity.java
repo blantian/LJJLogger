@@ -22,7 +22,7 @@ public class MainActivity extends AppCompatActivity {
 //            }
         }).start();
 //        throw new RuntimeException("Test Crash");
-        MGLogger.getSystemLogs();
+        MGLogger.getSystemLogs(1);
 //        Log.i("Test", "Hello from Java");
 //        for (int i = 0; i < 100; i++) {
 //            Log.w("Test", "Hello from Java " + i);
