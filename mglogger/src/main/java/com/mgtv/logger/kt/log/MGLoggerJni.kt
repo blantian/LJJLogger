@@ -65,6 +65,7 @@ public object MGLoggerJni : ILoggerProtocol {
     private external fun mglogger_flush()
     private external fun nativeStartLogcatCollector(blackList: Array<String>)
     private external fun nativeHookLogs()
+    private external fun nativeCollectLogByLoggerList()
 
     public fun startLogcatCollector(blackList: Array<String>) {
         try {
@@ -77,6 +78,14 @@ public object MGLoggerJni : ILoggerProtocol {
     public fun hookLogs() {
         try {
             nativeHookLogs()
+        } catch (e: UnsatisfiedLinkError) {
+            e.printStackTrace()
+        }
+    }
+
+    public fun collectLogByLoggerList() {
+        try {
+            nativeCollectLogByLoggerList()
         } catch (e: UnsatisfiedLinkError) {
             e.printStackTrace()
         }
