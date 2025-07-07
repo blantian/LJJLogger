@@ -35,5 +35,6 @@ public object MGLoggerStatus {
     public val MGLOGGER_LOAD_SO_FAIL: Int = -5020 //加载的SO失败
 
     public const val MGLOGGER_LOGCAT_COLLECTOR_STATUS: String = "logcat_collector"
+    public val MGLOGGER_LOGCAT_COLLECTOR_SUCCESS: Int = -6000
     public val MGLOGGER_LOGCAT_COLLECTOR_FAIL: Int = -6010
 }

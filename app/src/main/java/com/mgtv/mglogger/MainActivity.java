@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 
+import com.mgtv.logger.kt.i.ILoggerStatus;
 import com.mgtv.logger.kt.log.Logger;
 import com.mgtv.logger.kt.log.MGLogger;
 
@@ -15,6 +16,12 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         MGLogger.w("MainActivity onCreate", 3);
+        MGLogger.setStatusListener(new ILoggerStatus() {
+            @Override
+            public void loggerStatus(String cmd, int code) {
+                Log.i("MainActivity", cmd + "=" + code);
+            }
+        });
         new Thread(() -> {
             MGLogger.w("MainActivity onCreate", 1);
 //            for (int i = 0; i < 100; i++) {
