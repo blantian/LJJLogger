@@ -25,23 +25,19 @@ static void (*orig_log_assert)(const char*, const char*, const char*, ...) = nul
 
 
 static int hook_log_print(int prio, const char* tag, const char* fmt, ...) {
-//    __android_log_print(ANDROID_LOG_DEBUG, "HookLoglib", "hook_log_print called: prio=%d, tag=%s, fmt=%s",
-//                      prio, (tag ? tag : "(null)"), (fmt ? fmt : "(null)"));
     va_list args, args_copy;
     va_start(args, fmt);
     va_copy(args_copy, args);
 
     char msgBuf[1024];
     vsnprintf(msgBuf, sizeof(msgBuf), fmt, args);
-    long long ts = (long long)time(nullptr) * 1000LL;
-    clogan_write(0, msgBuf, ts, (char*)"hook_print", (long long)syscall(__NR_gettid), 0);
-
-    char debugMsg[1150];
-    snprintf(debugMsg, sizeof(debugMsg),
-             "__android_log_print called: prio=%d, tag=%s, msg=%s",
-             prio, (tag ? tag : "(null)"), msgBuf);
-
     va_end(args);
+
+    char logBuf[1200];
+    snprintf(logBuf, sizeof(logBuf), "[p:%d][%s] %s", prio, tag ? tag : "(null)", msgBuf);
+
+    long long ts = (long long)time(nullptr) * 1000LL;
+    clogan_write(0, logBuf, ts, (char*)"hook_print", (long long)syscall(__NR_gettid), 0);
 
     int result = 0;
     if (orig_log_vprint) {
@@ -55,11 +51,11 @@ static int hook_log_print(int prio, const char* tag, const char* fmt, ...) {
 
 
 static int hook_log_write(int prio, const char* tag, const char* text) {
-//    __android_log_print(ANDROID_LOG_DEBUG, "HookLoglib", "hook_log_write called: prio=%d, tag=%s, text=%s",
-//                      prio, (tag ? tag : "(null)"), (text ? text : "(null)"));
     long long ts = (long long)time(nullptr) * 1000LL;
     if (text) {
-        clogan_write(0, (char*)text, ts, (char*)"hook_write", (long long)syscall(__NR_gettid), 0);
+        char logBuf[1200];
+        snprintf(logBuf, sizeof(logBuf), "[p:%d][%s] %s", prio, tag ? tag : "(null)", text);
+        clogan_write(0, logBuf, ts, (char*)"hook_write", (long long)syscall(__NR_gettid), 0);
     }
     int result = 0;
     if (orig_log_write) {
@@ -69,11 +65,11 @@ static int hook_log_write(int prio, const char* tag, const char* text) {
 }
 
 static int hook_log_buf_write(int bufID, int prio, const char* tag, const char* text) {
-//    __android_log_print(ANDROID_LOG_DEBUG, "HookLoglib", "__android_log_buf_write called: bufID=%d, prio=%d, tag=%s, text=%s",
-//                      bufID, prio, (tag ? tag : "(null)"), (text ? text : "(null)"));
     long long ts = (long long)time(nullptr) * 1000LL;
     if (text) {
-        clogan_write(0, (char*)text, ts, (char*)"hook_buf", (long long)syscall(__NR_gettid), 0);
+        char logBuf[1200];
+        snprintf(logBuf, sizeof(logBuf), "[buf:%d][p:%d][%s] %s", bufID, prio, tag ? tag : "(null)", text);
+        clogan_write(0, logBuf, ts, (char*)"hook_buf", (long long)syscall(__NR_gettid), 0);
     }
     int result = 0;
     if (orig_log_buf_write) {
@@ -83,16 +79,17 @@ static int hook_log_buf_write(int bufID, int prio, const char* tag, const char* 
 }
 
 static int hook_log_vprint(int prio, const char* tag, const char* fmt, va_list ap) {
-//    __android_log_print(ANDROID_LOG_DEBUG, "HookLoglib", "hook_log_vprint called: prio=%d, tag=%s, fmt=%s",
-//                      prio, (tag ? tag : "(null)"), (fmt ? fmt : "(null)"));
     va_list args_copy;
     va_copy(args_copy, ap);
     char msgBuf[1024];
     vsnprintf(msgBuf, sizeof(msgBuf), fmt, args_copy);
     va_end(args_copy);
 
+    char logBuf[1200];
+    snprintf(logBuf, sizeof(logBuf), "[p:%d][%s] %s", prio, tag ? tag : "(null)", msgBuf);
+
     long long ts = (long long)time(nullptr) * 1000LL;
-    clogan_write(0, msgBuf, ts, (char*)"hook_vprint", (long long)syscall(__NR_gettid), 0);
+    clogan_write(0, logBuf, ts, (char*)"hook_vprint", (long long)syscall(__NR_gettid), 0);
 
     int result = 0;
     if (orig_log_vprint) {
@@ -102,8 +99,6 @@ static int hook_log_vprint(int prio, const char* tag, const char* fmt, va_list a
 }
 
 static void hook_log_assert(const char* cond, const char* tag, const char* fmt, ...) {
-//    __android_log_print(ANDROID_LOG_DEBUG, "HookLoglib", "hook_log_assert called: cond=%s, tag=%s, fmt=%s",
-//                      (cond ? cond : "(null)"), (tag ? tag : "(null)"), (fmt ? fmt : "(null)"));
     va_list args, args_copy;
     va_start(args, fmt);
     va_copy(args_copy, args);
@@ -112,8 +107,11 @@ static void hook_log_assert(const char* cond, const char* tag, const char* fmt, 
     vsnprintf(msgBuf, sizeof(msgBuf), fmt, args);
     va_end(args);
 
+    char logBuf[1280];
+    snprintf(logBuf, sizeof(logBuf), "[cond:%s][%s] %s", cond ? cond : "(null)", tag ? tag : "(null)", msgBuf);
+
     long long ts = (long long)time(nullptr) * 1000LL;
-    clogan_write(0, msgBuf, ts, (char*)"hook_assert", (long long)syscall(__NR_gettid), 0);
+    clogan_write(0, logBuf, ts, (char*)"hook_assert", (long long)syscall(__NR_gettid), 0);
 
     if (orig_log_assert) {
         orig_log_assert(cond, tag, fmt, args_copy);
