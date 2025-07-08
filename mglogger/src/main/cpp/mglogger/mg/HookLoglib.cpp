@@ -11,7 +11,7 @@
 #include <android/log.h>
 #include "xhook.h"
 #include "Logreader.h"
-#include "clogan_core.h"
+#include "mglogger/logan/clogan_core.h"
 #include <sys/syscall.h>
 #include <unistd.h>
 #include <ctime>
@@ -33,16 +33,28 @@ static int hook_log_print(int prio, const char* tag, const char* fmt, ...) {
     vsnprintf(msgBuf, sizeof(msgBuf), fmt, args);
     va_end(args);
 
+    // 构造给 clogan 的串
     char logBuf[1200];
-    snprintf(logBuf, sizeof(logBuf), "[p:%d][%s] %s", prio, tag ? tag : "(null)", msgBuf);
+    snprintf(logBuf, sizeof(logBuf), "[p:%d][%s] %s",
+             prio, tag ? tag : "(null)", msgBuf);
 
-    long long ts = (long long)time(nullptr) * 1000LL;
-    clogan_write(0, logBuf, ts, (char*)"hook_print", (long long)syscall(__NR_gettid), 0);
+    long long ts = static_cast<long long>(time(nullptr)) * 1000LL;
+    int cw_ret = clogan_write(0,
+                              logBuf,
+                              ts,
+                              "hook_print",
+                              static_cast<long long>(syscall(__NR_gettid)),
+                              0);
+
+    if (orig_log_print) {
+        orig_log_print(ANDROID_LOG_DEBUG,
+                       "HookLoglib",
+                       "clogan_write ret=%d, prio=%d, tag=%s",
+                       cw_ret, prio, tag ? tag : "(null)");
+    }
 
     int result = 0;
-    if (orig_log_vprint) {
-        result = orig_log_vprint(prio, tag, fmt, args_copy);
-    } else if (orig_log_print) {
+    if (orig_log_print) {
         result = orig_log_print(prio, tag, "%s", msgBuf);
     }
     va_end(args_copy);

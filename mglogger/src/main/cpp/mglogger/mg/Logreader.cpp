@@ -9,7 +9,7 @@
 #include <cstring>
 #include <ctime>
 #include <android/log.h>
-#include "clogan_core.h"
+#include "mglogger/logan/clogan_core.h"
 
 static bool s_running = false;
 static pid_t s_child_pid = -1;

@@ -6,7 +6,7 @@ extern "C"
 #endif
 
 #include <jni.h>
-#include <clogan_core.h>
+#include "mglogger/logan/clogan_core.h"
 
 /**
  * JNI write interface

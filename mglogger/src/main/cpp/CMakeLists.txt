@@ -20,9 +20,12 @@ option(USE_STATIC_MBEDTLS_LIBRARY "Build mbed TLS static library." ON)
 option(USE_SHARED_MBEDTLS_LIBRARY "Build mbed TLS shared library." OFF)
 option(LINK_WITH_PTHREAD "Explicitly link mbed TLS library to pthread." OFF)
 
+add_definitions(-DLOGGER_HOOK_DEBUG=1)
+
 include_directories(./)
 include_directories(mglogger)
 include_directories(mglogger/mg)
+include_directories(mglogger/logan)
 include_directories(external/include)
 include_directories(external/include/mbedtls)
 
@@ -34,19 +37,21 @@ find_library(
 
 # Main source files (removed duplicates)
 set(SOURCE_FILES
-        mglogger/clogan_core.c
-        mglogger/mmap_util.c
-        mglogger/cJSON.c
-        mglogger/construct_data.c
-        mglogger/zlib_util.c
-        mglogger/json_util.c
-        mglogger/aes_util.c
-        mglogger/directory_util.c
-        mglogger/base_util.c
-        mglogger/console_util.c
-        mglogger/main.c
+        mglogger/logan/clogan_core.c
+        mglogger/logan/mmap_util.c
+        mglogger/logan/cJSON.c
+        mglogger/logan/construct_data.c
+        mglogger/logan/zlib_util.c
+        mglogger/logan/json_util.c
+        mglogger/logan/aes_util.c
+        mglogger/logan/directory_util.c
+        mglogger/logan/base_util.c
+        mglogger/logan/console_util.c
+        mglogger/logan/main.c
         mglogger/mg/Logreader.cpp
         mglogger/mg/HookLoglib.cpp
+        mglogger/mg/LoggerHook.cpp
+        mglogger/mg/CLoganCaller.cpp
 )
 
 # MbedTLS crypto source files
