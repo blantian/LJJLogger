@@ -33,7 +33,7 @@ allprojects {
 ext {
 
     // SDK And Tools
-    minSdkVersion = 14 // <-- 保持 16
+    minSdkVersion = 16 // <-- 保持 16
     // 更新 target 和 compile SDK 版本
     targetSdkVersion = 33 // <-- 从 28 更新
     compileSdkVersion = 33 // <-- 从 28 更新

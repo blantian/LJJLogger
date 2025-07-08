@@ -1,6 +1,9 @@
 package com.mgtv.mglogger;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+
+import android.content.Context;
+import android.content.res.AssetManager;
 import android.os.Bundle;
 import android.util.Log;
 
@@ -8,8 +11,16 @@ import com.mgtv.logger.kt.i.ILoggerStatus;
 import com.mgtv.logger.kt.log.Logger;
 import com.mgtv.logger.kt.log.MGLogger;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+
 
 public class MainActivity extends AppCompatActivity {
+
+    private static final String TAG = "MainActivity";
+    private Thread readThread;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -18,19 +29,25 @@ public class MainActivity extends AppCompatActivity {
         MGLogger.w("MainActivity onCreate", 3);
         new Thread(() -> {
             MGLogger.w("MainActivity onCreate", 1);
-//            for (int i = 0; i < 100; i++) {
-//                Log.w("Test", "Hello from Java " + i);
-//            }
         }).start();
 //        throw new RuntimeException("Test Crash");
 //        MGLogger.getSystemLogs(1);
+        readThread = AssetReader.logTextFileAsync(this); // 默认路径
         MGLogger.flush();
     }
+
 
 
     @Override
     protected void onPause() {
         super.onPause();
+        MGLogger.w("MainActivity onPause", 3);
         MGLogger.flush();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (readThread != null) readThread.interrupt();  // 防止泄漏
     }
 }

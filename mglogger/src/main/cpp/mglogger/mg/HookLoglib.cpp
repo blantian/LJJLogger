@@ -3,6 +3,10 @@
  * Created by lantian 
  * Date： 2025/7/4
  * Time： 23:58
+ *
+ * 1. 上层无感知切换
+ * 2. 性能对比 ，压缩比对比
+ *
  */
 
 #include <jni.h>
@@ -63,11 +67,19 @@ static int hook_log_print(int prio, const char* tag, const char* fmt, ...) {
 
 
 static int hook_log_write(int prio, const char* tag, const char* text) {
-    long long ts = (long long)time(nullptr) * 1000LL;
     if (text) {
         char logBuf[1200];
-        snprintf(logBuf, sizeof(logBuf), "[p:%d][%s] %s", prio, tag ? tag : "(null)", text);
-        clogan_write(0, logBuf, ts, (char*)"hook_write", (long long)syscall(__NR_gettid), 0);
+        snprintf(logBuf, sizeof(logBuf),
+                 "[p:%d][%s] %s", prio, tag ? tag : "(null)", text);
+
+        long long ts = static_cast<long long>(time(nullptr)) * 1000LL;
+
+        clogan_write(0,
+                                  logBuf,
+                                  ts,
+                                  (char*)"hook_write",
+                                  (long long)syscall(__NR_gettid),
+                                  0);
     }
     int result = 0;
     if (orig_log_write) {
@@ -77,12 +89,27 @@ static int hook_log_write(int prio, const char* tag, const char* text) {
 }
 
 static int hook_log_buf_write(int bufID, int prio, const char* tag, const char* text) {
-    long long ts = (long long)time(nullptr) * 1000LL;
     if (text) {
         char logBuf[1200];
-        snprintf(logBuf, sizeof(logBuf), "[buf:%d][p:%d][%s] %s", bufID, prio, tag ? tag : "(null)", text);
-        clogan_write(0, logBuf, ts, (char*)"hook_buf", (long long)syscall(__NR_gettid), 0);
+        snprintf(logBuf, sizeof(logBuf),
+                 "[buf:%d][p:%d][%s] %s", bufID,
+                 prio, tag ? tag : "(null)", text);
+        // 写入 clogan
+        long long ts = (long long)time(nullptr) * 1000LL;
+
+        int cw_ret =  clogan_write(0,
+                                   logBuf,
+                                   ts,
+                                   (char*)"hook_buf",
+                                   (long long)syscall(__NR_gettid), 0);
+        if (orig_log_print) {
+            orig_log_print(ANDROID_LOG_DEBUG,
+                           "HookLoglib",
+                           "clogan_write ret=%d, prio=%d, tag=%s",
+                           cw_ret, prio, tag ? tag : "(null)");
+        }
     }
+
     int result = 0;
     if (orig_log_buf_write) {
         result = orig_log_buf_write(bufID, prio, tag, text);

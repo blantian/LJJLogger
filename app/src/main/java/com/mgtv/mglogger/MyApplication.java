@@ -11,7 +11,7 @@ import java.io.File;
 
 public class MyApplication extends Application {
 
-    private static final String TAG = MyApplication.class.getName();
+    private static final String TAG = "MyApplication";
     private static final String FILE_NAME = "logan_v1";
 
     private String path;
