@@ -6,4 +6,4 @@
  */
 
 
-#include "MGLogger.h"
+#include "mg_logger.h"
