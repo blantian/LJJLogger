@@ -2,6 +2,7 @@
 #include "mg/Logreader.h"
 #include "LoggerHook.h"
 #include "CloganCaller.h"
+#include "mg/MGLogger.h"
 
 static JavaVM *g_vm = NULL;
 
@@ -13,8 +14,8 @@ Java_com_mgtv_logger_java_CLoganProtocol_clogan_1write(JNIEnv *env, jobject inst
     const char *log = (*env)->GetStringUTFChars(env, log_, 0);
     const char *thread_name = (*env)->GetStringUTFChars(env, thread_name_, 0);
 
-    jint code = (jint) clogan_write(flag, (char *) log, local_time, (char *) thread_name, thread_id,
-                                    is_main);
+    jint code = (jint) mg_logger_write(flag, (char *) log, local_time, (char *) thread_name, thread_id,
+                                       is_main);
 
     (*env)->ReleaseStringUTFChars(env, log_, log);
     (*env)->ReleaseStringUTFChars(env, thread_name_, thread_name);
@@ -32,7 +33,7 @@ Java_com_mgtv_logger_java_CLoganProtocol_clogan_1init(JNIEnv *env, jobject insta
     const char *encrypt_key16 = (*env)->GetStringUTFChars(env, encrypt_key16_, 0);
     const char *encrypt_iv16 = (*env)->GetStringUTFChars(env, encrypt_iv16_, 0);
 
-    jint code = (jint) clogan_init(cache_path, dir_path, max_file, encrypt_key16, encrypt_iv16);
+    jint code = (jint) mg_logger_init(cache_path, dir_path, max_file, encrypt_key16, encrypt_iv16);
 
     (*env)->ReleaseStringUTFChars(env, dir_path_, dir_path);
     (*env)->ReleaseStringUTFChars(env, cache_path_, cache_path);
@@ -46,7 +47,7 @@ Java_com_mgtv_logger_java_CLoganProtocol_clogan_1open(JNIEnv *env, jobject insta
                                                  jstring file_name_) {
     const char *file_name = (*env)->GetStringUTFChars(env, file_name_, 0);
 
-    jint code = (jint) clogan_open(file_name);
+    jint code = (jint) mg_logger_open(file_name);
 
     (*env)->ReleaseStringUTFChars(env, file_name_, file_name);
     return code;
@@ -54,7 +55,7 @@ Java_com_mgtv_logger_java_CLoganProtocol_clogan_1open(JNIEnv *env, jobject insta
 
 JNIEXPORT void JNICALL
 Java_com_mgtv_logger_java_CLoganProtocol_clogan_1flush(JNIEnv *env, jobject instance) {
-    clogan_flush();
+    mg_logger_flush();
 }
 
 JNIEXPORT void JNICALL
@@ -64,7 +65,7 @@ Java_com_mgtv_logger_java_CLoganProtocol_clogan_1debug(JNIEnv *env, jobject inst
     if (!is_debug) {
         i = 0;
     }
-    clogan_debug(i);
+    mg_logger_debug(i);
 }
 
 
@@ -86,7 +87,7 @@ Java_com_mgtv_logger_kt_log_MGLoggerJni_mglogger_1init(JNIEnv *env,
     const char *encrypt_key16_ = (*env)->GetStringUTFChars(env, encrypt_key16, 0);
     const char *encrypt_iv16_ = (*env)->GetStringUTFChars(env, encrypt_iv16, 0);
 
-    jint code = (jint) clogan_init(dir_path_, cache_path_, max_file, encrypt_key16_, encrypt_iv16_);
+    jint code = (jint) mg_logger_init(cache_path_, dir_path_, max_file, encrypt_key16_, encrypt_iv16_);
 
     (*env)->ReleaseStringUTFChars(env, dir_path, dir_path_);
     (*env)->ReleaseStringUTFChars(env, cache_path, cache_path_);
@@ -101,7 +102,7 @@ Java_com_mgtv_logger_kt_log_MGLoggerJni_mglogger_1open(JNIEnv *env,
                                                        jstring file_name) {
     const char *file_name_ = (*env)->GetStringUTFChars(env, file_name, 0);
 
-    jint code = (jint) clogan_open(file_name_);
+    jint code = (jint) mg_logger_open(file_name_);
 
     (*env)->ReleaseStringUTFChars(env, file_name, file_name_);
     return code;
@@ -114,7 +115,7 @@ Java_com_mgtv_logger_kt_log_MGLoggerJni_mglogger_1debug(JNIEnv *env, jobject thi
     if (!is_debug) {
         i = 0;
     }
-    clogan_debug(i);
+    mg_logger_debug(i);
 }
 
 
@@ -130,12 +131,12 @@ Java_com_mgtv_logger_kt_log_MGLoggerJni_mglogger_1write(JNIEnv *env,
     const char *log_ = (*env)->GetStringUTFChars(env, log, 0);
     const char *thread_name_ = (*env)->GetStringUTFChars(env, thread_name, 0);
 
-    jint code = (jint) clogan_write(flag,
-                                    (char *) log_,
-                                    local_time,
-                                    (char *) thread_name_,
-                                    thread_id,
-                                    is_main);
+    jint code = (jint) mg_logger_write(flag,
+                                       (char *) log_,
+                                       local_time,
+                                       (char *) thread_name_,
+                                       thread_id,
+                                       is_main);
 
     (*env)->ReleaseStringUTFChars(env, log, log_);
     (*env)->ReleaseStringUTFChars(env, thread_name, thread_name_);
@@ -144,7 +145,7 @@ Java_com_mgtv_logger_kt_log_MGLoggerJni_mglogger_1write(JNIEnv *env,
 
 JNIEXPORT void JNICALL
 Java_com_mgtv_logger_kt_log_MGLoggerJni_mglogger_1flush(JNIEnv *env, jobject thiz) {
-    clogan_flush();
+    mg_logger_flush();
 }
 
 JNIEXPORT jint JNICALL
