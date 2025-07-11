@@ -53,6 +53,8 @@ set(SOURCE_FILES
         mglogger/mg/HookLoglib.cpp
         mglogger/mg/LoggerHook.cpp
         mglogger/mg/CLoganCaller.cpp
+        mglogger/mg/message_queue.cpp
+        mglogger/mg/MGLogger.cpp
 )
 
 # MbedTLS crypto source files
