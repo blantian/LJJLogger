@@ -16,13 +16,15 @@ public class MyApplication extends Application {
 
     private String path;
 
+    private Thread readThread;
+
     @Override
     public void onCreate() {
         super.onCreate();
         path = Environment.getExternalStorageDirectory().getAbsolutePath()
                 + File.separator + "mgtv" + File.separator + FILE_NAME;
         initLogan();
-        MGLogger.hookLogs();
+        MGLogger.w("TAG",1);
         Log.i(TAG, "Logan path: " + path);
     }
 
@@ -50,6 +52,8 @@ public class MyApplication extends Application {
                 .build();
         MGLogger.init(loggerConfig, (cmd, code) -> {
             Log.i(TAG, "Logger::" + cmd + " | " + "code : " + code);
+            MGLogger.hookLogs();
+            readThread = AssetReader.logTextFileAsync(this); // 默认路径
         });
 
 //        LoganConfig config = new LoganConfig.Builder()

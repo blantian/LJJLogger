@@ -11,6 +11,9 @@ cmake_minimum_required(VERSION 3.8.0)
 # build script scope).
 project("mglogger")
 
+set(CMAKE_BUILD_TYPE DEBUG)
+
+
 # Set C++ standard
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -19,8 +22,6 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 option(USE_STATIC_MBEDTLS_LIBRARY "Build mbed TLS static library." ON)
 option(USE_SHARED_MBEDTLS_LIBRARY "Build mbed TLS shared library." OFF)
 option(LINK_WITH_PTHREAD "Explicitly link mbed TLS library to pthread." OFF)
-
-add_definitions(-DLOGGER_HOOK_DEBUG=1)
 
 include_directories(./)
 include_directories(mglogger)

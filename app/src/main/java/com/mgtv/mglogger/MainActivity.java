@@ -26,14 +26,13 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        MGLogger.w("MainActivity onCreate", 3);
-        new Thread(() -> {
-            MGLogger.w("MainActivity onCreate", 1);
-        }).start();
+//        MGLogger.w("MainActivity onCreate", 3);
+//        new Thread(() -> {
+//            MGLogger.w("MainActivity onCreate", 1);
+//        }).start();
 //        throw new RuntimeException("Test Crash");
 //        MGLogger.getSystemLogs(1);
-        readThread = AssetReader.logTextFileAsync(this); // 默认路径
-        MGLogger.flush();
+//        MGLogger.flush();
     }
 
 
