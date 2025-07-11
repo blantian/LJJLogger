@@ -18,7 +18,7 @@ public class CrashHandler implements Thread.UncaughtExceptionHandler {
 
     @Override
     public void uncaughtException(Thread t, Throwable e) {
-//        mg_logger.w(Log.getStackTraceString(e), 3);
+//        MGLogger.w(Log.getStackTraceString(e), 3);
         MGLogger.flush();
         if (defaultHandler != null) {
             defaultHandler.uncaughtException(t, e);
