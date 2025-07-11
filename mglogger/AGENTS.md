@@ -10,8 +10,8 @@
 - `src/main/cpp` （C/C++ 代码）
 - `src/main/cpp/external` （mbedtls C++ 库）
 - `src/main/cpp/jni` （JNI 代码）
-- `src/main/cpp/mglogger` （日志框架缓存、加密、压缩主要逻辑代码）
-- `src/main/cpp/mglogger/mg` （c++ 重构代码）
+- `src/main/cpp/mglogger/logan` （美团日志框架缓存、加密、压缩主要逻辑代码）
+- `src/main/cpp/mglogger/mg` （包含 hook系统日志，调用 clogan c++ 代码）
 - `src/main/java` （Java/Kotlin 代码）
 - `src/main/java/com/mgtv/logger/kt` （kotlin 重构模块代码）
 - `src/main/java/com/mgtv/logger/java` （业务层java代码，待重构代码）
