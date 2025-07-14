@@ -50,11 +50,11 @@ set(SOURCE_FILES
         mglogger/logan/console_util.c
         mglogger/logan/main.c
         mglogger/mg/Logreader.cpp
-        mglogger/mg/HookLoglib.cpp
+        mglogger/mg/hook_log.cpp
         mglogger/mg/LoggerHook.cpp
         mglogger/mg/CLoganCaller.cpp
         mglogger/mg/message_queue.cpp
-        mglogger/mg/MGLogger.cpp
+        mglogger/mg/mg_logger.cpp
 )
 
 # MbedTLS crypto source files

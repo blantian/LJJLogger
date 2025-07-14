@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -16,8 +15,8 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <Button
-        android:id="@+id/h264"
-        android:text="111"
+        android:id="@+id/flush"
+        android:text="flush log"
         android:layout_marginTop="20dp"
         app:layout_constraintRight_toRightOf="parent"
         android:background="@drawable/bg_selector"
@@ -27,12 +26,12 @@
         android:layout_height="wrap_content"/>
 
     <Button
-        android:id="@+id/h265"
-        android:text="2222"
+        android:id="@+id/write"
+        android:text="write log"
         android:background="@drawable/bg_selector"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/h264"
+        app:layout_constraintTop_toBottomOf="@id/flush"
         android:layout_marginTop="20dp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"/>
@@ -42,7 +41,7 @@
         android:background="@drawable/bg_selector"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/h265"
+        app:layout_constraintTop_toBottomOf="@id/write"
         android:layout_marginTop="20dp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"/>

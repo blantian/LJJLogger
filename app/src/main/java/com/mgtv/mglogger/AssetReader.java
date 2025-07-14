@@ -13,7 +13,7 @@ public class AssetReader {
 
     private static final String TAG = "AssetReader";
     private static final String DEFAULT_PATH = "txt/三国演义.txt";
-    private static final long   INTERVAL_MS  = 50L;
+    private static final long   INTERVAL_MS  = 500L;
 
     /** 在新线程读取并打印 */
     public static Thread logTextFileAsync(Context ctx) {

@@ -2,7 +2,7 @@
 #include "mg/Logreader.h"
 #include "LoggerHook.h"
 #include "CloganCaller.h"
-#include "mg/MGLogger.h"
+#include "mg/mg_logger.h"
 
 static JavaVM *g_vm = NULL;
 

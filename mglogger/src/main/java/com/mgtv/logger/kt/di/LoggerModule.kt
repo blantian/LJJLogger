@@ -7,7 +7,7 @@ import org.koin.core.module.Module
 import org.koin.dsl.module
 
 /**
- * Provides Koin module for MGLogger.
+ * Provides Koin module for mg_logger.
  */
 public fun createLoggerModule(
     block: LoggerConfig.Builder.() -> Unit,

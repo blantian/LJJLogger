@@ -6,8 +6,8 @@
  */
 
 
-#ifndef MGLOGGER_MGLOGGER_H
-#define MGLOGGER_MGLOGGER_H
+#ifndef MGLOGGER_MG_LOGGER_H
+#define MGLOGGER_MG_LOGGER_H
 
 #ifdef __cplusplus
 #include <cstddef>
@@ -15,10 +15,10 @@
 
 class message_queue;
 
-class MGLogger {
+class mg_logger {
 public:
-    MGLogger();
-    ~MGLogger();
+    mg_logger();
+    ~mg_logger();
 
     int init(const char* cache_path, const char* dir_path, int max_file,
               const char* key16, const char* iv16);
@@ -51,4 +51,4 @@ void mg_logger_release();
 }
 #endif
 
-#endif //MGLOGGER_MGLOGGER_H
+#endif //MGLOGGER_MG_LOGGER_H

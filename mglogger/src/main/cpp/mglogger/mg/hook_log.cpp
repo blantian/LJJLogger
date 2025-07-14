@@ -19,6 +19,7 @@
 #include <sys/syscall.h>
 #include <unistd.h>
 #include <ctime>
+#include "mg_logger.h"
 
 
 static int (*orig_log_print)(int, const char*, const char*, ...) = nullptr;
@@ -37,13 +38,12 @@ static int hook_log_print(int prio, const char* tag, const char* fmt, ...) {
     vsnprintf(msgBuf, sizeof(msgBuf), fmt, args);
     va_end(args);
 
-    // 构造给 clogan 的串
     char logBuf[1200];
     snprintf(logBuf, sizeof(logBuf), "[p:%d][%s] %s",
              prio, tag ? tag : "(null)", msgBuf);
 
     long long ts = static_cast<long long>(time(nullptr)) * 1000LL;
-    int cw_ret = clogan_write(0,
+    int cw_ret = mg_logger_write(0,
                               logBuf,
                               ts,
                               "hook_print",
@@ -53,7 +53,7 @@ static int hook_log_print(int prio, const char* tag, const char* fmt, ...) {
     if (orig_log_print) {
         orig_log_print(ANDROID_LOG_DEBUG,
                        "HookLoglib",
-                       "clogan_write ret=%d, prio=%d, tag=%s",
+                       "mg_logger_write ret=%d, prio=%d, tag=%s",
                        cw_ret, prio, tag ? tag : "(null)");
     }
 
@@ -74,7 +74,7 @@ static int hook_log_write(int prio, const char* tag, const char* text) {
 
         long long ts = static_cast<long long>(time(nullptr)) * 1000LL;
 
-        clogan_write(0,
+        mg_logger_write(0,
                                   logBuf,
                                   ts,
                                   (char*)"hook_write",
@@ -94,10 +94,9 @@ static int hook_log_buf_write(int bufID, int prio, const char* tag, const char* 
         snprintf(logBuf, sizeof(logBuf),
                  "[buf:%d][p:%d][%s] %s", bufID,
                  prio, tag ? tag : "(null)", text);
-        // 写入 clogan
         long long ts = (long long)time(nullptr) * 1000LL;
 
-        int cw_ret =  clogan_write(0,
+        int cw_ret =  mg_logger_write(0,
                                    logBuf,
                                    ts,
                                    (char*)"hook_buf",
@@ -105,7 +104,7 @@ static int hook_log_buf_write(int bufID, int prio, const char* tag, const char* 
         if (orig_log_print) {
             orig_log_print(ANDROID_LOG_DEBUG,
                            "HookLoglib",
-                           "clogan_write ret=%d, prio=%d, tag=%s",
+                           "mg_logger_write ret=%d, prio=%d, tag=%s",
                            cw_ret, prio, tag ? tag : "(null)");
         }
     }
@@ -128,7 +127,7 @@ static int hook_log_vprint(int prio, const char* tag, const char* fmt, va_list a
     snprintf(logBuf, sizeof(logBuf), "[p:%d][%s] %s", prio, tag ? tag : "(null)", msgBuf);
 
     long long ts = (long long)time(nullptr) * 1000LL;
-    clogan_write(0, logBuf, ts, (char*)"hook_vprint", (long long)syscall(__NR_gettid), 0);
+    mg_logger_write(0, logBuf, ts, (char*)"hook_vprint", (long long)syscall(__NR_gettid), 0);
 
     int result = 0;
     if (orig_log_vprint) {
@@ -150,7 +149,7 @@ static void hook_log_assert(const char* cond, const char* tag, const char* fmt, 
     snprintf(logBuf, sizeof(logBuf), "[cond:%s][%s] %s", cond ? cond : "(null)", tag ? tag : "(null)", msgBuf);
 
     long long ts = (long long)time(nullptr) * 1000LL;
-    clogan_write(0, logBuf, ts, (char*)"hook_assert", (long long)syscall(__NR_gettid), 0);
+    mg_logger_write(0, logBuf, ts, (char*)"hook_assert", (long long)syscall(__NR_gettid), 0);
 
     if (orig_log_assert) {
         orig_log_assert(cond, tag, fmt, args_copy);

@@ -36,7 +36,7 @@ int message_queue::dispatch(const std::function<int()> &task) {
         if (!m_running) {
             return -1;
         }
-        m_queue.push([task, p]() { p->set_value(task()); });
+        m_queue.emplace([task, p]() { p->set_value(task()); });
     }
     m_cv.notify_one();
     return f.get();
@@ -50,7 +50,7 @@ void message_queue::dispatch_void(const std::function<void()> &task) {
         if (!m_running) {
             return;
         }
-        m_queue.push([task, p]() {
+        m_queue.emplace([task, p]() {
             task();
             p->set_value();
         });

@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.res.AssetManager;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 
 import com.mgtv.logger.kt.i.ILoggerStatus;
 import com.mgtv.logger.kt.log.Logger;
@@ -20,19 +21,24 @@ import java.io.InputStreamReader;
 public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = "MainActivity";
-    private Thread readThread;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-//        MGLogger.w("MainActivity onCreate", 3);
-//        new Thread(() -> {
-//            MGLogger.w("MainActivity onCreate", 1);
-//        }).start();
-//        throw new RuntimeException("Test Crash");
-//        MGLogger.getSystemLogs(1);
-//        MGLogger.flush();
+        findViewById(R.id.flush).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                MGLogger.flush();
+            }
+        });
+
+        findViewById(R.id.write).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                MGLogger.w("hello world", 2);
+            }
+        });
     }
 
 
@@ -47,6 +53,5 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        if (readThread != null) readThread.interrupt();  // 防止泄漏
     }
 }
