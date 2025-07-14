@@ -13,7 +13,7 @@ void stop_logreader();
 // Collect logs from log buffers using android_logger_list_read
 void collect_log_by_loggerlist();
 
-void hook_log();
+int hook_log();
 
 #ifdef __cplusplus
 }

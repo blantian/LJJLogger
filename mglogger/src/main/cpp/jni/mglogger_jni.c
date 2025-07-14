@@ -77,6 +77,7 @@ Java_com_mgtv_logger_kt_log_MGLoggerJni_mglogger_1init(JNIEnv *env,
                                                        jobject thiz,
                                                        jstring cache_path,
                                                        jstring dir_path,
+                                                       jint log_cache_s,
                                                        jint max_file,
                                                        jstring encrypt_key16,
                                                        jstring encrypt_iv16) {
@@ -91,6 +92,11 @@ Java_com_mgtv_logger_kt_log_MGLoggerJni_mglogger_1init(JNIEnv *env,
     (*env)->ReleaseStringUTFChars(env, cache_path, cache_path_);
     (*env)->ReleaseStringUTFChars(env, encrypt_key16, encrypt_key16_);
     (*env)->ReleaseStringUTFChars(env, encrypt_iv16, encrypt_iv16_);
+
+    if (log_cache_s == 1) {
+        hook_log();
+    }
+
     return code;
 }
 
@@ -201,6 +207,6 @@ Java_com_mgtv_logger_kt_log_MGLoggerJni_nativeStartLogcatCollector(JNIEnv *env,
 
 JNIEXPORT void JNICALL
 Java_com_mgtv_logger_kt_log_MGLoggerJni_nativeHookLogs(JNIEnv *env, jobject thiz) {
-    hook_log();
+//    hook_log();
 }
 

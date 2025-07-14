@@ -50,6 +50,7 @@ Java_com_mgtv_logger_CLoganProtocol_clogan_1debug(JNIEnv *env, jobject thiz, jbo
 JNIEXPORT jint JNICALL
 Java_com_mgtv_logger_kt_log_MGLoggerJni_mglogger_1init(JNIEnv *env, jobject thiz,
                                                        jstring cache_path, jstring dir_path,
+                                                       jint log_cache_s,
                                                        jint max_file, jstring encrypt_key16,
                                                        jstring encrypt_iv16);
 

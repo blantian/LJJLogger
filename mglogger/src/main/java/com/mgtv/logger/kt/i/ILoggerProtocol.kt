@@ -49,6 +49,7 @@ public interface ILoggerProtocol {
     public fun logger_init(
         cache_path: String?,
         dir_path: String?,
+        logCacheSelector: Int,
         max_file: Int,
         encrypt_key_16: String?,
         encrypt_iv_16: String?

@@ -19,7 +19,6 @@ public object MGLoggerJni : ILoggerProtocol {
 
     init {
         try {
-//            System.loadLibrary("xhook")
             System.loadLibrary("mglogger")
             isMGLoggerOk = true
         } catch (t: Throwable) {
@@ -46,6 +45,7 @@ public object MGLoggerJni : ILoggerProtocol {
     private external fun mglogger_init(
         cachePath: String?,
         dirPath: String?,
+        logCacheSelector: Int,
         maxFile: Int,
         encryptKey16: String?,
         encryptIv16: String?
@@ -89,6 +89,7 @@ public object MGLoggerJni : ILoggerProtocol {
     public override fun logger_init(
         cachePath: String?,
         dirPath: String?,
+        logCacheSelector: Int,
         maxFile: Int,
         encryptKey16: String?,
         encryptIv16: String?
@@ -103,7 +104,7 @@ public object MGLoggerJni : ILoggerProtocol {
         }
 
         try {
-            val code = mglogger_init(cachePath, dirPath, maxFile, encryptKey16, encryptIv16)
+            val code = mglogger_init(cachePath, dirPath,logCacheSelector, maxFile, encryptKey16, encryptIv16)
             isLoganInit = true
             loggerStatusCode(MGLoggerStatus.MGLOGGER_INIT_STATUS, code)
         } catch (e: UnsatisfiedLinkError) {
