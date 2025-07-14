@@ -1,5 +1,5 @@
-#ifndef MGLOGGER_LOGREADER_H
-#define MGLOGGER_LOGREADER_H
+#ifndef MGLOGGER_LOGGER_FORK_READ_H
+#define MGLOGGER_LOGGER_FORK_READ_H
 
 #ifdef __cplusplus
 extern "C" {
@@ -19,4 +19,4 @@ void hook_log();
 }
 #endif
 
-#endif //MGLOGGER_LOGREADER_H
+#endif //MGLOGGER_LOGGER_FORK_READ_H

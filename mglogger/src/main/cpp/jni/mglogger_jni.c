@@ -1,7 +1,5 @@
 #include "mglogger_jni.h"
-#include "mg/Logreader.h"
-#include "LoggerHook.h"
-#include "CloganCaller.h"
+#include "mg/logger_fork_read.h"
 #include "mg/mg_logger.h"
 
 static JavaVM *g_vm = NULL;
@@ -204,7 +202,5 @@ Java_com_mgtv_logger_kt_log_MGLoggerJni_nativeStartLogcatCollector(JNIEnv *env,
 JNIEXPORT void JNICALL
 Java_com_mgtv_logger_kt_log_MGLoggerJni_nativeHookLogs(JNIEnv *env, jobject thiz) {
     hook_log();
-//    clogan_bridge_init(g_vm, thiz);    // 保存回调目标
-//    logger_hook_init(g_vm);             // 安装 Hook
 }
 

@@ -7,11 +7,11 @@
 
 
 #include "mg_logger.h"
-#include "message_queue.h"
+#include "logger_queue.h"
 #include "mglogger/logan/clogan_core.h"
 
 mg_logger::mg_logger() {
-    m_queue = new message_queue();
+    m_queue = new logger_queue();
 }
 
 mg_logger::~mg_logger() {

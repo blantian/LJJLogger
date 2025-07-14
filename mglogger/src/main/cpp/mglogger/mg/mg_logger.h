@@ -13,7 +13,7 @@
 #include <cstddef>
 #include <cstdint>
 
-class message_queue;
+class logger_queue;
 
 class mg_logger {
 public:
@@ -30,7 +30,7 @@ public:
     void stop();
 
 private:
-    message_queue* m_queue;
+    logger_queue* m_queue;
 };
 #endif
 

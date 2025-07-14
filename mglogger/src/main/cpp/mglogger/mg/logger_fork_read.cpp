@@ -1,4 +1,4 @@
-#include "Logreader.h"
+#include "logger_fork_read.h"
 #include <vector>
 #include <string>
 #include <pthread.h>

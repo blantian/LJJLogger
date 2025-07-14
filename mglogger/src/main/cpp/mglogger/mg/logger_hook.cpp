@@ -14,7 +14,7 @@
 #include <dlfcn.h>
 #include <android/log.h>
 #include "xhook.h"
-#include "Logreader.h"
+#include "logger_fork_read.h"
 #include "mglogger/logan/clogan_core.h"
 #include <sys/syscall.h>
 #include <unistd.h>
