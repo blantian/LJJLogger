@@ -22,31 +22,32 @@ mg_logger::~mg_logger() {
 
 int mg_logger::init(const char* cache_path, const char* dir_path, int max_file,
                     const char* key16, const char* iv16) {
-    return m_queue->dispatch([=]() {
+    return m_queue->dispatch_sync([=]() {
         return clogan_init(cache_path, dir_path, max_file, key16, iv16);
     });
 }
 
 int mg_logger::open(const char* file_name) {
-    return m_queue->dispatch([=]() {
+    return m_queue->dispatch_sync([=]() {
         return clogan_open(file_name);
     });
 }
 
 int mg_logger::write(int flag, const char* log, long long local_time,
                      const char* thread_name, long long thread_id, int is_main) {
-    return m_queue->dispatch([=]() {
-        return clogan_write(flag, (char*)log, local_time, (char*)thread_name,
-                            thread_id, is_main);
+    int ret = m_queue->dispatch([=]() {
+        clogan_write(flag, (char*)log, local_time, (char*)thread_name,
+                     thread_id, is_main);
     });
+    return ret;
 }
 
 int mg_logger::flush() {
-    return m_queue->dispatch([=]() { return clogan_flush(); });
+    return m_queue->dispatch_sync([=]() { return clogan_flush(); });
 }
 
 void mg_logger::debug(int debug) {
-    m_queue->dispatch_void([=]() { clogan_debug(debug); });
+    m_queue->dispatch([=]() { clogan_debug(debug); });
 }
 
 void mg_logger::stop() {
