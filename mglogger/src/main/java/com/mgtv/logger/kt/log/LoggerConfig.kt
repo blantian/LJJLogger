@@ -9,6 +9,7 @@ package com.mgtv.logger.kt.log
 public data class LoggerConfig(
     public val cachePath: String,
     public val logDir: String,
+    public val logCacheS: Int,
     public val keepDays: Long,
     public val maxFile: Long,
     public val minSdCard: Long,
@@ -20,6 +21,7 @@ public data class LoggerConfig(
     public class Builder {
         public var cachePath: String = ""
         public var logDir: String = ""
+        public var logCacheS: Int = 1
         public var keepDays: Long = 1 * 24 * 60 * 60 * 1000L
         public var maxFile: Long = 10 * 1024 * 1024
         public var minSdCard: Long = 50 * 1024 * 1024
@@ -42,6 +44,7 @@ public data class LoggerConfig(
             LoggerConfig(
                 cachePath,
                 logDir,
+                logCacheS,
                 keepDays,
                 maxFile,
                 minSdCard,

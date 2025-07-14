@@ -43,7 +43,7 @@ internal class LoggerActor(
                 Logger.onListenerLogWriteStatus(cmd, code)
             }
         })
-        it.logger_init(cfg.cachePath, cfg.logDir, cfg.maxFile.toInt(), cfg.key16, cfg.iv16)
+        it.logger_init(cfg.cachePath, cfg.logDir,cfg.logCacheS, cfg.maxFile.toInt(), cfg.key16, cfg.iv16)
         it.logger_debug(Logger.sDebug)
     }
 

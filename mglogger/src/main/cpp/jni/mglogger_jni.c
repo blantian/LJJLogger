@@ -85,17 +85,15 @@ Java_com_mgtv_logger_kt_log_MGLoggerJni_mglogger_1init(JNIEnv *env,
     const char *cache_path_ = (*env)->GetStringUTFChars(env, cache_path, 0);
     const char *encrypt_key16_ = (*env)->GetStringUTFChars(env, encrypt_key16, 0);
     const char *encrypt_iv16_ = (*env)->GetStringUTFChars(env, encrypt_iv16, 0);
-
+    if (log_cache_s == 1) {
+        hook_log();
+    }
     jint code = (jint) mg_logger_init(cache_path_, dir_path_, max_file, encrypt_key16_, encrypt_iv16_);
 
     (*env)->ReleaseStringUTFChars(env, dir_path, dir_path_);
     (*env)->ReleaseStringUTFChars(env, cache_path, cache_path_);
     (*env)->ReleaseStringUTFChars(env, encrypt_key16, encrypt_key16_);
     (*env)->ReleaseStringUTFChars(env, encrypt_iv16, encrypt_iv16_);
-
-    if (log_cache_s == 1) {
-        hook_log();
-    }
 
     return code;
 }
