@@ -1,6 +1,6 @@
 /**
  * Description:
- * Created by lantian 
+ * Created by lantian
  * Date： 2025/7/11
  * Time： 14:50
  */
@@ -8,46 +8,77 @@
 
 #include "mg_logger.h"
 #include "logger_queue.h"
-#include "mglogger/logan/clogan_core.h"
+#include "message_queue.h"
+#include "mglogger/logan/clogan_core.h"  // CLogan API header
+#include "clogan_status.h"
+
+static mg_logger g_logger;
 
 mg_logger::mg_logger() {
     m_queue = new logger_queue();
+    m_statusQueue = new message_queue();
 }
 
 mg_logger::~mg_logger() {
     stop();
     delete m_queue;
     m_queue = nullptr;
+    delete m_statusQueue;
+    m_statusQueue = nullptr;
 }
 
 int mg_logger::init(const char* cache_path, const char* dir_path, int max_file,
                     const char* key16, const char* iv16) {
-    return m_queue->dispatch_sync([=]() {
-        return clogan_init(cache_path, dir_path, max_file, key16, iv16);
+    std::string cachePathStr(cache_path ? cache_path : "");
+    std::string dirPathStr(dir_path ? dir_path : "");
+    std::string keyStr(key16 ? key16 : "");
+    std::string ivStr(iv16 ? iv16 : "");
+    m_queue->enqueue([=]() {
+        int code =  clogan_init(cachePathStr.c_str(), dirPathStr.c_str(), max_file,
+                    keyStr.c_str(), ivStr.c_str());
+        if (m_statusQueue) {
+            m_statusQueue->push(code, CLGOAN_INIT_STATUS);
+        }
+        return code;
     });
+
+    return 0;
 }
 
 int mg_logger::open(const char* file_name) {
-    return m_queue->dispatch_sync([=]() {
-        return clogan_open(file_name);
+    std::string fileNameStr(file_name ? file_name : "");
+    m_queue->enqueue([=]() {
+        clogan_open(fileNameStr.c_str());
     });
+    return 0;
 }
 
 int mg_logger::write(int flag, const char* log, long long local_time,
                      const char* thread_name, long long thread_id, int is_main) {
-    int ret = m_queue->dispatch([=]() {
-        clogan_write(flag, (char*)log, local_time, (char*)thread_name,
-                     thread_id, is_main);
+    std::string logStr(log ? log : "");
+    std::string threadNameStr(thread_name ? thread_name : "");
+    m_queue->enqueue([=]() {
+        clogan_write(flag,
+                     const_cast<char*>(logStr.c_str()),
+                     local_time,
+                     const_cast<char*>(threadNameStr.c_str()),
+                     thread_id,
+                     is_main);
     });
-    return ret;
+    return 0;
 }
 
 int mg_logger::flush() {
-    return m_queue->dispatch_sync([=]() { return clogan_flush(); });
+    m_queue->enqueue([=]() {
+        clogan_flush();
+    });
+    return 0;
 }
 
 void mg_logger::debug(int debug) {
-    m_queue->dispatch([=]() { clogan_debug(debug); });
+    m_queue->enqueue([=]() {
+        clogan_debug(debug);
+    });
 }
 
 void mg_logger::stop() {
@@ -55,8 +86,6 @@ void mg_logger::stop() {
         m_queue->stop();
     }
 }
-
-static mg_logger g_logger;
 
 extern "C" {
 
@@ -87,4 +116,5 @@ void mg_logger_release() {
 }
 
 } // extern "C"
+
 

@@ -98,7 +98,6 @@ internal class LoggerActor(
                     2 -> collectProcessLogcat()
                 }
             }
-            is LogTask.HookLogs -> MGLoggerJni.hookLogs()
         }
     }
 

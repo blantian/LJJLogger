@@ -150,11 +150,6 @@ Java_com_mgtv_logger_kt_log_MGLoggerJni_mglogger_1flush(JNIEnv *env, jobject thi
     mg_logger_flush();
 }
 
-JNIEXPORT jint JNICALL
-JNI_OnLoad(JavaVM *vm, void *reserved) {
-    g_vm = vm;
-    return JNI_VERSION_1_6;
-}
 
 static void on_logcat_fail_callback() {
     if (g_vm == NULL) return;

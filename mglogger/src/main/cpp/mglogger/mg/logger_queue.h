@@ -11,6 +11,8 @@
 
 #include <queue>
 #include <mutex>
+#include "sdl_mutex.h"
+#include "sdl_thread.h"
 #include <condition_variable>
 #include <functional>
 #include <future>
@@ -18,33 +20,27 @@
 
 class logger_queue {
 public:
-    logger_queue();
+    logger_queue(size_t max_queue_size = 500);
+
     ~logger_queue();
 
-    // Asynchronously enqueue a task. Returns 0 on success or -1 if the queue
-    // has been stopped.
-    int dispatch(const std::function<void()> &task);
-
-    // Schedule a task and wait for its result. This is used for operations that
-    // require a return value.
-    int dispatch_sync(const std::function<int()> &task);
-
-    // Schedule a void task and block until completion.
-    void dispatch_sync_void(const std::function<void()> &task);
+    void enqueue(const std::function<void()> &task);
 
     void stop();
 
 private:
     using task_t = std::function<void()>;
+    static int workerTh(void* arg);   // SDL 线程入口
     void loop();
 
     std::queue<task_t> m_queue;
-    std::mutex m_mutex;
-    std::condition_variable m_cv_not_empty;
-    std::condition_variable m_cv_not_full;
-    bool m_running{true};
-    std::thread m_worker;
-    const size_t m_capacity = 1024;
+    SDL_mutex *m_queue_mutex{nullptr};
+    SDL_cond *m_cv_not_empty{nullptr};
+    SDL_cond *m_cv_not_full{nullptr};
+    bool m_running;
+    const size_t m_max_size;
+    SDL_Thread *m_worker_tid{nullptr};
+    SDL_Thread m_worker{};
 };
 
 #endif //MGLOGGER_LOGGER_QUEUE_H

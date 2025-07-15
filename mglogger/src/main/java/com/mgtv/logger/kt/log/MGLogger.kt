@@ -47,9 +47,6 @@ public object MGLogger {
     public fun getSystemLogs(mode: Int = 1) = Logger.getSystemLogs(mode)
 
     @JvmStatic
-    public fun hookLogs() { Logger.hookLogs() }
-
-    @JvmStatic
     public fun flush() {
         Logger.flush()
     }

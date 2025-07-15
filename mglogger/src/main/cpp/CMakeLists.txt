@@ -29,11 +29,13 @@ include_directories(mglogger/mg)
 include_directories(mglogger/logan)
 include_directories(external/include)
 include_directories(external/include/mbedtls)
+include_directories(external/j4a)
+include_directories(external/sdl)
 
 # Find Android log library
 find_library(
-    log-lib
-    log
+        log-lib
+        log
 )
 
 # Main source files (removed duplicates)
@@ -54,6 +56,20 @@ set(SOURCE_FILES
         mglogger/mg/logger_queue.cpp
         mglogger/mg/mg_logger.cpp
         mglogger/mg/message_queue.cpp
+)
+
+set(SRC_J4A
+        external/j4a/j4a_allclasses.c
+        external/j4a/j4a_base.c
+        external/j4a/Android/os/Build.c
+        external/j4a/Android/os/Bundle.c
+)
+
+set(SRC_SDL
+        external/sdl/sdl_android_jni.c
+        external/sdl/sdl_mutex.c
+        external/sdl/sdl_stdinc.c
+        external/sdl/sdl_thread.c
 )
 
 # MbedTLS crypto source files
@@ -228,6 +244,8 @@ set_target_properties(xhook
 # Build main mglogger library
 add_library(mglogger SHARED
         ${SOURCE_FILES}
+        ${SRC_J4A}
+        ${SRC_SDL}
         jni/mglogger_jni.c
 )
 target_link_libraries(mglogger

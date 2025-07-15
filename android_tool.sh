@@ -5,7 +5,7 @@
 #
 # command:
 #   screenshot    截图并拉取到本地  ./android_tool.sh screenshot -s <serial> -d <save_dir>
-#   log           抓取 AV_ENGINE 日志 ./android_tool.sh log start -s <serial> -o <output_file> -t <tag>
+#   log           抓取 AV_MGLOGGER 日志 ./android_tool.sh log start -s <serial> -o <output_file> -t <tag>
 #   install       构建 / 安装 / 启动 APK  ./android_tool.sh install -s debug -i put
 #
 
@@ -24,7 +24,7 @@ Usage: $0 <command> [options]
 
 Commands:
   screenshot   adb 截图并拉取到本地
-  log          过滤 AV_ENGINE 日志到文件
+  log          过滤 AV_MGLOGGER 日志到文件
   install      构建 / 安装 / 启动 APP
   playercore   构建 playercore 模块 AAR 并复制到指定目录
 
@@ -80,7 +80,7 @@ EOF
 cmd_log_start() {
     local serial="$DEFAULT_SERIAL"
     local outfile="$HOME/Desktop/mgtv_log_${NOW}.txt"
-    local tag="AV_ENGINE"
+    local tag="AV_MGLOGGER"
 
     # 解析参数
     while [[ $# -gt 0 ]]; do
@@ -94,7 +94,7 @@ Usage: $0 log start [options]
 
   -s SERIAL   设备序列号，默认 $DEFAULT_SERIAL
   -o FILE     保存文件，默认 ~/Desktop/mgtv_log_<time>.txt
-  -t TAGS     Tag 过滤(逗号分隔)，all/* 为全量，默认 AV_ENGINE
+  -t TAGS     Tag 过滤(逗号分隔)，all/* 为全量，默认 AV_MGLOGGER
 EOF
             return;;
             *) echo "未知参数 $1"; return 1;;
