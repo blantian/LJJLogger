@@ -20,7 +20,7 @@
 
 class logger_queue {
 public:
-    logger_queue(size_t max_queue_size = 500);
+    explicit logger_queue(size_t maxCapacity = 500);
 
     ~logger_queue();
 
@@ -29,16 +29,17 @@ public:
     void stop();
 
 private:
-    using task_t = std::function<void()>;
-    static int workerTh(void* arg);   // SDL 线程入口
-    void loop();
-
-    std::queue<task_t> m_queue;
-    SDL_mutex *m_queue_mutex{nullptr};
-    SDL_cond *m_cv_not_empty{nullptr};
-    SDL_cond *m_cv_not_full{nullptr};
-    bool m_running;
-    const size_t m_max_size;
+    // 禁止拷贝
+    logger_queue(const logger_queue&) = delete;
+    logger_queue& operator=(const logger_queue&) = delete;
+    static int threadFunc(void* arg);   // SDL 线程入口
+    int run();
+private:
+    SDL_mutex* m_mutex;
+    SDL_cond* m_cond;
+    std::queue<std::function<void()>> m_tasks;
+    const size_t m_maxCapacity;
+    bool m_stop;
     SDL_Thread *m_worker_tid{nullptr};
     SDL_Thread m_worker{};
 };

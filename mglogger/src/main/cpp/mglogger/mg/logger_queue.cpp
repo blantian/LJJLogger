@@ -10,64 +10,98 @@
 
 
 #include "logger_queue.h"
+#include "sdl_log.h"
 
-logger_queue::logger_queue(size_t max_queue_size)
-        : m_running(true), m_max_size(max_queue_size),
-            m_queue_mutex(SDL_CreateMutex()),
-            m_cv_not_empty(SDL_CreateCond()),
-            m_cv_not_full(SDL_CreateCond()){
-    m_worker_tid = SDL_CreateThreadEx(&m_worker, &workerTh, this, "logger_queue_worker");
+logger_queue::logger_queue(size_t maxCapacity)
+        :m_worker_tid(nullptr), m_mutex(nullptr), m_cond(nullptr),
+           m_maxCapacity(maxCapacity), m_stop(false){
+    m_mutex = SDL_CreateMutex();
+    if (!m_mutex) {
+        ALOGE("Failed to create logger queue mutex");
+    }
+    m_cond = SDL_CreateCond();
+    if (!m_cond) {
+        ALOGE("Failed to create logger queue cond");
+    }
+
+    m_worker_tid = SDL_CreateThreadEx(&m_worker, &threadFunc, this, "logger_queue_worker");
+    if (!m_worker_tid){
+        ALOGE("Failed to create logger queue thread");
+    }
 }
 
 logger_queue::~logger_queue() {
     stop();
+    // 销毁互斥锁和条件变量
+    if (m_mutex) {
+        SDL_DestroyMutex(m_mutex);
+        m_mutex = nullptr;
+    }
+    if (m_cond) {
+        SDL_DestroyCond(m_cond);
+        m_cond = nullptr;
+    }
 }
 
 
-int logger_queue::workerTh(void* arg) {
-    auto* queue = static_cast<logger_queue*>(arg);
-    queue->loop();
-    return 0;
+int logger_queue::threadFunc(void* data) {
+    auto* self = static_cast<logger_queue*>(data);
+    return self ? self->run() : 0;
 }
 
 void logger_queue::enqueue(const std::function<void()>& task) {
-    if (!m_running) return;
-
-    SDL_LockMutex(m_queue_mutex);
-    while (m_queue.size() >= m_max_size && m_running) {
-        SDL_CondWait(m_cv_not_full, m_queue_mutex);
+    SDL_LockMutex(m_mutex);
+    if (m_tasks.size() >= m_maxCapacity) {
+        // 队列已满，丢弃新任务以避免阻塞
+        SDL_UnlockMutex(m_mutex);
+        return;
     }
-
-    if (m_running) {
-        m_queue.push(task);
-        SDL_CondSignal(m_cv_not_empty);
+    // 将任务添加到队列
+    bool wasEmpty = m_tasks.empty();
+    m_tasks.push(task);
+    // 唤醒日志线程（如果线程在等待）
+    if (wasEmpty) {
+        SDL_CondSignal(m_cond);
     }
-    SDL_UnlockMutex(m_queue_mutex);
+    SDL_UnlockMutex(m_mutex);
 }
 
 void logger_queue::stop() {
-    SDL_LockMutex(m_queue_mutex);
-    m_running = false;
-    SDL_CondBroadcast(m_cv_not_empty);
-    SDL_CondBroadcast(m_cv_not_full);
-    SDL_UnlockMutex(m_queue_mutex);
-
+    SDL_LockMutex(m_mutex);
+    // 标记停止，并唤醒线程退出
+    m_stop = true;
+    SDL_CondSignal(m_cond);
+    SDL_UnlockMutex(m_mutex);
+    // 等待线程结束
     if (m_worker_tid) {
         SDL_WaitThread(m_worker_tid, nullptr);
         m_worker_tid = nullptr;
     }
-    if (m_queue_mutex) SDL_DestroyMutex(m_queue_mutex);
-    if (m_cv_not_empty) SDL_DestroyCond(m_cv_not_empty);
-    if (m_cv_not_full) SDL_DestroyCond(m_cv_not_full);
 }
 
-void logger_queue::loop() {
-    while (true) {
-        task_t task;
-        {
 
+int logger_queue::run() {
+    SDL_LockMutex(m_mutex);
+    // 日志线程主循环
+    while (true) {
+        // 等待任务或退出信号
+        while (!m_stop && m_tasks.empty()) {
+            SDL_CondWait(m_cond, m_mutex);
         }
+        // 如果收到停止信号且队列已空，退出循环
+        if (m_stop && m_tasks.empty()) {
+            SDL_UnlockMutex(m_mutex);
+            break;
+        }
+        // 取出一个日志任务执行
+        std::function<void()> task = m_tasks.front();
+        m_tasks.pop();
+        SDL_UnlockMutex(m_mutex);
+        // 执行日志写入任务（调用clogan接口）
         task();
+        SDL_LockMutex(m_mutex);
     }
+    // 线程退出
+    return 0;
 }
 

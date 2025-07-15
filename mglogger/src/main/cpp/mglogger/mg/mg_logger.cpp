@@ -48,29 +48,42 @@ int mg_logger::init(const char* cache_path, const char* dir_path, int max_file,
 int mg_logger::open(const char* file_name) {
     std::string fileNameStr(file_name ? file_name : "");
     m_queue->enqueue([=]() {
-        clogan_open(fileNameStr.c_str());
+        int code = clogan_open(fileNameStr.c_str());
+        if (m_statusQueue) {
+            m_statusQueue->push(code, CLOGAN_OPEN_STATUS);
+        }
+        return code;
     });
     return 0;
 }
+
 
 int mg_logger::write(int flag, const char* log, long long local_time,
                      const char* thread_name, long long thread_id, int is_main) {
     std::string logStr(log ? log : "");
     std::string threadNameStr(thread_name ? thread_name : "");
     m_queue->enqueue([=]() {
-        clogan_write(flag,
-                     const_cast<char*>(logStr.c_str()),
-                     local_time,
-                     const_cast<char*>(threadNameStr.c_str()),
-                     thread_id,
-                     is_main);
+        int code = clogan_write(flag,
+                                const_cast<char*>(logStr.c_str()),
+                                local_time,
+                                const_cast<char*>(threadNameStr.c_str()),
+                                thread_id,
+                                is_main);
+        if (m_statusQueue) {
+            m_statusQueue->push(code, CLOGAN_WRITE_STATUS);
+        }
+        return code;
     });
     return 0;
 }
 
 int mg_logger::flush() {
     m_queue->enqueue([=]() {
-        clogan_flush();
+        int code = clogan_flush();
+        if (m_statusQueue) {
+            m_statusQueue->push(code, CLOGAN_FLUSH_STATUS);
+        }
+        return code;
     });
     return 0;
 }
@@ -84,6 +97,12 @@ void mg_logger::debug(int debug) {
 void mg_logger::stop() {
     if (m_queue) {
         m_queue->stop();
+    }
+}
+
+void mg_logger::registerCallback(void (*cb)(int, const char*)) {
+    if (m_statusQueue) {
+        m_statusQueue->setCallback(cb);
     }
 }
 
@@ -113,6 +132,10 @@ void mg_logger_debug(int debug) {
 
 void mg_logger_release() {
     g_logger.stop();
+}
+
+void mg_logger_register_callback(void (*cb)(int, const char*)) {
+    g_logger.registerCallback(cb);
 }
 
 } // extern "C"

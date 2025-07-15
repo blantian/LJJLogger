@@ -6,6 +6,7 @@
 #include "sdl_inc_internal_android.h"
 
 static JavaVM *g_jvm;
+static JNIEnv* g_env;
 
 static pthread_key_t g_thread_key;
 static pthread_once_t g_key_once = PTHREAD_ONCE_INIT;
@@ -185,7 +186,7 @@ JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM *vm, void *reserved)
         ALOGI("Failed to get JNIEnv");
         return JNI_ERR;
     }
-    
+    g_env = env;
     // 然后检查API级别
     int apiLevel = SDL_Android_GetApiLevel();
     ALOGI("Android API Level: %d", apiLevel);

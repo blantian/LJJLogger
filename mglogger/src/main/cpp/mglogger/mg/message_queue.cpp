@@ -5,79 +5,121 @@
  * Time: 15:56
  *
  */
+#include <jni.h>
 #include "message_queue.h"
+#include "sdl_log.h"
+#include "sdl_android_jni.h"
 
 message_queue::message_queue(size_t cap)
-        : m_queue_mutex(SDL_CreateMutex()),
-          m_cv_not_empty(SDL_CreateCond()),
-          m_cv_not_full(SDL_CreateCond()),
+        : m_mutex(nullptr),
+          m_cond(nullptr),
           m_worker_tid(nullptr),
-          m_running(true),
+          m_stop(false),
           m_capacity(cap),
           m_callback(nullptr) {
-    m_worker_tid = SDL_CreateThreadEx(&_m_worker_thread, &workerEntry, this, "logan_status_worker");
-}
 
-message_queue::~message_queue() { stop(); }
-
-void message_queue::push(int code, const char *type) {
-    if (!m_running) return;
-    SDL_LockMutex(m_queue_mutex);
-    while (m_queue.size() >= m_capacity && m_running)
-        SDL_CondWait(m_cv_not_full, m_queue_mutex);
-
-    if (m_running) {
-        m_queue.push({code, type ? type : ""});
-        SDL_CondSignal(m_cv_not_empty);
+    m_mutex = SDL_CreateMutex();
+    if (!m_mutex) {
+        ALOGE("Failed to create message queue mutex");
     }
-    SDL_UnlockMutex(m_queue_mutex);
+    m_cond = SDL_CreateCond();
+
+    if (!m_cond) {
+        ALOGE("Failed to create message queue cond");
+    }
+
+    m_worker_tid = SDL_CreateThreadEx(&_m_worker_thread, &threadFunc, this, "logan_status_worker");
+
+    if (!m_worker_tid) {
+        ALOGE("Failed to create message queue worker thread");
+    }
 }
 
-void message_queue::setCallback(StatusCallback cb) {
-    SDL_LockMutex(m_queue_mutex);
-    m_callback = cb;
-    SDL_UnlockMutex(m_queue_mutex);
+message_queue::~message_queue() {
+    // 确保线程已退出
+    stop();
+    if (m_mutex) {
+        SDL_DestroyMutex(m_mutex);
+        m_mutex = nullptr;
+    }
+    if (m_cond) {
+        SDL_DestroyCond(m_cond);
+        m_cond = nullptr;
+    }
 }
+
 
 void message_queue::stop() {
-    SDL_LockMutex(m_queue_mutex);
-    m_running = false;
-    SDL_CondBroadcast(m_cv_not_empty);
-    SDL_CondBroadcast(m_cv_not_full);
-    SDL_UnlockMutex(m_queue_mutex);
-
+    SDL_LockMutex(m_mutex);
+    m_stop = true;
+    SDL_CondSignal(m_cond);  // 唤醒线程以退出
+    SDL_UnlockMutex(m_mutex);
     if (m_worker_tid) {
         SDL_WaitThread(m_worker_tid, nullptr);
         m_worker_tid = nullptr;
     }
-    if (m_queue_mutex) SDL_DestroyMutex(m_queue_mutex);
-    if (m_cv_not_empty) SDL_DestroyCond(m_cv_not_empty);
-    if (m_cv_not_full) SDL_DestroyCond(m_cv_not_full);
 }
 
-int message_queue::workerEntry(void *arg) {
-    static_cast<message_queue *>(arg)->loop();
-    return 0;
+void message_queue::push(int code, const char* type) {
+    SDL_LockMutex(m_mutex);
+    // 将事件添加到队列
+    bool wasEmpty = m_events.empty();
+    m_events.emplace(code, type ? std::string(type) : std::string());
+    if (wasEmpty) {
+        SDL_CondSignal(m_cond);
+    }
+    SDL_UnlockMutex(m_mutex);
 }
 
-void message_queue::loop() {
+void message_queue::setCallback(void (*callback)(int, const char*)) {
+    SDL_LockMutex(m_mutex);
+    m_callback = callback;
+    SDL_UnlockMutex(m_mutex);
+}
+
+
+int message_queue::threadFunc(void* data) {
+    auto* self = static_cast<message_queue*>(data);
+    return self ? self->run() : 0;
+}
+
+int message_queue::run() {
+    // 独立回调线程循环处理状态事件，并调用 Java 层回调
+    JNIEnv* env = nullptr;
+#if defined(__ANDROID__)
+//    env = static_cast<JNIEnv*>(SDL_JNI_GetJvm());
+#endif
+    SDL_LockMutex(m_mutex);
     while (true) {
-        LoganStatus st;
-        SDL_LockMutex(m_queue_mutex);
-        while (m_queue.empty() && m_running)
-            SDL_CondWait(m_cv_not_empty, m_queue_mutex);
-
-        if (!m_running && m_queue.empty()) {
-            SDL_UnlockMutex(m_queue_mutex);
+        while (!m_stop && m_events.empty()) {
+            SDL_CondWait(m_cond, m_mutex);
+        }
+        if (m_stop && m_events.empty()) {
+            SDL_UnlockMutex(m_mutex);
             break;
         }
-        st = std::move(m_queue.front());
-        m_queue.pop();
-        SDL_CondSignal(m_cv_not_full);
-        SDL_UnlockMutex(m_queue_mutex);
-
-        // 调用回调
-        if (m_callback) m_callback(st.code, st.type.c_str());
+        // 取出一个事件进行处理
+        StatusEvent event = m_events.front();
+        m_events.pop();
+        SDL_UnlockMutex(m_mutex);
+        // 调用 Java LoganCallback.onStatus 回调（通过J4A）
+//        if (env) {
+//            J4AC_LoganCallback__onStatus__withCString(env, event.code, event.type.c_str());
+//        }
+        // 如果设置了本地回调函数，调用本地回调
+        if (m_callback) {
+            m_callback(event.code, event.type.c_str());
+        }
+        SDL_LockMutex(m_mutex);
     }
+    // 分离 Java 线程（Detach），清理 JNI 环境
+//    if (env) {
+//        JavaVM* jvm = nullptr;
+//        env->GetJavaVM(&jvm);
+//        if (jvm) {
+//            jvm->DetachCurrentThread();
+//        }
+//    }
+    return 0;
 }
 
