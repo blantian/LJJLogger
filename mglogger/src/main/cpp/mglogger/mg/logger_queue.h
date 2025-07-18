@@ -21,37 +21,46 @@ extern "C" {
 }
 #endif
 
+constexpr size_t MAX_TAG_LENGTH = 64;
+constexpr size_t MAX_MSG_LENGTH = 1024;
+
+// 日志条目结构
 typedef struct Log {
-    long long tid;      // Thread ID
-    char tag[64];       // MGLog tag
-    char msg[1024];     // MGLog message
-    long long ts;       // Timestamp in milliseconds
+    long long tid;                   // 线程 ID
+    char tag[MAX_TAG_LENGTH];        // 日志标签
+    char msg[MAX_MSG_LENGTH];        // 日志内容
+    long long ts;                    // 时间戳（毫秒）
 } MGLog;
 
 namespace MGLogger {
+
+    // 日志来源类型，用于标识日志来自哪个 hook 函数
+    enum LogSourceType {
+        LOG_SRC_PRINT    = 0,
+        LOG_SRC_WRITE    = 1,
+        LOG_SRC_VPRINT   = 2,
+        LOG_SRC_BUF_WRITE= 3,
+        LOG_SRC_ASSERT   = 4
+    };
 
     class LoggerNode;
 
     class LoggerQueue {
     public:
-        explicit LoggerQueue(size_t m_maxCapacity = 1000);
-
+        explicit LoggerQueue(size_t maxCapacity = 1000);
         ~LoggerQueue();
 
-        void enqueue(MGLog *log, int tag = 0);
+        // 将日志加入队列（非阻塞；若队列已满则直接丢弃）
+        void enqueue(const MGLog *log, LogSourceType sourceType);
+        // 从队列取出一条日志；返回日志来源类型，若返回 -1 表示队列结束（中止）
+        int dequeue(MGLog *outLog);
 
-        int dequeue(MGLog *log);
+        inline size_t getSize() const { return logList.size(); }
+        inline bool isAborted() const { return abort_request != 0; }
 
-        inline int getSize() {
-            return logList.size();
-        }
-
-        inline bool isAbort() {
-            return (abort_request != 0);
-        }
-
+        // 中止队列（通知等待的消费者线程退出）
         void abort();
-
+        // 清空队列中剩余的日志
         void clear();
 
     private:
@@ -71,9 +80,9 @@ namespace MGLogger {
         ~LoggerNode() = default;
 
     private:
-        MGLog log{};
-        friend LoggerQueue;
-        int tag = 0; // log tag, 0: print, 1: write, 2: vprint, 3: buf_write, 4: assert
+        MGLog log;
+        LogSourceType source;                // 日志来源类型
+        friend class LoggerQueue;
     };
 }
 

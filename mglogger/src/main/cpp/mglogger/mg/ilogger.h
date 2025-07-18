@@ -16,6 +16,8 @@ namespace MGLogger {
 
         virtual int dequeue(MGLog *log) = 0;
 
+        virtual void stop() = 0;
+
     };
 }
 
