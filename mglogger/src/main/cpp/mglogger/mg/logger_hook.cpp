@@ -15,11 +15,12 @@
 namespace MGLogger {
 
     LoggerHook::LoggerHook() : m_loggerQueue(std::make_shared<LoggerQueue>(1000)) {
-        ALOGD("LoggerHook() called %s", __func__);
+        ALOGD("%s constructor", __func__);
         s_instance = this;
     }
 
     LoggerHook::~LoggerHook() {
+        ALOGD("%s down", __func__);
         m_loggerQueue->abort();
         m_loggerQueue->clear();
     }
@@ -27,9 +28,8 @@ namespace MGLogger {
     LoggerHook *LoggerHook::s_instance = nullptr;
 
     void LoggerHook::init() {
-        ALOGD("LoggerHook::init() called, %s", __func__);
+        ALOGD("LoggerHook::%s called", __func__);
         if (orig_log_print || orig_log_write || orig_log_buf_write || orig_log_vprint) {
-            ALOGD("LoggerHook::init() already initialized, skipping");
             return;
         }
 
@@ -85,7 +85,8 @@ namespace MGLogger {
     int LoggerHook::hookLogWrite(int prio, const char *tag, const char *buf) {
         MGLog log{};
         log.tid = my_tid();
-        log.tag = tag ? tag : "unknown";
+        strncpy(log.tag, tag ? tag : "unknown", sizeof(log.tag) - 1);
+        log.tag[sizeof(log.tag) - 1] = '\0';
         strncpy(log.msg, buf ? buf : "", sizeof(log.msg) - 1);
         log.msg[sizeof(log.msg) - 1] = '\0';
         log.ts = getCurrentTimeMillis();
@@ -115,7 +116,8 @@ namespace MGLogger {
         va_end(ap);
         MGLog log{};
         log.tid = my_tid();
-        log.tag = tag ? tag : "unknown";
+        strncpy(log.tag, tag ? tag : "unknown", sizeof(log.tag) - 1);
+        log.tag[sizeof(log.tag) - 1] = '\0';
         strncpy(log.msg, msgBuf, sizeof(log.msg) - 1);
         log.msg[sizeof(log.msg) - 1] = '\0';
         log.ts = getCurrentTimeMillis();
@@ -142,7 +144,8 @@ namespace MGLogger {
         vsnprintf(msgBuf, sizeof(msgBuf), fmt, ap);
         MGLog log{};
         log.tid = my_tid();
-        log.tag = tag ? tag : "unknown";
+        strncpy(log.tag, tag ? tag : "unknown", sizeof(log.tag) - 1);
+        log.tag[sizeof(log.tag) - 1] = '\0';
         strncpy(log.msg, msgBuf, sizeof(log.msg) - 1);
         log.msg[sizeof(log.msg) - 1] = '\0';
         log.ts = getCurrentTimeMillis();
@@ -163,25 +166,29 @@ namespace MGLogger {
 #if OPEN_BUF_WRITE
 
     int LoggerHook::hookLogBufWrite(int bufID, int prio, const char *tag, const char *text) {
-        MGLog log{};
-        log.tid = my_tid();
-        log.tag = tag ? tag : "unknown";
-        strncpy(log.msg, text ? text : "", sizeof(log.msg) - 1);
-        log.msg[sizeof(log.msg) - 1] = '\0';
-        log.ts = getCurrentTimeMillis();
+        if (text) {
+            MGLog log{};
+            log.tid = my_tid();
+            strncpy(log.tag, tag ? tag : "unknown", sizeof(log.tag) - 1);
+            log.tag[sizeof(log.tag) - 1] = '\0';
+            strncpy(log.msg, text, sizeof(log.msg) - 1);
+            log.msg[sizeof(log.msg) - 1] = '\0';
+            log.ts = getCurrentTimeMillis();
 
-        static thread_local bool reentry = false;
-        if (!reentry && orig_log_buf_write) {
-            reentry = true;  // 防止调试日志再进这里
-            char dbg[512];
-            snprintf(dbg, sizeof(dbg),
-                     "hookLogBufWrite: bufID=%d prio=%d tag=%s tid=%lld text=%s",
-                     bufID, prio, log.tag,
-                     (long long) my_tid(), log.msg);
-            // 用 MAIN 缓冲区；0 == LOG_ID_MAIN
-            orig_log_buf_write(0 /*LOG_ID_MAIN*/,
-                               ANDROID_LOG_DEBUG, LOG_BUF_WRITE, dbg);
-            reentry = false;
+#if DEBUG_LOG
+            static thread_local bool reentry = false;
+            if (!reentry && orig_log_buf_write) {
+                reentry = true;  // 防止调试日志再进这里
+                char dbg[512];
+                snprintf(dbg, sizeof(dbg),
+                         "tag=%s tid=%lld log=%s",
+                         log.tag, (long long) my_tid(), log.msg);
+                // 用 MAIN 缓冲区；0 == LOG_ID_MAIN
+                orig_log_buf_write(0 /*LOG_ID_MAIN*/,
+                                   ANDROID_LOG_DEBUG, LOG_BUF_WRITE, dbg);
+                reentry = false;
+            }
+#endif
         }
 
         int ret = 0;

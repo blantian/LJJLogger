@@ -4,8 +4,6 @@
  * Date： 2025/7/11
  * Time： 15:16
  *
- * A simple single-threaded task queue used to serialize
- * access to clogan APIs. All public methods are thread-safe.
  */
 
 #include "logger_queue.h"
@@ -28,6 +26,7 @@ namespace MGLogger {
 
     LoggerQueue::~LoggerQueue() {
         SDL_LockMutex(m_mutex);
+        abort();  // 确保队列停止
         clear();
         SDL_UnlockMutex(m_mutex);
         // 销毁互斥锁和条件变量
@@ -64,7 +63,7 @@ namespace MGLogger {
         SDL_LockMutex(m_mutex);
         // 等待直到有日志可用
         while (logList.empty() && !abort_request) {
-            SDL_CondWait(m_cond, m_mutex);
+            SDL_CondWaitTimeout(m_cond, m_mutex, 20); // 等待10毫秒
         }
         // 如果收到停止信号且队列已空，返回-1
         if (abort_request && logList.empty()) {

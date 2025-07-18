@@ -126,8 +126,8 @@ namespace MGLogger {
             SDL_UnlockMutex(m_mutex);
             return -1;
         }
-        if (log->tag == nullptr || log->tag[0] == '\0') {
-            log->tag = "default";
+        if (log->tag[0] == '\0') {
+            strncpy(log->tag, "default", sizeof(log->tag) - 1);
         }
         if (log->ts <= 0) {
             log->ts = static_cast<long long>(time(nullptr)) * 1000LL;

@@ -5,16 +5,13 @@
 #ifndef MGLOGGER_LOGGER_HOOK_H
 #define MGLOGGER_LOGGER_HOOK_H
 
-#define OPEN_PRINT 0
-#define OPEN_WRITE 0
-#define OPEN_VPRINT 0
-#define OPEN_BUF_WRITE 1
 
 #include <unistd.h>
 #include "logger_queue.h"
 #include <memory>
 #include "ilogger.h"
 #include <android/log.h>
+#include "logger_config.h"
 
 #ifdef __cplusplus
 extern "C" {

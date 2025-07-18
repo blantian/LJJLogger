@@ -22,8 +22,8 @@ extern "C" {
 #endif
 
 typedef struct Log {
-    long long tid;            // Thread ID
-    const char *tag;    // MGLog tag
+    long long tid;      // Thread ID
+    char tag[64];       // MGLog tag
     char msg[1024];     // MGLog message
     long long ts;       // Timestamp in milliseconds
 } MGLog;
