@@ -34,21 +34,6 @@ namespace MGLogger {
                        const char *key16,
                        const char *iv16) {
         // 初始化 CLogan 环境，根据配置决定是否使用钩子线程
-        if (log_cache_s == 1) {
-            // 使用 Hook 方式拦截日志（在当前进程）
-            loggerHook = std::make_shared<LoggerHook>();
-            // 创建并启动后台日志消费线程
-            m_worker_tid = createEnqueueTh();
-            if (!m_worker_tid) {
-                ALOGE("MGLogger::init - Failed to create logger thread");
-                return MG_ERROR;
-            }
-            // 安装日志钩子
-            loggerHook->init();
-        } else {
-            // TODO: 使用独立进程记录日志的实现
-        }
-        // 初始化 CLogan 日志库
         SDL_LockMutex(m_mutex);
         int result = clogan_init(cache_path ? cache_path : "",
                                  dir_path ? dir_path : "",
@@ -56,6 +41,35 @@ namespace MGLogger {
                                  key16 ? key16 : "",
                                  iv16 ? iv16 : "");
         SDL_UnlockMutex(m_mutex);
+        if (result != CLOGAN_INIT_SUCCESS_MMAP) {
+            ALOGE("MGLogger::init - CLogan initialization failed (code=%d)", result);
+            return result;
+        } else {
+            int code = 0;
+            ALOGD("MGLogger::init - CLogan initialized successfully (code=%d)", result);
+            code = clogan_open(MG_LOGGER_LOG);
+            ALOGD("MGLogger::init - CLogan opened logan.bin (code=%d)", code);
+            clogan_flush();
+            code = clogan_write(0, "MGLogger initialized", 0, "MGLogger", getpid(), 1);
+            if (code == CLOGAN_WRITE_SUCCESS) {
+                ALOGE("MGLogger::init - Write initial log success (code=%d)", code);
+            }
+
+            if (log_cache_s == 1) {
+                // 使用 Hook 方式拦截日志（在当前进程）
+                loggerHook = std::make_shared<LoggerHook>();
+                // 创建并启动后台日志消费线程
+                m_worker_tid = createEnqueueTh();
+                if (!m_worker_tid) {
+                    ALOGE("MGLogger::init - Failed to create logger thread");
+                    return MG_ERROR;
+                }
+                // 安装日志钩子
+                loggerHook->init();
+            } else {
+                // TODO: 使用独立进程记录日志的实现
+            }
+        }
         return result;
     }
 
@@ -66,7 +80,7 @@ namespace MGLogger {
     }
 
     int MGLogger::threadFunc(void *arg) {
-        auto self = static_cast<MGLogger*>(arg);
+        auto self = static_cast<MGLogger *>(arg);
         ALOGI("MGLogger::threadFunc - Logger thread started");
         int ret = self->run();
         ALOGI("MGLogger::threadFunc - Logger thread exiting (ret=%d)", ret);
@@ -77,8 +91,9 @@ namespace MGLogger {
     int MGLogger::run() {
         ALOGD("MGLogger::run - Entering log consumption loop");
         MGLog logEntry;
-        while (true) {
+        while (running) {
             // 阻塞等待获取一条日志
+            ALOGD("MGLogger::run - Waiting for log entry (running=%d)", running);
             int sourceType = loggerHook->dequeue(&logEntry);
             if (sourceType < 0) {
                 // 返回 -1 表示队列已中止且无日志，退出循环
@@ -86,10 +101,13 @@ namespace MGLogger {
             }
             // 写入获取的日志到持久化存储（CLogan）
             int writeRet = write(&logEntry);
-            if (writeRet < 0) {
+            if (writeRet == CLOGAN_WRITE_SUCCESS) {
+                ALOGI("MGLogger::run - Log written successfully (tid=%lld, tag=%s, writeRet=%d)",
+                      logEntry.tid, logEntry.tag, writeRet);
+            } else {
                 ALOGE("MGLogger::run - Failed to write log (tid=%lld, tag=%s, writeRet=%d)",
                       logEntry.tid, logEntry.tag, writeRet);
-                // 写入失败，仅记录错误，不中断循环，继续处理下一条
+                //todo 处理写入失败的情况,暂时忽略
             }
         }
         // 所有剩余日志处理完毕后，刷新缓存数据到文件
@@ -160,7 +178,8 @@ namespace MGLogger {
     }
 
     void MGLogger::stop() {
-        // 发出停止信号，让日志线程优雅退出
+        ALOGI("MGLogger::stop - Stopping logger");
+        flush();
         if (loggerHook) {
             loggerHook->stop();
         }
@@ -169,8 +188,14 @@ namespace MGLogger {
             m_worker_tid = nullptr;
         }
         // 销毁同步资源
-        if (m_mutex) { SDL_DestroyMutex(m_mutex); m_mutex = nullptr; }
-        if (m_cond)  { SDL_DestroyCond(m_cond);  m_cond  = nullptr; }
+        if (m_mutex) {
+            SDL_DestroyMutex(m_mutex);
+            m_mutex = nullptr;
+        }
+        if (m_cond) {
+            SDL_DestroyCond(m_cond);
+            m_cond = nullptr;
+        }
         // 释放 LoggerHook（此时其析构会清理队列）
         loggerHook.reset();
     }

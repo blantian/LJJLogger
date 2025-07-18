@@ -40,7 +40,7 @@ namespace MGLogger {
         env->ReleaseStringUTFChars(encrypt_key16, encrypt_key16_);
         env->ReleaseStringUTFChars(encrypt_iv16, encrypt_iv16_);
 
-        return 0;
+        return code;
     }
 
     extern "C"

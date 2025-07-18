@@ -17,6 +17,8 @@
 #define MG_OK 0
 #define MG_ERROR -1
 
+#define MG_LOGGER_LOG "MGLogger.zip" // 日志文件名
+
 
 
 #define LOG_READ_TIME_OUT 20 // ms
