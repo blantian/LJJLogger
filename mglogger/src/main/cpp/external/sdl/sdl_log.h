@@ -10,6 +10,19 @@
 
 #include <android/log.h>
 
+#define LOG_PRINT "__android_log_print"
+#define LOG_WRITE "__android_log_write"
+#define LOG_BUF_WRITE "__android_log_buf_write"
+#define LOG_VPRINT "__android_log_vprint"
+#define LOG_ASSERT "__android_log_assert"
+
+
+#define PRINT 0
+#define WRITE 1
+#define BUF_WRITE 2
+#define VPRINT 3
+#define ASSERT 4
+
 #define MGLOGGER_LOG_UNKNOWN     ANDROID_LOG_UNKNOWN
 #define MGLOGGER_LOG_DEFAULT     ANDROID_LOG_DEFAULT
 

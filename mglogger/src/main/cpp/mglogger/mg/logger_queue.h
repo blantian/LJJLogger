@@ -9,39 +9,72 @@
 #ifndef MGLOGGER_LOGGER_QUEUE_H
 #define MGLOGGER_LOGGER_QUEUE_H
 
-#include <queue>
-#include <mutex>
-#include "sdl_mutex.h"
+#include "list"
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+#include "sdl_log.h"
 #include "sdl_thread.h"
-#include <condition_variable>
-#include <functional>
-#include <future>
-#include <thread>
+#include "sdl_mutex.h"
+#ifdef __cplusplus
+}
+#endif
 
-class logger_queue {
-public:
-    explicit logger_queue(size_t maxCapacity = 500);
+typedef struct Log {
+    long long tid;            // Thread ID
+    const char *tag;    // MGLog tag
+    char msg[1024];     // MGLog message
+    long long ts;       // Timestamp in milliseconds
+} MGLog;
 
-    ~logger_queue();
+namespace MGLogger {
 
-    void enqueue(const std::function<void()> &task);
+    class LoggerNode;
 
-    void stop();
+    class LoggerQueue {
+    public:
+        explicit LoggerQueue(size_t m_maxCapacity = 1000);
 
-private:
-    // 禁止拷贝
-    logger_queue(const logger_queue&) = delete;
-    logger_queue& operator=(const logger_queue&) = delete;
-    static int threadFunc(void* arg);   // SDL 线程入口
-    int run();
-private:
-    SDL_mutex* m_mutex;
-    SDL_cond* m_cond;
-    std::queue<std::function<void()>> m_tasks;
-    const size_t m_maxCapacity;
-    bool m_stop;
-    SDL_Thread *m_worker_tid{nullptr};
-    SDL_Thread m_worker{};
-};
+        ~LoggerQueue();
+
+        void enqueue(MGLog *log, int tag = 0);
+
+        int dequeue(MGLog *log);
+
+        inline int getSize() {
+            return logList.size();
+        }
+
+        inline bool isAbort() {
+            return (abort_request != 0);
+        }
+
+        void abort();
+
+        void clear();
+
+    private:
+
+
+    private:
+        SDL_mutex *m_mutex{nullptr};
+        SDL_cond *m_cond{nullptr};
+        std::list<std::shared_ptr<LoggerNode>> logList;
+        const size_t m_maxCapacity;
+        int abort_request{0};
+    };
+
+    class LoggerNode {
+    public:
+        LoggerNode() = default;
+        ~LoggerNode() = default;
+
+    private:
+        MGLog log{};
+        friend LoggerQueue;
+        int tag = 0; // log tag, 0: print, 1: write, 2: vprint, 3: buf_write, 4: assert
+    };
+}
 
 #endif //MGLOGGER_LOGGER_QUEUE_H

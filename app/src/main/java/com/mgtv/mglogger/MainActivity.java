@@ -46,7 +46,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onPause() {
         super.onPause();
-        MGLogger.w("MainActivity onPause", 3);
+//        MGLogger.w("MainActivity onPause", 3);
         MGLogger.flush();
     }
 

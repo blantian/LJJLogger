@@ -174,7 +174,7 @@ int SDL_Android_GetApiLevel()
 
 JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM *vm, void *reserved)
 {
-    ALOGI("AVEngine JNI_OnLoad called");
+    ALOGI("MGLogger JNI_OnLoad called");
 
     int retval;
     JNIEnv* env = NULL;
@@ -186,10 +186,10 @@ JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM *vm, void *reserved)
         ALOGI("Failed to get JNIEnv");
         return JNI_ERR;
     }
-    g_env = env;
-    // 然后检查API级别
-    int apiLevel = SDL_Android_GetApiLevel();
-    ALOGI("Android API Level: %d", apiLevel);
+//    g_env = env;
+//    // 然后检查API级别
+//    int apiLevel = SDL_Android_GetApiLevel();
+//    ALOGI("Android API Level: %d", apiLevel);
 
     retval = J4A_LoadAll__catchAll(env);
     JNI_CHECK_RET(retval == 0, env, NULL, NULL, -1);
@@ -197,6 +197,3 @@ JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM *vm, void *reserved)
     return JNI_VERSION_1_4;
 }
 
-JNIEXPORT void JNICALL JNI_OnUnload(JavaVM *jvm, void *reserved)
-{
-}

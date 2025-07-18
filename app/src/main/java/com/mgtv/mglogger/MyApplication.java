@@ -24,7 +24,7 @@ public class MyApplication extends Application {
         path = Environment.getExternalStorageDirectory().getAbsolutePath()
                 + File.separator + "mgtv" + File.separator + FILE_NAME;
         initLogan();
-        MGLogger.w("TAG",1);
+//        MGLogger.w("TAG",1);
         Log.i(TAG, "Logan path: " + path);
     }
 
@@ -67,7 +67,7 @@ public class MyApplication extends Application {
 //        Logan.setOnLoganProtocolStatus(new OnLoganProtocolStatus() {
 //            @Override
 //            public void loganProtocolStatus(String cmd, int code) {
-//                Log.d(TAG, "clogan > cmd : " + cmd + " | " + "code : " + code);
+//                MGLog.d(TAG, "clogan > cmd : " + cmd + " | " + "code : " + code);
 //            }
 //        });
     }

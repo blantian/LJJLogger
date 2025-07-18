@@ -78,7 +78,7 @@ public object Logger : CoroutineScope {
 
 
     private fun ensureReady() {
-        check(isReady) { "mg_logger is not initialized or has been closed" }
+        check(isReady) { "logger is not initialized or has been closed" }
     }
 
 

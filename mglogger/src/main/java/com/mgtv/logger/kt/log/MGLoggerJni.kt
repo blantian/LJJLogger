@@ -1,5 +1,6 @@
 package com.mgtv.logger.kt.log
 
+import androidx.annotation.Keep
 import com.mgtv.logger.kt.common.MGLoggerStatus
 import com.mgtv.logger.kt.i.ILoggerProtocol
 import com.mgtv.logger.kt.i.ILoggerStatus
@@ -178,6 +179,11 @@ public object MGLoggerJni : ILoggerProtocol {
             }
             loggerStatus?.loggerStatus(cmd, code)
         }
+    }
+
+    @Keep
+    internal fun onLoggerStatus(code: Int,cmd: String) {
+        loggerStatusCode(cmd, code)
     }
 
     internal fun onLogcatCollectorFail() {

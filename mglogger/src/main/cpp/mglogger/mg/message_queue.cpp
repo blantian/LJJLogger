@@ -7,8 +7,10 @@
  */
 #include <jni.h>
 #include "message_queue.h"
+extern "C"{
 #include "sdl_log.h"
 #include "sdl_android_jni.h"
+}
 
 message_queue::message_queue(size_t cap)
         : m_mutex(nullptr),

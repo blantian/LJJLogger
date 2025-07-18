@@ -54,8 +54,8 @@ set(SOURCE_FILES
         mglogger/mg/logger_fork_read.cpp
         mglogger/mg/logger_hook.cpp
         mglogger/mg/logger_queue.cpp
-        mglogger/mg/mg_logger.cpp
         mglogger/mg/message_queue.cpp
+        mglogger/mg/mglogger.cpp
 )
 
 set(SRC_J4A
@@ -247,6 +247,7 @@ add_library(mglogger SHARED
         ${SRC_J4A}
         ${SRC_SDL}
         jni/mglogger_jni.c
+        jni/logger_jni.cpp
 )
 target_link_libraries(mglogger
         xhook
