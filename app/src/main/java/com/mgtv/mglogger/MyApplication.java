@@ -52,7 +52,7 @@ public class MyApplication extends Application {
                 .build();
         MGLogger.init(loggerConfig, (cmd, code) -> {
             Log.i(TAG, "Logger::" + cmd + " | " + "code : " + code);
-//            readThread = AssetReader.logTextFileAsync(this); // 默认路径
+            readThread = AssetReader.logTextFileAsync(this); // 默认路径
         });
 
 //        LoganConfig config = new LoganConfig.Builder()

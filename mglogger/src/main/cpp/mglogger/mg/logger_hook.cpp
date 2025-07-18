@@ -45,11 +45,13 @@ void LoggerHook::init() {
 #endif
 
 #if OPEN_PRINT
-    if (xhook_register(".*\\.so$", LOG_PRINT, (void*)hookLogPrint, (void**)&orig_log_print) != 0) {
+    if (SDL_Android_GetApiLevel() <= ANDROID_API_LEVEL) {
+        if (xhook_register(".*\\.so$", LOG_PRINT, (void*)hookLogPrint, (void**)&orig_log_print) != 0) {
             ALOGE("LoggerHook::init - Failed to hook __android_log_print");
         } else {
             ALOGD("LoggerHook::init - Hooked __android_log_print");
         }
+    }
 #endif
 #if OPEN_VPRINT
     if (xhook_register(".*\\.so$", LOG_VPRINT, (void*)hookLogVPrint, (void**)&orig_log_vprint) != 0) {
@@ -144,7 +146,6 @@ int LoggerHook::hookLogWrite(int prio, const char *tag, const char *buf) {
 #endif
 
 #if OPEN_PRINT
-
 int LoggerHook::hookLogPrint(int prio, const char *tag, const char *fmt, ...) {
         char msgBuf[1024];
         va_list args;

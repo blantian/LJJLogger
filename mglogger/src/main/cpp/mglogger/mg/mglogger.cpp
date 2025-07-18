@@ -8,6 +8,7 @@
 #pragma once
 
 #include "mglogger.h"
+#include "sdl_android_jni.h"
 
 namespace MGLogger {
 
@@ -34,6 +35,17 @@ namespace MGLogger {
                        const char *key16,
                        const char *iv16) {
         // 初始化 CLogan 环境，根据配置决定是否使用钩子线程
+
+        ALOGD("MGLogger::init - Initializing MGLogger with cache_path=%s, dir_path=%s, max_file=%d key16=%s, iv16=%s in Android API level %d",
+              cache_path ? cache_path : "null",
+              dir_path ? dir_path : "null",
+              max_file, key16 ? key16 : "null", iv16 ? iv16 : "null", SDL_Android_GetApiLevel());
+
+        if (m_mutex == nullptr || m_cond == nullptr) {
+            ALOGE("MGLogger::init - Mutex or Cond not initialized");
+            return MG_ERROR;
+        }
+
         SDL_LockMutex(m_mutex);
         int result = clogan_init(cache_path ? cache_path : "",
                                  dir_path ? dir_path : "",
@@ -64,7 +76,7 @@ namespace MGLogger {
                     ALOGE("MGLogger::init - Failed to create logger thread");
                     return MG_ERROR;
                 }
-                // 安装日志钩子
+                // 初始化日志钩子
                 loggerHook->init();
             } else {
                 // TODO: 使用独立进程记录日志的实现

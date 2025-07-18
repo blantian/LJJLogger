@@ -12,7 +12,7 @@ import java.io.InputStreamReader;
 public class AssetReader {
 
     private static final String TAG = "AssetReader";
-    private static final String DEFAULT_PATH = "txt/三国演义.txt";
+    private static final String DEFAULT_PATH = "txt/西游记.txt";
     private static final long   INTERVAL_MS  = 500L;
 
     /** 在新线程读取并打印 */

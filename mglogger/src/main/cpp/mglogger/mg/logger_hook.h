@@ -20,6 +20,7 @@ extern "C" {
 #include "sdl_mutex.h"
 #include "sdl_thread.h"
 #include "sdl_log.h"
+#include "sdl_android_jni.h"
 #ifdef __cplusplus
 }
 #endif
