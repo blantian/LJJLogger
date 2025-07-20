@@ -16,9 +16,10 @@ using namespace MGLogger;
 
 LoggerHook *LoggerHook::s_instance = nullptr;
 
-LoggerHook::LoggerHook() : m_loggerQueue(std::make_shared<LoggerQueue>(1000)) {
+LoggerHook::LoggerHook() {
     ALOGD("LoggerHook::LoggerHook - initialized");
     s_instance = this;
+    m_loggerQueue = std::make_shared<LoggerQueue>(500);
 }
 
 LoggerHook::~LoggerHook() {
@@ -27,6 +28,7 @@ LoggerHook::~LoggerHook() {
         m_loggerQueue->abort();
         m_loggerQueue->clear();
     }
+    m_loggerQueue = nullptr;
     s_instance = nullptr;
 }
 

@@ -13,21 +13,9 @@ namespace MGLogger {
         this->what = what;
     }
 
-    MGMessage::MGMessage(int what, void *obj, int length) {
+    MGMessage::MGMessage(int what, const char *cmd) {
         this->what = what;
-        this->obj = malloc(length);
-        memcpy(this->obj, obj, length);
-        this->freeFunc = [this]() {
-            if (this->obj != nullptr) {
-                free(this->obj);
-            }
-        };
-    }
-
-    MGMessage::~MGMessage() {
-        if (obj != nullptr) {
-            freeFunc();
-        }
+        this->msg = cmd ? std::string(cmd) : "";
     }
 
     MessageQueue::MessageQueue() {
@@ -52,12 +40,12 @@ namespace MGLogger {
         sendMessage(msg);
     }
 
-    void MessageQueue::sendMessage(int what, void *obj, int length) {
-        std::shared_ptr<MGMessage> msg = std::make_shared<MGMessage>(what, obj, length);
+    void MessageQueue::sendMessage(int what, const char *cmd) {
+        std::shared_ptr<MGMessage> msg = std::make_shared<MGMessage>(what,cmd);
         sendMessage(msg);
     }
 
-    void MessageQueue::sendMessage(std::shared_ptr<MGMessage> msg) {
+    void MessageQueue::sendMessage(const std::shared_ptr<MGMessage>& msg) {
         SDL_LockMutex(mutex);
         sendMessageLocked(msg);
         SDL_UnlockMutex(mutex);
@@ -95,7 +83,7 @@ namespace MGLogger {
         SDL_UnlockMutex(mutex);
     }
 
-    void MessageQueue::sendMessageLocked(std::shared_ptr<MGMessage> msg) {
+    void MessageQueue::sendMessageLocked(const std::shared_ptr<MGMessage>& msg) {
         if (abort_request)
             return;
 

@@ -51,11 +51,13 @@ set(SOURCE_FILES
         mglogger/logan/base_util.c
         mglogger/logan/console_util.c
         mglogger/logan/main.c
+        mglogger/mg/ilogger.cpp
         mglogger/mg/logger_fork_read.cpp
         mglogger/mg/logger_hook.cpp
+        mglogger/mg/logger_fork.cpp
         mglogger/mg/logger_queue.cpp
         mglogger/mg/message_queue.cpp
-        mglogger/mg/mglogger.cpp
+        mglogger/mg/logger_core.cpp
 )
 
 set(SRC_J4A

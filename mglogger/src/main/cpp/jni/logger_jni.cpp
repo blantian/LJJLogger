@@ -3,7 +3,7 @@
 //
 
 #include "jni.h"
-#include "mglogger.h"
+#include "logger_core.h"
 #include "logger_fork_read.h"
 
 static JavaVM *g_vm = nullptr;

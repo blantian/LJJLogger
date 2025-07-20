@@ -8,6 +8,9 @@
 #define MG_LOGGER_VERSION "1.0.0"
 #define DEBUG_LOG 1
 
+#define LOGGER_TYPE_HOOK 0 // 使用 Hook 方式记录日志
+#define LOGGER_TYPE_FORK 1 // 使用 Logan 方式记录日志
+
 #define OPEN_PRINT 1
 #define OPEN_WRITE 0
 #define OPEN_VPRINT 0

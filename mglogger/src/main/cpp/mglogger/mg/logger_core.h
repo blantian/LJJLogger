@@ -2,15 +2,18 @@
 // Created by sky blue on 2025/7/17.
 //
 
-#ifndef MGLOGGER_MGLOGGER_H
-#define MGLOGGER_MGLOGGER_H
+#ifndef MGLOGGER_LOGGER_CORE_H
+#define MGLOGGER_LOGGER_CORE_H
 
 
-#include "logger_hook.h"
 #include <asm/unistd-common.h>
 #include <string>
 #include "mglogger/logan/clogan_core.h"  // CLogan API header
 #include "clogan_status.h"
+#include "message_queue.h"
+#include "ilogger.h"
+#include "logger_config.h"
+#include "logger_listener.h"
 
 namespace MGLogger {
 
@@ -44,16 +47,32 @@ namespace MGLogger {
 
         int run();
 
+        static int messageThreadFunc(void *arg);
+
+        int runMessageThread();
+
+        virtual void SetOnEventListener(std::shared_ptr<OnEventListener> listener);
+
     private:
-        SDL_Thread * createEnqueueTh();
+        SDL_Thread *createEnqueueTh();
+
+        SDL_Thread *createMessageTh();
+
+        void handleMessage(const std::shared_ptr<MGMessage> &msg);
+
     private:
-        std::shared_ptr<LoggerHook> loggerHook{nullptr};
+        std::shared_ptr<ILogger> mLogger{nullptr};
+        std::shared_ptr<MessageQueue> _listener{nullptr};
+        std::shared_ptr<OnEventListener> _eventListener{nullptr};
         SDL_Thread *m_worker_tid{nullptr};
         SDL_Thread _m_worker_thread{};
+        SDL_Thread *m_message_tid{nullptr};
+        SDL_Thread _m_message_thread{};
         SDL_mutex *m_mutex{nullptr};
         SDL_cond *m_cond{nullptr};
         bool running{false};
+        bool alive{false};
     };
 }
 
-#endif //MGLOGGER_MGLOGGER_H
+#endif //MGLOGGER_LOGGER_CORE_H

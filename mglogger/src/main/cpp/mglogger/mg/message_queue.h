@@ -24,16 +24,15 @@ namespace MGLogger {
 
     class MGMessage {
     public:
-        MGMessage(int what);
 
-        MGMessage(int what, void *obj,int length);
+        explicit MGMessage(int what);
 
-        ~MGMessage();
+        MGMessage(int what, const char *cmd);
+
+        ~MGMessage() = default;
 
         int what{0};
         std::string msg;
-        void *obj{nullptr};
-        std::function<void()> freeFunc;
     };
 
     class MessageQueue {
@@ -44,9 +43,9 @@ namespace MGLogger {
 
         void sendMessage(int what);
 
-        void sendMessage(int what, void *obj,int length);
+        void sendMessage(int what, const char *cmd);
 
-        void sendMessage(std::shared_ptr<MGMessage> msg);
+        void sendMessage(const std::shared_ptr<MGMessage>& msg);
 
         void removeMessage(int what);
 
@@ -57,7 +56,7 @@ namespace MGLogger {
         void abort();
 
     private:
-        void sendMessageLocked(std::shared_ptr<MGMessage> msg);
+        void sendMessageLocked(const std::shared_ptr<MGMessage>& msg);
 
         void removeMessageLocked(int what);
 
