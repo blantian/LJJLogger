@@ -52,6 +52,7 @@ namespace MGLogger {
             ALOGE("MGLogger::init - Failed to create MessageQueue");
             return MG_ERROR;
         }
+        _listener->start();
         // 创建消息处理线程
         m_message_tid = createMessageTh();
         if (!m_message_tid) {
@@ -65,10 +66,7 @@ namespace MGLogger {
                                  key16 ? key16 : "",
                                  iv16 ? iv16 : "");
         SDL_UnlockMutex(m_mutex);
-        if (result != CLOGAN_INIT_SUCCESS_MMAP) {
-            ALOGE("MGLogger::init - CLogan initialization failed (code=%d)", result);
-            return result;
-        } else {
+        if (result == CLOGAN_INIT_SUCCESS_MMAP || result == CLOGAN_INIT_SUCCESS_MEMORY) {
             int code = 0;
             ALOGD("MGLogger::init - CLogan initialized successfully (code=%d)", result);
             code = clogan_open(MG_LOGGER_LOG);
@@ -86,8 +84,22 @@ namespace MGLogger {
             }
             // 初始化日志钩子
             result = mLogger->init();
+        } else {
+            ALOGE("MGLogger::init - CLogan initialization failed (code=%d)", result);
+            return result;
         }
         return result;
+    }
+
+
+    void MGLogger::setBlackList(const std::list<std::string> &blackList) {
+        SDL_LockMutex(m_mutex);
+        if (mLogger) {
+            mLogger->setBlackList(blackList);
+        } else {
+            ALOGE("MGLogger::setBlackList - Logger not initialized, cannot set blacklist");
+        }
+        SDL_UnlockMutex(m_mutex);
     }
 
 
@@ -123,29 +135,52 @@ namespace MGLogger {
     int MGLogger::run() {
         ALOGD("MGLogger::run - Entering log consumption loop");
         MGLog logEntry;
+        mBatchBuf.reserve(BATCH_SIZE);          // 预分配一次即可
         while (running) {
             // 阻塞等待获取一条日志
-            ALOGD("MGLogger::run - Waiting for log entry (running=%d)", running);
             int sourceType = mLogger->dequeue(&logEntry);
             if (sourceType < 0) {
                 // 返回 -1 表示队列已中止且无日志，退出循环
                 break;
             }
-            // 写入获取的日志到持久化存储（CLogan）
-            int writeRet = write(&logEntry);
-            if (writeRet == CLOGAN_WRITE_SUCCESS) {
-                ALOGI("MGLogger::run - Log written successfully (tid=%lld, tag=%s, writeRet=%d)",
-                      logEntry.tid, logEntry.tag, writeRet);
-            } else {
-                ALOGE("MGLogger::run - Failed to write log (tid=%lld, tag=%s, writeRet=%d)",
-                      logEntry.tid, logEntry.tag, writeRet);
-                _listener->sendMessage(writeRet, "MGLogger::run - Failed to write log");
-                //todo 处理写入失败的情况,暂时忽略
+
+            mBatchBuf.emplace_back(logEntry);   // 放进批量容器
+            uint64_t now = nowMs(); // 获取当前时间戳（毫秒）
+            bool sizeLimit   = mBatchBuf.size() >= BATCH_SIZE;
+            bool timeExpired = now - mLastFlushTs >= FLUSH_INTERVAL_MS;
+            ALOGD("MGLogger::run - Log entry received (tid=%lld, tag=%s, sizeLimit=%d, timeExpired=%d)",
+                  logEntry.tid, logEntry.tag, sizeLimit, timeExpired);
+            // 写入获取的日志到持久化存储
+            if (sizeLimit || timeExpired) {
+                SDL_LockMutex(m_mutex);
+                for (auto &item : mBatchBuf) {
+                    int code = write(&item);
+                    if (code == CLOGAN_WRITE_SUCCESS) {
+                        ALOGI("MGLogger::run - Log written successfully (tid=%lld, tag=%s, writeRet=%d)",
+                              logEntry.tid, logEntry.tag, code);
+                    } else {
+                        ALOGE("MGLogger::run - Failed to write log (tid=%lld, tag=%s, writeRet=%d)",
+                              logEntry.tid, logEntry.tag, code);
+                        // todo 处理写入失败的情况,暂时忽略
+                    }
+                }
+                mBatchBuf.clear();
+                mLastFlushTs = now;
+                SDL_UnlockMutex(m_mutex);
             }
         }
+        SDL_LockMutex(m_mutex);
+        //处理残留日志
+        for (auto &item : mBatchBuf) {
+            write(&item);
+        }
+        mBatchBuf.clear();
+        mLastFlushTs = 0; // 更新最后刷新时间戳
+        SDL_UnlockMutex(m_mutex);
         // 所有剩余日志处理完毕后，刷新缓存数据到文件
         flush();
         running = false;
+        ALOGD("MGLogger::run - Logger thread exiting (running=%d)", running);
         return MG_OK;
     }
 
@@ -228,20 +263,23 @@ namespace MGLogger {
         // 判断日志是否来自主线程
         int is_main = (log->tid == getpid()) ? 1 : 0;
         // 写入日志到 CLogan（日志类型 flag=0 表示普通日志）
-        SDL_LockMutex(m_mutex);
         int code = clogan_write(0,
                                 log->msg,
                                 log->ts,
                                 const_cast<char *>(log->tag),
                                 log->tid,
                                 is_main);
-        SDL_UnlockMutex(m_mutex);
         return code;
     }
 
     int MGLogger::flush() {
         SDL_LockMutex(m_mutex);
         int code = clogan_flush();
+        if (code == CLOGAN_FLUSH_SUCCESS) {
+            ALOGI("MGLogger::flush - CLogan flush successful");
+        } else {
+            ALOGE("MGLogger::flush - CLogan flush failed (code=%d)", code);
+        }
         SDL_UnlockMutex(m_mutex);
         return code;
     }
@@ -277,7 +315,7 @@ namespace MGLogger {
             SDL_DestroyCond(m_cond);
             m_cond = nullptr;
         }
-        // 释放 LoggerHook（此时其析构会清理队列）
+        // 释放 LoggerHook
         mLogger.reset();
     }
 

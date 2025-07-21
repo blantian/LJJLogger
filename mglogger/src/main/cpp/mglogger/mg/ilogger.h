@@ -25,6 +25,7 @@ namespace MGLogger {
     class ILogger {
     public:
         static std::shared_ptr<ILogger> CreateLogger(int type);
+
         virtual int init() = 0;
 
         virtual void writeLog(MGLog *log, int tag) = 0;
@@ -35,7 +36,7 @@ namespace MGLogger {
 
         virtual void stop() = 0;
 
-        virtual void setBlackList(std::list<std::string> blackList) = 0;
+        virtual void setBlackList(const std::list<std::string> &blackList) = 0;
 
         // 工具函数：获取当前线程 ID
         static inline pid_t my_tid() {
@@ -45,6 +46,7 @@ namespace MGLogger {
             return (pid_t) syscall(SYS_gettid);
 #endif
         }
+
         // 工具函数：获取当前时间（毫秒）
         static inline long long getCurrentTimeMillis() {
 #if defined(CLOCK_REALTIME)
@@ -57,6 +59,7 @@ namespace MGLogger {
             return (long long) tv.tv_sec * 1000LL + tv.tv_usec / 1000;
 #endif
         }
+
         // 工具函数：获取当前进程（主线程）ID
         static inline pid_t my_pid() {
             return getpid();

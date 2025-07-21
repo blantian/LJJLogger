@@ -88,7 +88,7 @@ int LoggerHook::init() {
     return MG_OK;
 }
 
-void LoggerHook::setBlackList(const std::list<std::string> blackList) {
+void LoggerHook::setBlackList(const std::list<std::string> &blackList) {
     ALOGD("LoggerHook::setBlackList - setting black list");
     m_blackList.clear();
     m_blackList.insert(blackList.begin(), blackList.end());

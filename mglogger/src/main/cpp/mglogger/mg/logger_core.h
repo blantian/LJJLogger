@@ -14,8 +14,15 @@
 #include "ilogger.h"
 #include "logger_status.h"
 #include "logger_listener.h"
+#include "vector"
+
+#include <chrono>
+#include <cstdint>
 
 namespace MGLogger {
+
+    static constexpr size_t BATCH_SIZE = 64;          // 一批 64 条
+    static constexpr uint32_t FLUSH_INTERVAL_MS = 1000; // 或 1 秒
 
     class MGLogger {
     public:
@@ -43,6 +50,8 @@ namespace MGLogger {
 
         void stop();
 
+        void setBlackList(const std::list<std::string> &blackList);
+
         static int threadFunc(void *arg);
 
         int run();
@@ -60,9 +69,18 @@ namespace MGLogger {
 
         void handleMessage(const std::shared_ptr<MGMessage> &msg);
 
+        inline uint64_t nowMs() {
+            using namespace std::chrono;
+            return duration_cast<milliseconds>(
+                    steady_clock::now().time_since_epoch()
+            ).count();          // 单位：毫秒
+        }
+
     private:
         std::shared_ptr<ILogger> mLogger{nullptr};
         std::shared_ptr<MessageQueue> _listener{nullptr};
+        std::vector<MGLog> mBatchBuf;                     // 批量缓存
+        uint64_t mLastFlushTs{0};                         // 上次批量写入时间
         std::shared_ptr<OnEventListener> _eventListener{nullptr};
         SDL_Thread *m_worker_tid{nullptr};
         SDL_Thread _m_worker_thread{};

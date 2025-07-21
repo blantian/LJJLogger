@@ -41,7 +41,7 @@ int LoggerFork::init() {
 
 }
 
-void LoggerFork::setBlackList(const std::list<std::string> blackList) {
+void LoggerFork::setBlackList(const std::list<std::string> &blackList) {
     ALOGD("LoggerFork::setBlackList - setting black list");
     m_blackList.clear();
     m_blackList.insert(blackList.begin(), blackList.end());

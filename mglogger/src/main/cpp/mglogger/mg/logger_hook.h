@@ -47,7 +47,7 @@ namespace MGLogger {
         // 停止 Hook（中止队列消费）
         void stop() override;
 
-        void setBlackList(std::list<std::string> blackList) override;
+        void setBlackList(const std::list<std::string> &blackList) override;
 
     private:
 
