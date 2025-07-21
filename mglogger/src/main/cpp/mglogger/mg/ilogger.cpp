@@ -4,9 +4,11 @@
 
 #include "ilogger.h"
 #include "logger_hook.h"
+#include "logger_fork.h"
 
 using namespace MGLogger;
 std::shared_ptr<ILogger> ILogger::logger = nullptr;
+std::unordered_set<std::string> ILogger::m_blackList;
 
 std::shared_ptr<ILogger> ILogger::CreateLogger(const int type) {
     ALOGD("%s: create %d", __func__, type);
@@ -27,6 +29,15 @@ std::shared_ptr<ILogger> ILogger::CreateLogger(const int type) {
         case LOGGER_TYPE_FORK:
             // 使用 Logan 方式记录日志
             ALOGD("ILogger::CreateLogger - Creating CLoganLogger");
+            if (logger == nullptr) {
+                logger = std::make_shared<LoggerFork>();
+                if (!logger) {
+                    ALOGE("ILogger::CreateLogger - Failed to create LoggerFork");
+                    return nullptr;
+                }
+            } else {
+                ALOGD("ILogger::CreateLogger - LoggerFork already exists");
+            }
             break;
         default:
             ALOGE("ILogger::CreateLogger - Unknown logger type: %d", type);

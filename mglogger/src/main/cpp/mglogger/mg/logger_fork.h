@@ -10,7 +10,7 @@
 #define MGLOGGER_LOGGER_FORK_H
 
 #include "ilogger.h"
-#include "logger_config.h"
+#include "logger_status.h"
 
 using namespace MGLogger;
 
@@ -20,12 +20,14 @@ public:
 
     ~LoggerFork();
 
-    void init() override;
+    int init() override;
 
     int dequeue(MGLog *log) override;
 
     // 停止 Fork（中止队列消费）
     void stop() override;
+
+    void setBlackList(std::list<std::string> blackList) override;
 
 private:
     // 将日志加入队列

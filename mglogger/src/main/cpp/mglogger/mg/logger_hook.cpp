@@ -1,11 +1,9 @@
 /**
- * Description:
+ * Description: LoggerHook 类用于拦截 Android 日志输出
  * Created by lantian 
  * Date： 2025/7/4
  * Time： 23:58
  *
- * 1. 上层无感知切换
- * 2. 性能对比 ，压缩比对比
  *
  */
 
@@ -32,10 +30,10 @@ LoggerHook::~LoggerHook() {
     s_instance = nullptr;
 }
 
-void LoggerHook::init() {
+int LoggerHook::init() {
     ALOGD("LoggerHook::init - registering log hooks");
     if (orig_log_print || orig_log_write || orig_log_buf_write || orig_log_vprint) {
-        return;
+        return MG_OK;
     }
 
 #if OPEN_WRITE
@@ -48,7 +46,8 @@ void LoggerHook::init() {
 
 #if OPEN_PRINT
     if (SDL_Android_GetApiLevel() <= ANDROID_API_LEVEL) {
-        if (xhook_register(".*\\.so$", LOG_PRINT, (void*)hookLogPrint, (void**)&orig_log_print) != 0) {
+        if (xhook_register(".*\\.so$", LOG_PRINT, (void *) hookLogPrint,
+                           (void **) &orig_log_print) != 0) {
             ALOGE("LoggerHook::init - Failed to hook __android_log_print");
         } else {
             ALOGD("LoggerHook::init - Hooked __android_log_print");
@@ -80,8 +79,19 @@ void LoggerHook::init() {
         }
 #endif
     // 应用所有挂钩
-    xhook_refresh(0);
+    int ret = xhook_refresh(0);
+    if (ret != 0) {
+        ALOGE("LoggerHook::init - hook_refresh failed with error code: %d", ret);
+        return MG_ERROR;
+    }
     ALOGD("LoggerHook::init - log hooks installed");
+    return MG_OK;
+}
+
+void LoggerHook::setBlackList(const std::list<std::string> blackList) {
+    ALOGD("LoggerHook::setBlackList - setting black list");
+    m_blackList.clear();
+    m_blackList.insert(blackList.begin(), blackList.end());
 }
 
 
@@ -97,6 +107,13 @@ void LoggerHook::writeLog(MGLog *log, int sourceType) {
     if (!m_loggerQueue) {
         ALOGE("LoggerHook::writeLog - LoggerQueue not initialized");
         return;
+    }
+    if (!m_blackList.empty()) {
+        // 检查黑名单
+        if (m_blackList.find(log->tag) != m_blackList.end()) {
+            ALOGD("LoggerHook::writeLog - Log tag '%s' is in the blacklist, skipping", log->tag);
+            return;
+        }
     }
     // 将日志封装入队列
     enqueue(log, sourceType);
@@ -148,36 +165,65 @@ int LoggerHook::hookLogWrite(int prio, const char *tag, const char *buf) {
 #endif
 
 #if OPEN_PRINT
+
 int LoggerHook::hookLogPrint(int prio, const char *tag, const char *fmt, ...) {
-        char msgBuf[1024];
-        va_list args;
-        va_start(args, fmt);
-        vsnprintf(msgBuf, sizeof(msgBuf), fmt, args);
-        va_end(args);
-        MGLog log{};
-        log.tid = my_tid();
-        strncpy(log.tag, tag ? tag : "unknown", sizeof(log.tag) - 1);
-        log.tag[sizeof(log.tag) - 1] = '\0';
-        strncpy(log.msg, msgBuf, sizeof(log.msg) - 1);
-        log.msg[sizeof(log.msg) - 1] = '\0';
-        log.ts = getCurrentTimeMillis();
-        if (s_instance && tag && strcmp(tag, MGLOGGER_LOG_TAG) != 0) {
-            s_instance->writeLog(&log, LOG_SRC_PRINT);
-        }
-#if DEBUG_LOG
-        if (orig_log_print) {
-            orig_log_print(ANDROID_LOG_DEBUG, "MG_LOGGER",
-                           "hookLogPrint: prio=%d, tag=%s, tid=%lld",
-                           prio, tag ? tag : "NULL", (long long)my_tid());
-        }
-#endif
-        int result = 0;
-        if (orig_log_print) {
-            // 调用原始函数输出原始日志
-            result = orig_log_print(prio, tag ? tag : "NULL", "%s", msgBuf);
-        }
-        return result;
+    char msgBuf[LOG_MAX_LENGTH];
+    va_list args;
+    va_start(args, fmt);
+    vsnprintf(msgBuf, sizeof(msgBuf), fmt, args);
+    va_end(args);
+    MGLog log{};
+    log.tid = my_tid();
+    strncpy(log.tag, tag ? tag : "unknown", sizeof(log.tag) - 1);
+    log.tag[sizeof(log.tag) - 1] = '\0';
+    // 获取日志级别字符
+    char levelChar = LOG_UNKNOWN;
+    switch (prio) {
+        case ANDROID_LOG_DEBUG:
+            levelChar = LOG_DEBUG;
+            break;
+        case ANDROID_LOG_INFO:
+            levelChar = LOG_INFO;
+            break;
+        case ANDROID_LOG_WARN:
+            levelChar = LOG_WARN;
+            break;
+        case ANDROID_LOG_ERROR:
+            levelChar = LOG_ERROR;
+            break;
+        case ANDROID_LOG_FATAL:
+            levelChar = LOG_FATAL;
+            break;
+        case ANDROID_LOG_VERBOSE:
+            levelChar = LOG_VERBOSE;
+            break;
+        default:
+            levelChar = LOG_UNKNOWN; // 未知级别
+            break;
     }
+    char finalMsg[LOG_MAX_LENGTH + 2]; // +2 for levelChar and space
+    snprintf(finalMsg, sizeof(finalMsg), "%c %s", levelChar, msgBuf);
+    strncpy(log.msg, finalMsg, sizeof(log.msg) - 1);
+    log.msg[sizeof(log.msg) - 1] = '\0';
+    log.ts = getCurrentTimeMillis();
+    // 过滤掉内部日志
+    if (s_instance && tag && strcmp(tag, MGLOGGER_LOG_TAG) != 0) {
+        s_instance->writeLog(&log, LOG_SRC_PRINT);
+    }
+#if DEBUG_LOG
+    if (orig_log_print) {
+        orig_log_print(ANDROID_LOG_DEBUG, "MG_LOGGER",
+                       "hookLogPrint: prio=%d, tag=%s, tid=%lld",
+                       prio, tag ? tag : "NULL", (long long) my_tid());
+    }
+#endif
+    int result = 0;
+    if (orig_log_print) {
+        // 调用原始函数输出原始日志
+        result = orig_log_print(prio, tag ? tag : "NULL", "%s", msgBuf);
+    }
+    return result;
+}
 
 #endif
 
@@ -219,7 +265,34 @@ int LoggerHook::hookLogBufWrite(int bufID, int prio, const char *tag, const char
         log.tid = my_tid();
         strncpy(log.tag, tag ? tag : "unknown", sizeof(log.tag) - 1);
         log.tag[sizeof(log.tag) - 1] = '\0';
-        strncpy(log.msg, text, sizeof(log.msg) - 1);
+        // 获取日志级别字符
+        char levelChar = LOG_UNKNOWN;
+        switch (prio) {
+            case ANDROID_LOG_DEBUG:
+                levelChar = LOG_DEBUG;
+                break;
+            case ANDROID_LOG_INFO:
+                levelChar = LOG_INFO;
+                break;
+            case ANDROID_LOG_WARN:
+                levelChar = LOG_WARN;
+                break;
+            case ANDROID_LOG_ERROR:
+                levelChar = LOG_ERROR;
+                break;
+            case ANDROID_LOG_FATAL:
+                levelChar = LOG_FATAL;
+                break;
+            case ANDROID_LOG_VERBOSE:
+                levelChar = LOG_VERBOSE;
+                break;
+            default:
+                levelChar = LOG_UNKNOWN;
+                break;
+        }
+        char finalMsg[LOG_MAX_LENGTH + 2]; // +2 for levelChar and space
+        snprintf(finalMsg, sizeof(finalMsg), "%c %s", levelChar, text);
+        strncpy(log.msg, finalMsg, sizeof(log.msg) - 1);
         log.msg[sizeof(log.msg) - 1] = '\0';
         log.ts = getCurrentTimeMillis();
         // 将日志加入队列（过滤内部的 MG_LOGGER 日志）

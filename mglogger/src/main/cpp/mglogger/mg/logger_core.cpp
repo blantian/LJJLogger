@@ -85,7 +85,7 @@ namespace MGLogger {
                 return MG_ERROR;
             }
             // 初始化日志钩子
-            mLogger->init();
+            result = mLogger->init();
         }
         return result;
     }

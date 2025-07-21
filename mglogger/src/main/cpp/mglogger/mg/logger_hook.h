@@ -10,7 +10,8 @@
 #include <memory>
 #include "ilogger.h"
 #include <android/log.h>
-#include "logger_config.h"
+#include "logger_status.h"
+#include <set>
 
 #ifdef __cplusplus
 extern "C" {
@@ -40,11 +41,13 @@ namespace MGLogger {
 
         ~LoggerHook();
 
-        void init() override;
+        int init() override;
 
         int dequeue(MGLog *log) override;
         // 停止 Hook（中止队列消费）
-        void stop();
+        void stop() override;
+
+        void setBlackList(std::list<std::string> blackList) override;
 
     private:
 
@@ -64,6 +67,7 @@ namespace MGLogger {
         void writeLog(MGLog *log, int sourceType) override;
 
     private:
+        std::set<std::string> m_blackList;
         static LoggerHook *s_instance;
     };
 }

@@ -9,6 +9,7 @@
 #include <unistd.h>
 #include "logger_queue.h"
 #include "string"
+#include <unordered_set>
 
 #ifdef __cplusplus
 extern "C" {
@@ -24,7 +25,7 @@ namespace MGLogger {
     class ILogger {
     public:
         static std::shared_ptr<ILogger> CreateLogger(int type);
-        virtual void init() = 0;
+        virtual int init() = 0;
 
         virtual void writeLog(MGLog *log, int tag) = 0;
 
@@ -34,7 +35,7 @@ namespace MGLogger {
 
         virtual void stop() = 0;
 
-        virtual void setBlackList(const std::vector<std::string> &blackList);
+        virtual void setBlackList(std::list<std::string> blackList) = 0;
 
         // 工具函数：获取当前线程 ID
         static inline pid_t my_tid() {
@@ -64,7 +65,7 @@ namespace MGLogger {
     protected:
         std::shared_ptr<LoggerQueue> m_loggerQueue{nullptr};
         static std::shared_ptr<ILogger> logger;
-        static std::vector<std::string> m_blackList; // 黑名单列表
+        static std::unordered_set<std::string> m_blackList; // 黑名单列表
     };
 }
 

@@ -12,7 +12,7 @@
 #include "clogan_status.h"
 #include "message_queue.h"
 #include "ilogger.h"
-#include "logger_config.h"
+#include "logger_status.h"
 #include "logger_listener.h"
 
 namespace MGLogger {

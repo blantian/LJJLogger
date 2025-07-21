@@ -32,13 +32,19 @@ LoggerFork::~LoggerFork() {
     }
 }
 
-void LoggerFork::init() {
+int LoggerFork::init() {
     ALOGD("LoggerFork::init - initializing fork logger");
     if (s_instance) {
         ALOGE("LoggerFork::init - LoggerFork already initialized");
-        return;
+        return MG_ERROR;
     }
 
+}
+
+void LoggerFork::setBlackList(const std::list<std::string> blackList) {
+    ALOGD("LoggerFork::setBlackList - setting black list");
+    m_blackList.clear();
+    m_blackList.insert(blackList.begin(), blackList.end());
 }
 
 
@@ -84,6 +90,21 @@ int LoggerFork::handleForkLogs() {
         }
         _exit(1); // 如果 execlp 失败，退出子进程
     }
+}
 
+void LoggerFork::writeLog(MGLog* log, int sourceType) {
+    // 实现内容
+}
+
+void LoggerFork::enqueue(MGLog* log, int sourceType) {
+    // 实现内容
+}
+
+int LoggerFork::dequeue(MGLog* log) {
+
+}
+
+void LoggerFork::stop() {
+    // 实现内容
 }
 
