@@ -12,6 +12,7 @@
 #include "logger_base.h"
 #include "logger_common.h"
 #include "vector"
+#include <atomic>
 
 namespace MGLogger {
 
@@ -66,7 +67,7 @@ namespace MGLogger {
         SDL_Thread _forkThread{};
         pid_t s_child_pid = -1;
         std::vector<std::string> m_args_str; // logcat 启动参数列表
-        bool s_running{false};
+        std::atomic<bool> s_running{false};
     };
 
 }

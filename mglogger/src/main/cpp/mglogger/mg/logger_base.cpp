@@ -3,6 +3,8 @@
 //
 
 #include "logger_base.h"
+#include "logger_hook.h"
+#include "logger_fork.h"
 
 using namespace MGLogger;
 std::shared_ptr<BaseLogger> BaseLogger::logger = nullptr;
@@ -12,7 +14,7 @@ std::shared_ptr<BaseLogger> BaseLogger::CreateLogger(const int type) {
     switch (type) {
         case LOGGER_TYPE_HOOK:
             // 使用 Hook 方式拦截日志
-            ALOGD("ILogger::CreateLogger - Creating LoggerHook");
+            ALOGD("MGLogger::CreateLogger - Creating LoggerHook");
             if (logger == nullptr) {
                 logger = std::make_shared<LoggerHook>();
                 if (!logger) {
@@ -25,19 +27,19 @@ std::shared_ptr<BaseLogger> BaseLogger::CreateLogger(const int type) {
             break;
         case LOGGER_TYPE_FORK:
             // 使用 Logan 方式记录日志
-            ALOGD("ILogger::CreateLogger - Creating CLoganLogger");
+            ALOGD("MGLogger::CreateLogger - Creating CLoganLogger");
             if (logger == nullptr) {
                 logger = std::make_shared<LoggerFork>();
                 if (!logger) {
-                    ALOGE("ILogger::CreateLogger - Failed to create LoggerFork");
+                    ALOGE("MGLogger::CreateLogger - Failed to create LoggerFork");
                     return nullptr;
                 }
             } else {
-                ALOGD("ILogger::CreateLogger - LoggerFork already exists");
+                ALOGD("MGLogger::CreateLogger - LoggerFork already exists");
             }
             break;
         default:
-            ALOGE("ILogger::CreateLogger - Unknown logger type: %d", type);
+            ALOGE("MGLogger::CreateLogger - Unknown logger type: %d", type);
             return nullptr;
 
     }
@@ -59,11 +61,15 @@ int BaseLogger::init() {
     if (!m_loggerQueue) {
         ALOGE("BaseLogger::init - Failed to create LoggerQueue");
         return MG_ERROR;
+    } else {
+        ALOGD("BaseLogger::init - LoggerQueue created successfully");
     }
     messageQueue = std::make_shared<MessageQueue>();
     if (!messageQueue) {
         ALOGE("BaseLogger::init - Failed to create MessageQueue");
         return MG_ERROR;
+    } else {
+        ALOGD("BaseLogger::init - MessageQueue created successfully");
     }
     messageQueue->start();
     return MG_OK;

@@ -19,6 +19,7 @@ namespace MGLogger {
     }
 
     MessageQueue::MessageQueue() {
+        ALOGD("MessageQueue::MessageQueue - initializing message queue");
         mutex = SDL_CreateMutex();
         cond = SDL_CreateCond();
         abort_request = 1;
@@ -70,6 +71,11 @@ namespace MGLogger {
     }
 
     void MessageQueue::start() {
+        ALOGD("MessageQueue::start - starting message queue");
+        if (mutex == nullptr || cond == nullptr) {
+            ALOGE("MessageQueue::start - Mutex or Cond not initialized");
+            return;
+        }
         SDL_LockMutex(mutex);
         abort_request = 0;
         SDL_CondSignal(cond);
@@ -77,6 +83,7 @@ namespace MGLogger {
     }
 
     void MessageQueue::abort() {
+        ALOGD("MessageQueue::abort - aborting message queue");
         SDL_LockMutex(mutex);
         abort_request = 1;
         SDL_CondSignal(cond);

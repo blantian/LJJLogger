@@ -9,8 +9,6 @@
 #include "logger_common.h"
 #include "logger_status.h"
 #include "vector"
-#include "logger_hook.h"
-#include "logger_fork.h"
 
 namespace MGLogger {
     /**

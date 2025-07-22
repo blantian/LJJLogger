@@ -71,12 +71,6 @@ namespace MGLogger {
                 ALOGE("MGLogger::init - Failed to create ILogger instance");
                 return MG_ERROR;
             }
-            // 创建日志处理线程
-            m_worker_tid = createEnqueueTh();
-            if (!m_worker_tid) {
-                ALOGE("MGLogger::init - Failed to create logger thread");
-                return MG_ERROR;
-            }
             // 初始化日志钩子/logcat 进程
             result = mLogger->init();
             if (result != MG_OK) {
@@ -88,6 +82,13 @@ namespace MGLogger {
             if (result != MG_OK) {
                 ALOGE("MGLogger::init - ILogger start failed (code=%d)", result);
                 return result;
+            }
+
+            // 创建日志处理线程
+            m_worker_tid = createEnqueueTh();
+            if (!m_worker_tid) {
+                ALOGE("MGLogger::init - Failed to create logger thread");
+                return MG_ERROR;
             }
 
             // 创建消息处理线程

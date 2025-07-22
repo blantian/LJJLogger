@@ -21,7 +21,7 @@ public data class LoggerConfig(
     public class Builder {
         public var cachePath: String = ""
         public var logDir: String = ""
-        public var logCacheS: Int = 0
+        public var logCacheS: Int = 1
         public var keepDays: Long = 1 * 24 * 60 * 60 * 1000L
         public var maxFile: Long = 10 * 1024 * 1024
         public var minSdCard: Long = 50 * 1024 * 1024

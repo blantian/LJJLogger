@@ -23,7 +23,7 @@
 namespace MGLogger {
 
     static constexpr size_t BATCH_SIZE = 64;          // 一批 64 条
-    static constexpr uint32_t FLUSH_INTERVAL_MS = 1000; // 或 1 秒
+    static constexpr uint32_t FLUSH_INTERVAL_MS = 200; // 或 200 ms
 
     class MGLogger {
     public:

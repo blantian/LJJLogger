@@ -130,7 +130,7 @@ int LoggerFork::handleForkLogs() {
     }
 
     // 父进程开始读取 log
-    ALOGD("LoggerFork::handleForkLogs - parent reading logs pid=%d", s_child_pid);
+    ALOGD("LoggerFork::handleForkLogs - parent start reading logs");
     close(pipe_fd[1]); // 关闭写端
     FILE *fp = fdopen(pipe_fd[0], "r"); // 打开管道读端
     if (!fp) {
@@ -140,7 +140,7 @@ int LoggerFork::handleForkLogs() {
         s_running = false;
         return MG_ERROR;
     }
-    ALOGD("LoggerFork::handleForkLogs - logcat pipe opened successfully");
+    ALOGD("LoggerFork::handleForkLogs - logcat pipe opened successfully pid=%d", s_child_pid);
     char buffer[MAX_MSG_LENGTH];
     while (s_running && fgets(buffer, sizeof(buffer), fp)) {
         // 处理读取到的日志
@@ -153,7 +153,6 @@ int LoggerFork::handleForkLogs() {
     fclose(fp);
     int status = 0;
     waitpid(s_child_pid, &status, 0);
-    __android_log_print(ANDROID_LOG_DEBUG, "Logreader", "child process exit status=%d", status);
     if (WIFEXITED(status) && WEXITSTATUS(status) != 0) {
         sendMessage(MG_LOGGER_STATUS_FORK_EXITED, "child process exited with error");
     }

@@ -9,6 +9,7 @@
 extern "C" {
 #endif
 #include "sdl_mutex.h"
+#include "sdl_log.h"
 #ifdef __cplusplus
 }
 #endif
