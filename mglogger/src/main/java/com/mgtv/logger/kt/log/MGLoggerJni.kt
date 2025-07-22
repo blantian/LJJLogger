@@ -64,15 +64,6 @@ public object MGLoggerJni : ILoggerProtocol {
     ): Int
 
     private external fun mglogger_flush()
-    private external fun nativeStartLogcatCollector(blackList: Array<String>)
-
-    public fun startLogcatCollector(blackList: Array<String>) {
-        try {
-            nativeStartLogcatCollector(blackList)
-        } catch (e: UnsatisfiedLinkError) {
-            e.printStackTrace()
-        }
-    }
 
     // ----------------------------
     // LoganProtocolHandler impl

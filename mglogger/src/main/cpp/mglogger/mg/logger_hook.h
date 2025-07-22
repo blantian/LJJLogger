@@ -8,9 +8,9 @@
 
 #include "logger_queue.h"
 #include <memory>
-#include "ilogger.h"
+#include "logger_base.h"
 #include <android/log.h>
-#include "logger_status.h"
+#include "logger_common.h"
 #include <set>
 
 #ifdef __cplusplus
@@ -34,20 +34,26 @@ namespace MGLogger {
 
     static void (*orig_log_assert)(const char *, const char *, const char *, ...) = nullptr;
 
-    class LoggerHook : public ILogger {
+    class LoggerHook : public BaseLogger {
 
     public:
         LoggerHook();
 
-        ~LoggerHook();
+        ~LoggerHook() override;
 
         int init() override;
 
+        int start() override {
+            return MG_OK;
+        };
+
         int dequeue(MGLog *log) override;
-        // 停止 Hook（中止队列消费）
-        void stop() override;
 
         void setBlackList(const std::list<std::string> &blackList) override;
+
+        void setLogcatArgs(const std::vector<std::string> &args) override;
+
+        std::shared_ptr<MGMessage> getMessage() override;
 
     private:
 
@@ -61,13 +67,24 @@ namespace MGLogger {
 
         static void hookLogAssert(const char *cond, const char *file, const char *func, ...);
 
-        // 将日志加入队列
-        void enqueue(MGLog *log, int sourceType) override;
         // 写入日志至队列（内部调用 enqueue）
         void writeLog(MGLog *log, int sourceType) override;
 
+
+        inline void sendMessage(int what) {
+            messageQueue->sendMessage(what);
+        }
+
+        inline void sendMessage(int what, const char *cmd) {
+            messageQueue->sendMessage(what, cmd);
+        }
+
+        inline void sendMessage(const std::shared_ptr<MGMessage>& msg){
+            messageQueue->sendMessage(msg);
+        }
+
+
     private:
-        std::set<std::string> m_blackList;
         static LoggerHook *s_instance;
     };
 }

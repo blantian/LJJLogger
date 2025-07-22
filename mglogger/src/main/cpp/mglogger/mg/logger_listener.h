@@ -9,7 +9,7 @@ namespace MGLogger {
 
     class OnEventListener {
     public:
-        virtual void OnEvent(int what, const char *cmd) = 0;
+        virtual void onEvent(int what, const char *cmd) = 0;
     };
 }
 

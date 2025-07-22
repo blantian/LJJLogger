@@ -114,37 +114,37 @@ namespace MGLogger {
         g_vm->DetachCurrentThread();
     }
 
-    extern "C"
-    JNIEXPORT void JNICALL
-    Java_com_mgtv_logger_kt_log_MGLoggerJni_nativeStartLogcatCollector(JNIEnv *env,
-                                                                       jobject thiz,
-                                                                       jobjectArray blacklist) {
-        int count = 0;
-        if (blacklist != nullptr) {
-            count = env->GetArrayLength(blacklist);
-        }
-        const char **list = nullptr;
-        if (count > 0) {
-            list = (const char **) malloc(sizeof(char *) * count);
-            for (int i = 0; i < count; ++i) {
-                jstring str = (jstring) env->GetObjectArrayElement(blacklist, i);
-                const char *tmp = env->GetStringUTFChars(str, 0);
-                list[i] = strdup(tmp);
-                env->ReleaseStringUTFChars(str, tmp);
-                env->DeleteLocalRef(str);
-            }
-        }
-
-        int ret = start_logreader(list, count, on_logcat_fail_callback);
-        if (ret < 0) {
-            on_logcat_fail_callback();
-        }
-        if (list) {
-            for (int i = 0; i < count; ++i) {
-                free((void *) list[i]);
-            }
-            free(list);
-        }
-    }
+//    extern "C"
+//    JNIEXPORT void JNICALL
+//    Java_com_mgtv_logger_kt_log_MGLoggerJni_nativeStartLogcatCollector(JNIEnv *env,
+//                                                                       jobject thiz,
+//                                                                       jobjectArray blacklist) {
+//        int count = 0;
+//        if (blacklist != nullptr) {
+//            count = env->GetArrayLength(blacklist);
+//        }
+//        const char **list = nullptr;
+//        if (count > 0) {
+//            list = (const char **) malloc(sizeof(char *) * count);
+//            for (int i = 0; i < count; ++i) {
+//                jstring str = (jstring) env->GetObjectArrayElement(blacklist, i);
+//                const char *tmp = env->GetStringUTFChars(str, 0);
+//                list[i] = strdup(tmp);
+//                env->ReleaseStringUTFChars(str, tmp);
+//                env->DeleteLocalRef(str);
+//            }
+//        }
+//
+//        int ret = start_logreader(list, count, on_logcat_fail_callback);
+//        if (ret < 0) {
+//            on_logcat_fail_callback();
+//        }
+//        if (list) {
+//            for (int i = 0; i < count; ++i) {
+//                free((void *) list[i]);
+//            }
+//            free(list);
+//        }
+//    }
 }
 

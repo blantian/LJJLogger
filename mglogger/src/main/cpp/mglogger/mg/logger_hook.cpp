@@ -17,16 +17,10 @@ LoggerHook *LoggerHook::s_instance = nullptr;
 LoggerHook::LoggerHook() {
     ALOGD("LoggerHook::LoggerHook - initialized");
     s_instance = this;
-    m_loggerQueue = std::make_shared<LoggerQueue>(500);
 }
 
 LoggerHook::~LoggerHook() {
     ALOGD("LoggerHook::~LoggerHook - shutting down");
-    if (m_loggerQueue) {
-        m_loggerQueue->abort();
-        m_loggerQueue->clear();
-    }
-    m_loggerQueue = nullptr;
     s_instance = nullptr;
 }
 
@@ -85,7 +79,7 @@ int LoggerHook::init() {
         return MG_ERROR;
     }
     ALOGD("LoggerHook::init - log hooks installed");
-    return MG_OK;
+    return BaseLogger::init();
 }
 
 void LoggerHook::setBlackList(const std::list<std::string> &blackList) {
@@ -94,13 +88,8 @@ void LoggerHook::setBlackList(const std::list<std::string> &blackList) {
     m_blackList.insert(blackList.begin(), blackList.end());
 }
 
-
-void LoggerHook::enqueue(MGLog *log, int sourceType) {
-    if (!m_loggerQueue) {
-        ALOGE("LoggerHook::enqueue - LoggerQueue not initialized");
-        return;
-    }
-    m_loggerQueue->enqueue(log, static_cast<LogSourceType>(sourceType));
+void LoggerHook::setLogcatArgs(const std::vector<std::string> &args) {
+    ALOGD("LoggerHook::setLogcatArgs - setting logcat args do nothing");
 }
 
 void LoggerHook::writeLog(MGLog *log, int sourceType) {
@@ -116,22 +105,24 @@ void LoggerHook::writeLog(MGLog *log, int sourceType) {
         }
     }
     // 将日志封装入队列
-    enqueue(log, sourceType);
+    BaseLogger::enqueue(log, sourceType);
+}
+
+
+std::shared_ptr<MGMessage> LoggerHook::getMessage() {
+    if (!messageQueue) {
+        ALOGE("LoggerHook::getMessage - LoggerQueue not initialized");
+        return nullptr;
+    }
+    return messageQueue->getMessage();
 }
 
 int LoggerHook::dequeue(MGLog *log) {
     if (!m_loggerQueue) {
-        ALOGE("LoggerHook::dequeue - LoggerQueue not initialized");
+        ALOGE("BaseLogger::dequeue - LoggerQueue not initialized");
         return -1;
     }
     return m_loggerQueue->dequeue(log);
-}
-
-void LoggerHook::stop() {
-    // 中止日志队列，通知消费者线程退出
-    if (m_loggerQueue) {
-        m_loggerQueue->abort();
-    }
 }
 
 #if OPEN_WRITE

@@ -9,49 +9,65 @@
 #ifndef MGLOGGER_LOGGER_FORK_H
 #define MGLOGGER_LOGGER_FORK_H
 
-#include "ilogger.h"
-#include "logger_status.h"
+#include "logger_base.h"
+#include "logger_common.h"
+#include "vector"
 
-using namespace MGLogger;
+namespace MGLogger {
 
-class LoggerFork : public ILogger {
-public:
-    LoggerFork();
+    class LoggerFork : public BaseLogger {
+    public:
+        LoggerFork();
 
-    ~LoggerFork();
+        ~LoggerFork() override;
 
-    int init() override;
+        int init() override;
 
-    int dequeue(MGLog *log) override;
+        void stop() override;
 
-    // 停止 Fork（中止队列消费）
-    void stop() override;
+        int start() override;
 
-    void setBlackList(const std::list<std::string> &blackList) override;
+        int dequeue(MGLog *log) override;
 
-private:
-    // 将日志加入队列
-    void enqueue(MGLog *log, int sourceType) override;
+        void setBlackList(const std::list<std::string> &blackList) override;
 
-    // 写入日志至队列（内部调用 enqueue）
-    void writeLog(MGLog *log, int sourceType) override;
+        void setLogcatArgs(const std::vector<std::string> &args) override;
 
-    // 启动 Fork 线程
-    SDL_Thread *createForkThread();
+        std::shared_ptr<MGMessage> getMessage() override;
 
-    // Fork 线程函数
-    static int forkThreadFunc(void *arg);
+    private:
 
-    // 处理 Fork 线程中的日志
-    int handleForkLogs();
+        // 写入日志至队列（内部调用 enqueue）
+        void writeLog(MGLog *log, int sourceType) override;
 
-private:
-    static LoggerFork *s_instance;
-    SDL_Thread *forkThread{nullptr};
-    SDL_Thread _forkThread{};
-    pid_t s_child_pid = -1;
+        // 启动 Fork 线程
+        SDL_Thread *createForkThread();
 
-};
+        // Fork 线程函数
+        static int forkThreadFunc(void *arg);
 
+        // 处理 Fork 线程中的日志
+        int handleForkLogs();
 
+        inline void sendMessage(int what) {
+            messageQueue->sendMessage(what);
+        }
+
+        inline void sendMessage(int what, const char *cmd){
+            messageQueue->sendMessage(what, cmd);
+        }
+
+        inline void sendMessage(const std::shared_ptr<MGMessage> &msg){
+            messageQueue->sendMessage(msg);
+        }
+
+    private:
+        SDL_Thread *forkThread{nullptr};
+        SDL_Thread _forkThread{};
+        pid_t s_child_pid = -1;
+        std::vector<std::string> m_args_str; // logcat 启动参数列表
+        bool s_running{false};
+    };
+
+}
 #endif //MGLOGGER_LOGGER_FORK_H

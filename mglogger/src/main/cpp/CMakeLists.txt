@@ -39,7 +39,7 @@ find_library(
 )
 
 # Main source files (removed duplicates)
-set(SOURCE_FILES
+set(CLOGAN_FILES
         mglogger/logan/clogan_core.c
         mglogger/logan/mmap_util.c
         mglogger/logan/cJSON.c
@@ -51,8 +51,11 @@ set(SOURCE_FILES
         mglogger/logan/base_util.c
         mglogger/logan/console_util.c
         mglogger/logan/main.c
-        mglogger/mg/ilogger.cpp
-        mglogger/mg/logger_fork_read.cpp
+)
+
+
+set(SOURCE_LOGGER
+        mglogger/mg/logger_base.cpp
         mglogger/mg/logger_hook.cpp
         mglogger/mg/logger_fork.cpp
         mglogger/mg/logger_queue.cpp
@@ -245,7 +248,8 @@ set_target_properties(xhook
 
 # Build main mglogger library
 add_library(mglogger SHARED
-        ${SOURCE_FILES}
+        ${SOURCE_LOGGER}
+        ${CLOGAN_FILES}
         ${SRC_J4A}
         ${SRC_SDL}
         jni/mglogger_jni.c

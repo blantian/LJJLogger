@@ -11,10 +11,11 @@
 #include "mglogger/logan/clogan_core.h"  // CLogan API header
 #include "clogan_status.h"
 #include "message_queue.h"
-#include "ilogger.h"
-#include "logger_status.h"
+#include "logger_base.h"
+#include "logger_common.h"
 #include "logger_listener.h"
 #include "vector"
+#include "logger_status.h"
 
 #include <chrono>
 #include <cstdint>
@@ -69,7 +70,7 @@ namespace MGLogger {
 
         void handleMessage(const std::shared_ptr<MGMessage> &msg);
 
-        inline uint64_t nowMs() {
+        static inline uint64_t nowMs() {
             using namespace std::chrono;
             return duration_cast<milliseconds>(
                     steady_clock::now().time_since_epoch()
@@ -78,7 +79,6 @@ namespace MGLogger {
 
     private:
         std::shared_ptr<ILogger> mLogger{nullptr};
-        std::shared_ptr<MessageQueue> _listener{nullptr};
         std::vector<MGLog> mBatchBuf;                     // 批量缓存
         uint64_t mLastFlushTs{0};                         // 上次批量写入时间
         std::shared_ptr<OnEventListener> _eventListener{nullptr};

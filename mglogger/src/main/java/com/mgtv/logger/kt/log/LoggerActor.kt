@@ -92,12 +92,6 @@ internal class LoggerActor(
             is LogTask.Write -> write(task)
             is LogTask.Flush -> protocol.logger_flush()
             is LogTask.Send -> send(task)
-            is LogTask.GetSysLog -> {
-                when (task.mode) {
-                    1 -> MGLoggerJni.startLogcatCollector(cfg.logcatBlackList.toTypedArray())
-                    2 -> collectProcessLogcat()
-                }
-            }
         }
     }
 

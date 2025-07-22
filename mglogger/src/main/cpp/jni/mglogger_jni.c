@@ -68,9 +68,3 @@ Java_com_mgtv_logger_java_CLoganProtocol_clogan_1debug(JNIEnv *env, jobject inst
 }
 
 
-
-JNIEXPORT void JNICALL
-Java_com_mgtv_logger_kt_log_MGLoggerJni_nativeHookLogs(JNIEnv *env, jobject thiz) {
-//    hook_log();
-}
-

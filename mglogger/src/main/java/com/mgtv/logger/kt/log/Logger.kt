@@ -40,11 +40,6 @@ public object Logger : CoroutineScope {
         worker!!.offer(LogTask.Write(log, type, threadName, threadId, isMainThread))
     }
 
-    public fun getSystemLogs(mode: Int = 1) {
-        ensureReady()
-        worker!!.offer(LogTask.GetSysLog(mode))
-    }
-
     public fun flush() {
         ensureReady()
         worker!!.offer(LogTask.Flush)

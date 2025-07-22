@@ -36,11 +36,13 @@ namespace MGLogger {
 
     // 日志来源类型，用于标识日志来自哪个 hook 函数
     enum LogSourceType {
+        LOG_SRC_UNKNOWN  = -1,
         LOG_SRC_PRINT    = 0,
         LOG_SRC_WRITE    = 1,
         LOG_SRC_VPRINT   = 2,
         LOG_SRC_BUF_WRITE= 3,
-        LOG_SRC_ASSERT   = 4
+        LOG_SRC_ASSERT   = 4,
+        LOG_SRC_FORK     = 5,
     };
 
     class LoggerNode;

@@ -5,8 +5,6 @@
  * Time： 14:50
  */
 
-#pragma once
-
 #include "logger_core.h"
 
 #include <utility>
@@ -36,6 +34,8 @@ namespace MGLogger {
                        int max_file,
                        const char *key16,
                        const char *iv16) {
+
+        int result = MG_OK;
         // 初始化 CLogan 环境，根据配置决定是否使用钩子线程
         ALOGD("MGLogger::init - Initializing MGLogger with cache_path=%s, dir_path=%s, max_file=%d key16=%s, iv16=%s in Android API level %d",
               cache_path ? cache_path : "null",
@@ -47,20 +47,8 @@ namespace MGLogger {
             return MG_ERROR;
         }
 
-        _listener = std::make_shared<MessageQueue>();
-        if (!_listener) {
-            ALOGE("MGLogger::init - Failed to create MessageQueue");
-            return MG_ERROR;
-        }
-        _listener->start();
-        // 创建消息处理线程
-        m_message_tid = createMessageTh();
-        if (!m_message_tid) {
-            ALOGE("MGLogger::init - Failed to create message thread");
-            return MG_ERROR;
-        }
         SDL_LockMutex(m_mutex);
-        int result = clogan_init(cache_path ? cache_path : "",
+        result = clogan_init(cache_path ? cache_path : "",
                                  dir_path ? dir_path : "",
                                  max_file,
                                  key16 ? key16 : "",
@@ -70,20 +58,44 @@ namespace MGLogger {
             int code = 0;
             ALOGD("MGLogger::init - CLogan initialized successfully (code=%d)", result);
             code = clogan_open(MG_LOGGER_LOG);
-            ALOGD("MGLogger::init - CLogan opened logan.bin (code=%d)", code);
-            clogan_flush();
+            ALOGD("MGLogger::init - CLogan opened logan (code=%d)", code);
+            code = clogan_flush();
+            ALOGD("MGLogger::init - CLogan flushed logan (code=%d)", code);
             code = clogan_write(0, "MGLogger initialized", 0, "MGLogger", getpid(), 1);
             if (code == CLOGAN_WRITE_SUCCESS) {
-                ALOGE("MGLogger::init - Write initial log success (code=%d)", code);
+                ALOGI("MGLogger::init - Write initial log success (code=%d)", code);
             }
-            mLogger = ILogger::CreateLogger(log_cache_s);
+            // 创建日志处理器
+            mLogger = BaseLogger::CreateLogger(log_cache_s);
+            if (!mLogger) {
+                ALOGE("MGLogger::init - Failed to create ILogger instance");
+                return MG_ERROR;
+            }
+            // 创建日志处理线程
             m_worker_tid = createEnqueueTh();
             if (!m_worker_tid) {
                 ALOGE("MGLogger::init - Failed to create logger thread");
                 return MG_ERROR;
             }
-            // 初始化日志钩子
+            // 初始化日志钩子/logcat 进程
             result = mLogger->init();
+            if (result != MG_OK) {
+                ALOGE("MGLogger::init - ILogger initialization failed (code=%d)", result);
+                return result;
+            }
+
+            result = mLogger->start();
+            if (result != MG_OK) {
+                ALOGE("MGLogger::init - ILogger start failed (code=%d)", result);
+                return result;
+            }
+
+            // 创建消息处理线程
+            m_message_tid = createMessageTh();
+            if (!m_message_tid) {
+                ALOGE("MGLogger::init - Failed to create message thread");
+                return MG_ERROR;
+            }
         } else {
             ALOGE("MGLogger::init - CLogan initialization failed (code=%d)", result);
             return result;
@@ -114,6 +126,11 @@ namespace MGLogger {
                                   "logan_message_worker");
     }
 
+    /**
+     * 日志处理线程函数
+     * @param arg
+     * @return
+     */
     int MGLogger::threadFunc(void *arg) {
         auto self = static_cast<MGLogger *>(arg);
         ALOGI("MGLogger::threadFunc - Logger thread started");
@@ -123,6 +140,11 @@ namespace MGLogger {
     }
 
 
+    /**
+     * 消息处理线程函数
+     * @param arg
+     * @return
+     */
     int MGLogger::messageThreadFunc(void *arg) {
         auto self = static_cast<MGLogger *>(arg);
         ALOGI("MGLogger::messageThreadFunc - Message thread started");
@@ -132,6 +154,9 @@ namespace MGLogger {
     }
 
 
+    /**
+     * 日志处理线程函数
+     */
     int MGLogger::run() {
         ALOGD("MGLogger::run - Entering log consumption loop");
         MGLog logEntry;
@@ -184,12 +209,21 @@ namespace MGLogger {
         return MG_OK;
     }
 
+    /**
+     * 设置事件监听器
+     * @param listener
+     */
     void MGLogger::SetOnEventListener(std::shared_ptr<OnEventListener> listener) {
         SDL_LockMutex(m_mutex);
         _eventListener = std::move(listener);
         SDL_UnlockMutex(m_mutex);
     }
 
+    /**
+     * 消息处理线程函数
+     * @param arg
+     * @return
+     */
     int MGLogger::runMessageThread() {
         ALOGD("MGLogger::runMessageThread - Entering message consumption loop");
         while (alive) {
@@ -197,13 +231,8 @@ namespace MGLogger {
                 ALOGW("MGLogger::runMessageThread - Message thread is null, exiting loop");
                 break;
             }
-
-            if (!_listener) {
-                ALOGW("MGLogger::runMessageThread - MessageQueue is null, exiting loop");
-                break;
-            }
             // 阻塞等待获取一条消息
-            std::shared_ptr<MGMessage> msg = _listener->getMessage();
+            std::shared_ptr<MGMessage> msg = mLogger->getMessage();
             if (msg == nullptr) {
                 continue; // 没有消息，继续等待
             }
@@ -222,7 +251,27 @@ namespace MGLogger {
      */
     void MGLogger::handleMessage(const std::shared_ptr<MGMessage> &msg) {
         switch (msg->what) {
-
+            case MG_LOGGER_STATUS_FORK_FAILED:
+                ALOGE("MGLogger::handleMessage - Fork failed: %s", msg->msg.c_str());
+                if (_eventListener) {
+                    _eventListener->onEvent(MG_LOGGER_STATUS_FORK_FAILED, msg->msg.c_str());
+                }
+                break;
+            case MG_LOGGER_STATUS_PIPE_OPEN_FAILED:
+                ALOGE("MGLogger::handleMessage - Pipe open failed: %s", msg->msg.c_str());
+                if (_eventListener) {
+                    _eventListener->onEvent(MG_LOGGER_STATUS_PIPE_OPEN_FAILED, msg->msg.c_str());
+                }
+                break;
+            case MG_LOGGER_STATUS_FORK_EXITED:
+                ALOGI("MGLogger::handleMessage - Fork exited with error: %s", msg->msg.c_str());
+                if (_eventListener) {
+                    _eventListener->onEvent(MG_LOGGER_STATUS_FORK_EXITED, msg->msg.c_str());
+                }
+                break;
+            default:
+                ALOGW("MGLogger::handleMessage - Unknown message type: %d", msg->what);
+                break;
         }
     }
 

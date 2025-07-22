@@ -9,6 +9,7 @@
 #include <unistd.h>
 #include "logger_queue.h"
 #include "string"
+#include "message_queue.h"
 #include <unordered_set>
 
 #ifdef __cplusplus
@@ -24,7 +25,7 @@ namespace MGLogger {
 
     class ILogger {
     public:
-        static std::shared_ptr<ILogger> CreateLogger(int type);
+
 
         virtual int init() = 0;
 
@@ -34,41 +35,17 @@ namespace MGLogger {
 
         virtual int dequeue(MGLog *log) = 0;
 
+        virtual int start() = 0;
+
         virtual void stop() = 0;
+
+        virtual std::shared_ptr<MGMessage> getMessage() = 0;
 
         virtual void setBlackList(const std::list<std::string> &blackList) = 0;
 
-        // 工具函数：获取当前线程 ID
-        static inline pid_t my_tid() {
-#ifdef __ANDROID__
-            return gettid();
-#else
-            return (pid_t) syscall(SYS_gettid);
-#endif
-        }
+        virtual void setLogcatArgs(const std::vector<std::string> &args) = 0;
 
-        // 工具函数：获取当前时间（毫秒）
-        static inline long long getCurrentTimeMillis() {
-#if defined(CLOCK_REALTIME)
-            struct timespec ts{};
-            clock_gettime(CLOCK_REALTIME, &ts);
-            return (long long) ts.tv_sec * 1000LL + ts.tv_nsec / 1000000;
-#else
-            struct timeval tv;
-            gettimeofday(&tv, nullptr);
-            return (long long) tv.tv_sec * 1000LL + tv.tv_usec / 1000;
-#endif
-        }
 
-        // 工具函数：获取当前进程（主线程）ID
-        static inline pid_t my_pid() {
-            return getpid();
-        }
-
-    protected:
-        std::shared_ptr<LoggerQueue> m_loggerQueue{nullptr};
-        static std::shared_ptr<ILogger> logger;
-        static std::unordered_set<std::string> m_blackList; // 黑名单列表
     };
 }
 
