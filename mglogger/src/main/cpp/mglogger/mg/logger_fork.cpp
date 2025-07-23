@@ -159,7 +159,7 @@ int LoggerFork::handleForkLogs() {
     return MG_OK;
 }
 
-void LoggerFork:: parseThreadTimeLine(const char *line, MGLog *out) {
+void LoggerFork::parseThreadTimeLine(const char *line, MGLog *out) {
     if (!line || !out) {
         return;
     }
@@ -204,6 +204,7 @@ void LoggerFork::writeLog(MGLog *log, int sourceType) {
         }
     }
     // 将日志封装入队列
+    ALOGD("LoggerFork::writeLog - Enqueuing logTag: %s msg: %s",log->tag, log->msg);
     BaseLogger::enqueue(log, sourceType);
 }
 
