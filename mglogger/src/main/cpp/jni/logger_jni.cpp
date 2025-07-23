@@ -103,54 +103,5 @@ namespace MGLogger {
     Java_com_mgtv_logger_kt_log_MGLoggerJni_LoggerFlush(JNIEnv *env, jobject thiz) {
         logger->flush();
     }
-
-
-    static void on_logcat_fail_callback() {
-        if (g_vm == nullptr) return;
-        JNIEnv *env = nullptr;
-        if (g_vm->AttachCurrentThread(&env, nullptr) != 0) return;
-        jclass cls = env->FindClass("com/mgtv/logger/kt/log/MGLoggerJni");
-        if (cls != nullptr) {
-            jmethodID mid = env->GetStaticMethodID(cls, "onLogcatCollectorFail", "()V");
-            if (mid != nullptr) {
-                env->CallStaticVoidMethod(cls, mid);
-            }
-            env->DeleteLocalRef(cls);
-        }
-        g_vm->DetachCurrentThread();
-    }
-
-//    extern "C"
-//    JNIEXPORT void JNICALL
-//    Java_com_mgtv_logger_kt_log_MGLoggerJni_nativeStartLogcatCollector(JNIEnv *env,
-//                                                                       jobject thiz,
-//                                                                       jobjectArray blacklist) {
-//        int count = 0;
-//        if (blacklist != nullptr) {
-//            count = env->GetArrayLength(blacklist);
-//        }
-//        const char **list = nullptr;
-//        if (count > 0) {
-//            list = (const char **) malloc(sizeof(char *) * count);
-//            for (int i = 0; i < count; ++i) {
-//                jstring str = (jstring) env->GetObjectArrayElement(blacklist, i);
-//                const char *tmp = env->GetStringUTFChars(str, 0);
-//                list[i] = strdup(tmp);
-//                env->ReleaseStringUTFChars(str, tmp);
-//                env->DeleteLocalRef(str);
-//            }
-//        }
-//
-//        int ret = start_logreader(list, count, on_logcat_fail_callback);
-//        if (ret < 0) {
-//            on_logcat_fail_callback();
-//        }
-//        if (list) {
-//            for (int i = 0; i < count; ++i) {
-//                free((void *) list[i]);
-//            }
-//            free(list);
-//        }
-//    }
 }
 
