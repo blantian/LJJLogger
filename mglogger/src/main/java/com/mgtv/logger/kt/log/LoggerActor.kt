@@ -44,6 +44,9 @@ internal class LoggerActor(
             }
         })
         logger_init(cfg.cachePath, cfg.logDir,cfg.logCacheS, cfg.maxFile.toInt(), cfg.key16, cfg.iv16)
+        if (cfg.logcatBlackList.isNotEmpty()) {
+            setBlackList(cfg.logcatBlackList)
+        }
 //        it.logger_debug(Logger.sDebug)
     }
 
