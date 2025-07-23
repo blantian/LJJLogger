@@ -173,11 +173,14 @@ public object MGLoggerJni : ILoggerProtocol {
     }
 
     @Keep
-    internal fun onLoggerStatus(code: Int,cmd: String) {
+    @JvmStatic
+    public fun onLoggerStatus(code: Int, cmd: String) {
         loggerStatusCode(cmd, code)
     }
 
-    internal fun onLogcatCollectorFail() {
+    @Keep
+    @JvmStatic
+    public fun onLogcatCollectorFail() {
         loggerStatusCode(
             MGLoggerStatus.MGLOGGER_LOGCAT_COLLECTOR_STATUS,
             MGLoggerStatus.MGLOGGER_LOGCAT_COLLECTOR_FAIL
