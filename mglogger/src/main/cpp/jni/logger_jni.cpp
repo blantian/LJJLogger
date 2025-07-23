@@ -4,6 +4,8 @@
 
 #include "jni.h"
 #include "logger_core.h"
+#include "logger_listener.h"
+#include "logger_common.h"
 
 static JavaVM *g_vm = nullptr;
 
@@ -26,6 +28,8 @@ namespace MGLogger {
         const char *encrypt_key16_ = env->GetStringUTFChars(encrypt_key16, 0);
         const char *encrypt_iv16_ = env->GetStringUTFChars(encrypt_iv16, 0);
 
+        env->GetJavaVM(&g_vm);
+
         logger = std::make_shared<MGLogger>();
         int code = logger->init(cache_path_,
                                 dir_path_,
@@ -33,6 +37,9 @@ namespace MGLogger {
                                 max_file,
                                 encrypt_key16_,
                                 encrypt_iv16_);
+        if (code == MG_OK) {
+            logger->SetOnEventListener(createJniEventListener(env, thiz));
+        }
 
         env->ReleaseStringUTFChars(dir_path, dir_path_);
         env->ReleaseStringUTFChars(cache_path, cache_path_);
