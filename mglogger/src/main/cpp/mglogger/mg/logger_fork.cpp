@@ -12,40 +12,6 @@
 
 using namespace MGLogger;
 
-namespace {
-    static void parseThreadtimeLine(const char *line, MGLog *out) {
-        if (!line || !out) {
-            return;
-        }
-        char date[16] = {0};
-        char time[16] = {0};
-        int pid = 0;
-        long long tid = 0;
-        char level = 'D';
-        char tagBuf[MAX_TAG_LENGTH] = {0};
-        char msgBuf[MAX_MSG_LENGTH] = {0};
-
-        int matched = sscanf(line,
-                             "%15s %15s %d %lld %c %63[^:]: %1025[^\n]",
-                             date, time, &pid, &tid, &level, tagBuf, msgBuf);
-        if (matched >= 6) {
-            out->tid = tid;
-            strncpy(out->tag, tagBuf, MAX_TAG_LENGTH - 1);
-            out->tag[MAX_TAG_LENGTH - 1] = '\0';
-            char finalMsg[MAX_MSG_LENGTH];
-            snprintf(finalMsg, sizeof(finalMsg), "%c %s", level, msgBuf);
-            strncpy(out->msg, finalMsg, MAX_MSG_LENGTH - 1);
-            out->msg[MAX_MSG_LENGTH - 1] = '\0';
-        } else {
-            out->tid = 0;
-            out->tag[0] = '\0';
-            strncpy(out->msg, line, MAX_MSG_LENGTH - 1);
-            out->msg[MAX_MSG_LENGTH - 1] = '\0';
-        }
-        out->ts = BaseLogger::getCurrentTimeMillis();
-    }
-}
-
 LoggerFork::LoggerFork() {
     ALOGD("LoggerFork::LoggerFork - initialized");
     m_loggerQueue = std::make_shared<LoggerQueue>(500);
@@ -185,7 +151,7 @@ int LoggerFork::handleForkLogs() {
             continue;
         }
         MGLog mgLog{};
-        parseThreadtimeLine(buffer, &mgLog);
+        parseThreadTimeLine(buffer, &mgLog);
         writeLog(&mgLog, LOG_SRC_FORK);
     }
     fclose(fp);
@@ -197,6 +163,38 @@ int LoggerFork::handleForkLogs() {
     s_child_pid = -1;
     s_running = false;
     return MG_OK;
+}
+
+void LoggerFork:: parseThreadTimeLine(const char *line, MGLog *out) {
+    if (!line || !out) {
+        return;
+    }
+    char date[16] = {0};
+    char time[16] = {0};
+    int pid = 0;
+    long long tid = 0;
+    char level = 'D';
+    char tagBuf[MAX_TAG_LENGTH] = {0};
+    char msgBuf[MAX_MSG_LENGTH] = {0};
+
+    int matched = sscanf(line,
+                         "%15s %15s %d %lld %c %63[^:]: %1025[^\n]",
+                         date, time, &pid, &tid, &level, tagBuf, msgBuf);
+    if (matched >= 6) {
+        out->tid = tid;
+        strncpy(out->tag, tagBuf, MAX_TAG_LENGTH - 1);
+        out->tag[MAX_TAG_LENGTH - 1] = '\0';
+        char finalMsg[MAX_MSG_LENGTH];
+        snprintf(finalMsg, sizeof(finalMsg), "%c %s", level, msgBuf);
+        strncpy(out->msg, finalMsg, MAX_MSG_LENGTH - 1);
+        out->msg[MAX_MSG_LENGTH - 1] = '\0';
+    } else {
+        out->tid = 0;
+        out->tag[0] = '\0';
+        strncpy(out->msg, line, MAX_MSG_LENGTH - 1);
+        out->msg[MAX_MSG_LENGTH - 1] = '\0';
+    }
+    out->ts = BaseLogger::getCurrentTimeMillis();
 }
 
 void LoggerFork::writeLog(MGLog *log, int sourceType) {

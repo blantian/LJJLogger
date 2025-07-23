@@ -41,6 +41,8 @@ namespace MGLogger {
         // 写入日志至队列（内部调用 enqueue）
         void writeLog(MGLog *log, int sourceType) override;
 
+        static void parseThreadTimeLine(const char *line, MGLog *log);
+
         // 启动 Fork 线程
         SDL_Thread *createForkThread();
 
