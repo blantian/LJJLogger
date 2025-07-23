@@ -110,12 +110,6 @@ int LoggerFork::handleForkLogs() {
         m_args_str.emplace_back("logcat");
         m_args_str.emplace_back("-v");
         m_args_str.emplace_back("threadtime");
-        for (const auto &tag: m_blackList) {
-            if (!tag.empty()) {
-                ALOGD("LoggerFork::handleForkLogs - adding tag to logcat args: %s", tag.c_str());
-                m_args_str.emplace_back(tag + ":S");
-            }
-        }
         std::vector<char *> argv;
         argv.reserve(m_args_str.size());
         for (auto &s: m_args_str) {
@@ -201,6 +195,13 @@ void LoggerFork::writeLog(MGLog *log, int sourceType) {
     if (!m_loggerQueue) {
         ALOGE("LoggerFork::writeLog - LoggerQueue not initialized");
         return;
+    }
+    if (!m_blackList.empty()) {
+        // 检查黑名单
+        if (m_blackList.find(log->tag) != m_blackList.end()) {
+            ALOGD("LoggerFork::writeLog - Log tag '%s' is in the blacklist, skipping", log->tag);
+            return;
+        }
     }
     // 将日志封装入队列
     BaseLogger::enqueue(log, sourceType);
