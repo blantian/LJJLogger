@@ -13,7 +13,7 @@ import java.util.Collections
  * Date： 2025/7/3
  * Time： 09:20
  */
-public object MGLoggerJni : ILoggerProtocol {
+public class MGLoggerJni : ILoggerProtocol {
 
     @Volatile
     private var isMGLoggerOk = false
@@ -175,13 +175,11 @@ public object MGLoggerJni : ILoggerProtocol {
     }
 
     @Keep
-    @JvmStatic
     public fun onLoggerStatus(code: Int, cmd: String) {
         loggerStatusCode(cmd, code)
     }
 
     @Keep
-    @JvmStatic
     public fun onLogcatCollectorFail() {
         loggerStatusCode(
             MGLoggerStatus.MGLOGGER_LOGCAT_COLLECTOR_STATUS,

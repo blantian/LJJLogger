@@ -37,13 +37,13 @@ internal class LoggerActor(
     private val long24h = 24 * 60 * 60 * 1000L
 
 
-    private val protocol: ILoggerProtocol = MGLoggerJni.also {
-        it.setOnLoggerStatus(object : ILoggerStatus {
+    private val protocol: ILoggerProtocol = MGLoggerJni().apply {
+        setOnLoggerStatus(object : ILoggerStatus {
             override fun loggerStatus(cmd: String, code: Int) {
                 Logger.onListenerLogWriteStatus(cmd, code)
             }
         })
-        it.logger_init(cfg.cachePath, cfg.logDir,cfg.logCacheS, cfg.maxFile.toInt(), cfg.key16, cfg.iv16)
+        logger_init(cfg.cachePath, cfg.logDir,cfg.logCacheS, cfg.maxFile.toInt(), cfg.key16, cfg.iv16)
 //        it.logger_debug(Logger.sDebug)
     }
 
