@@ -24,12 +24,12 @@ public class MyApplication extends Application {
         super.onCreate();
         path = Environment.getExternalStorageDirectory().getAbsolutePath()
                 + File.separator + "mgtv" + File.separator + FILE_NAME;
-//        initLogan();
-        MGLog.initLogManager(getApplicationContext());
+        initLogan();
+//        MGLog.initLogManager(getApplicationContext());
         ContextProvider.init(this);
 //        MGLogger.w("TAG",1);
         Log.i(TAG, "Logan path: " + path);
-        readThread = AssetReader.logTextFileAsync(this); // 默认路径
+//        readThread = AssetReader.logTextFileAsync(this); // 默认路径
     }
 
     private void initLogan() {

@@ -1,6 +1,14 @@
 #include "logger_listener.h"
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 #include "external/j4a/logger/OnEventListener.h"
 #include "external/sdl/sdl_android_jni.h"
+#ifdef __cplusplus
+}
+#endif
+
 
 namespace MGLogger {
 
@@ -10,7 +18,7 @@ public:
         m_thiz = J4A_NewGlobalRef__catchAll(env, thiz);
     }
 
-    ~JniEventListener() override {
+    ~JniEventListener()  {
         if (!m_thiz) return;
         JNIEnv *env = nullptr;
         if (SDL_JNI_SetupThreadEnv(&env) == JNI_OK) {

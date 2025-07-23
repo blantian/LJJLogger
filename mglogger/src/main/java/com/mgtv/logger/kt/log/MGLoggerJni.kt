@@ -1,5 +1,6 @@
 package com.mgtv.logger.kt.log
 
+import android.util.Log
 import androidx.annotation.Keep
 import com.mgtv.logger.kt.common.MGLoggerStatus
 import com.mgtv.logger.kt.i.ILoggerProtocol
@@ -161,6 +162,7 @@ public object MGLoggerJni : ILoggerProtocol {
     }
 
     private fun loggerStatusCode(cmd: String, code: Int) {
+        Log.i("MGLoggerJni", "loggerStatusCode cmd: $cmd, code: $code")
         if (code < 0) {
             if (cmd.endsWith(MGLoggerStatus.MGLOGGER_WRITE_STATUS) &&
                 code != MGLoggerStatus.MGLOGGER_INIT_FAIL_JNI &&
