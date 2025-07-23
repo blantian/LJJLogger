@@ -31,6 +31,7 @@ public data class LoggerConfig(
         public var logcatBlackList: List<String> = emptyList()
         public fun putCachePath(path: String): Builder = apply { cachePath = path }
         public fun putLogDir(dir: String): Builder = apply { logDir = dir }
+        public fun putLogCacheS(selector: Int): Builder = apply { logCacheS = selector }
         public fun putKeepDays(days: Long): Builder = apply { keepDays = days }
         public fun putMaxFile(value: Long): Builder = apply { maxFile = value }
         public fun putMinSdCard(value: Long): Builder = apply { minSdCard = value }

@@ -27,7 +27,7 @@ std::shared_ptr<BaseLogger> BaseLogger::CreateLogger(const int type) {
             break;
         case LOGGER_TYPE_FORK:
             // 使用 Logan 方式记录日志
-            ALOGD("MGLogger::CreateLogger - Creating CLoganLogger");
+            ALOGD("MGLogger::CreateLogger - Creating LoggerFork");
             if (logger == nullptr) {
                 logger = std::make_shared<LoggerFork>();
                 if (!logger) {

@@ -116,7 +116,7 @@ namespace MGLogger {
         if (list != nullptr) {
             jsize len = env->GetArrayLength(list);
             for (jsize i = 0; i < len; ++i) {
-                jstring item = (jstring) env->GetObjectArrayElement(list, i);
+                auto item = (jstring) env->GetObjectArrayElement(list, i);
                 const char *c_str = env->GetStringUTFChars(item, 0);
                 vec.emplace_back(c_str);
                 env->ReleaseStringUTFChars(item, c_str);

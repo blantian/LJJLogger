@@ -99,6 +99,7 @@ int LoggerFork::handleForkLogs() {
     } else if (s_child_pid == 0) {
         // 子进程
         ALOGD("LoggerFork::handleForkLogs - child process started");
+        sendMessage(MG_LOGGER_STATUS_FORK_STARTED, "child process started");
         close(pipe_fd[0]); // 关闭读端
         dup2(pipe_fd[1], STDOUT_FILENO); // 重定向标准输出到管道
         dup2(pipe_fd[1], STDERR_FILENO); // 重定向标准错误到管道
@@ -109,6 +110,7 @@ int LoggerFork::handleForkLogs() {
         m_args_str.emplace_back("threadtime");
         for (const auto &tag: m_blackList) {
             if (!tag.empty()) {
+                ALOGD("LoggerFork::handleForkLogs - adding tag to logcat args: %s", tag.c_str());
                 m_args_str.emplace_back(tag + ":S");
             }
         }

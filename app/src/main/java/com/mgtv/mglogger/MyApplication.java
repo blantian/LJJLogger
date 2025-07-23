@@ -9,6 +9,7 @@ import com.mgtv.logger.kt.log.MGLogger;
 import com.mgtv.mglogger.log.utils.ContextProvider;
 
 import java.io.File;
+import java.util.ArrayList;
 
 public class MyApplication extends Application {
 
@@ -50,9 +51,16 @@ public class MyApplication extends Application {
 
         Log.i(TAG, "save path: " + internalDir.getAbsolutePath());
 
+        // 配置黑名单
+        ArrayList<String> blackList = new ArrayList<>();
+        blackList.add("MyApplication");
+        blackList.add("art");
+
         LoggerConfig loggerConfig = new LoggerConfig.Builder()
                 .putCachePath(internalDir.getAbsolutePath())
                 .putLogDir(internalDir.getAbsolutePath() + File.separator + FILE_NAME)
+                .putLogcatBlackList(blackList)
+                .putLogCacheS(1) // 0: hook, 1: logcat
                 .build();
         MGLogger.init(loggerConfig, (cmd, code) -> {
             Log.i(TAG, "Logger::" + cmd + " | " + "code : " + code);

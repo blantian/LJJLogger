@@ -107,6 +107,7 @@ namespace MGLogger {
 
 
     void MGLogger::setBlackList(const std::list<std::string> &blackList) {
+        ALOGD("MGLogger::setBlackList - Setting blacklist with %zu items", blackList.size());
         SDL_LockMutex(m_mutex);
         if (mLogger) {
             mLogger->setBlackList(blackList);
@@ -271,6 +272,7 @@ namespace MGLogger {
                     _eventListener->onEvent(MG_LOGGER_STATUS_FORK_EXITED, msg->msg.c_str());
                 }
                 break;
+            case MG_LOGGER_STATUS_FORK_STARTED:
             default:
                 ALOGW("MGLogger::handleMessage - Unknown message type: %d", msg->what);
                 break;
