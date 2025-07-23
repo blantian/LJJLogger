@@ -1,8 +1,6 @@
 package com.mgtv.logger.kt.log
 
-import com.mgtv.logger.kt.di.createLoggerModule
 import com.mgtv.logger.kt.i.ILoggerStatus
-import org.koin.core.context.startKoin
 import com.mgtv.logger.kt.i.ISendLogCallback
 
 /**
@@ -19,28 +17,19 @@ public object MGLogger {
         config: LoggerConfig,
         loggerStatus: ILoggerStatus? = null
     ) {
-//        startKoin {
-//            modules(
-//                createLoggerModule(
-//                    {
-//                        putCachePath(config.cachePath)
-//                        putLogDir(config.logDir)
-////                        putKeepDays(config.keepDays)
-////                        putMaxFile(config.maxFile)
-////                        putMinSdCard(config.minSdCard)
-////                        putMaxQueue(config.maxQueue)
-////                        putKey16(config.key16)
-////                        putIv16(config.iv16)
-//                    },
-//                    loggerStatus = loggerStatus
-//                )
-//            )
-//        }
-
-        Logger.apply {
-            init(config)
-            setStatusListener(loggerStatus)
-        }
+        createLoggerModule(
+            {
+                putCachePath(config.cachePath)
+                putLogDir(config.logDir)
+//                        putKeepDays(config.keepDays)
+//                        putMaxFile(config.maxFile)
+//                        putMinSdCard(config.minSdCard)
+//                        putMaxQueue(config.maxQueue)
+//                        putKey16(config.key16)
+//                        putIv16(config.iv16)
+            },
+            loggerStatus = loggerStatus
+        )
     }
 
     @JvmStatic

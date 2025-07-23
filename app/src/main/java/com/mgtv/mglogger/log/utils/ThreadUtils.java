@@ -3,6 +3,7 @@ package com.mgtv.mglogger.log.utils;
 import android.os.Looper;
 
 import com.mgtv.mglogger.log.thread.GlobalJsonThreadPool;
+import com.mgtv.mglogger.log.thread.GlobalSingleThread;
 import com.mgtv.mglogger.log.thread.GlobalSingleThreadPool;
 import com.mgtv.mglogger.log.thread.LogWriteSingleThreadPool;
 import com.mgtv.mglogger.log.thread.NetworkThreadPool;
@@ -38,8 +39,8 @@ public class ThreadUtils {
     }
 
     public static void startRunInThreadForClearQueue(Runnable doSthRunnable) {
-//        GlobalSingleThread.getInstance(ContextProvider.getApplicationContext())
-//                .startRunAndClearQueue(doSthRunnable);
+        GlobalSingleThread.getInstance(ContextProvider.getApplicationContext())
+                .startRunAndClearQueue(doSthRunnable);
     }
 
     /**

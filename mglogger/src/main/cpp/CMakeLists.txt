@@ -68,6 +68,7 @@ set(SRC_J4A
         external/j4a/j4a_base.c
         external/j4a/Android/os/Build.c
         external/j4a/Android/os/Bundle.c
+        external/j4a/logger/OnEventListener.c
 )
 
 set(SRC_SDL

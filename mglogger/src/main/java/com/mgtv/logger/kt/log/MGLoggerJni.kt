@@ -43,7 +43,7 @@ public object MGLoggerJni : ILoggerProtocol {
     // Native interface (JNI)
     // ----------------------------
 
-    private external fun mglogger_init(
+    private external fun LoggerInit(
         cachePath: String?,
         dirPath: String?,
         logCacheSelector: Int,
@@ -52,9 +52,9 @@ public object MGLoggerJni : ILoggerProtocol {
         encryptIv16: String?
     ): Int
 
-    private external fun mglogger_open(fileName: String?): Int
-    private external fun mglogger_debug(isDebug: Boolean)
-    private external fun mglogger_write(
+    private external fun LoggerOpen(fileName: String?): Int
+    private external fun LoggerDebug(isDebug: Boolean)
+    private external fun LoggerWrite(
         flag: Int,
         log: String?,
         localTime: Long,
@@ -63,7 +63,7 @@ public object MGLoggerJni : ILoggerProtocol {
         isMain: Int
     ): Int
 
-    private external fun mglogger_flush()
+    private external fun LoggerFlush()
 
     // ----------------------------
     // LoganProtocolHandler impl
@@ -87,7 +87,7 @@ public object MGLoggerJni : ILoggerProtocol {
         }
 
         try {
-            val code = mglogger_init(cachePath, dirPath,logCacheSelector, maxFile, encryptKey16, encryptIv16)
+            val code = LoggerInit(cachePath, dirPath,logCacheSelector, maxFile, encryptKey16, encryptIv16)
             isLoganInit = true
             loggerStatusCode(MGLoggerStatus.MGLOGGER_INIT_STATUS, code)
         } catch (e: UnsatisfiedLinkError) {
@@ -102,7 +102,7 @@ public object MGLoggerJni : ILoggerProtocol {
     public override fun logger_debug(debug: Boolean) {
         if (!isLoganInit || !isMGLoggerOk) return
         try {
-            mglogger_debug(debug)
+            LoggerDebug(debug)
         } catch (e: UnsatisfiedLinkError) {
             e.printStackTrace()
         }
@@ -115,7 +115,7 @@ public object MGLoggerJni : ILoggerProtocol {
     public override fun logger_open(fileName: String?) {
         if (!isLoganInit || !isMGLoggerOk) return
         try {
-            val code = mglogger_open(fileName)
+            val code = LoggerOpen(fileName)
             isLoganOpen = true
             loggerStatusCode(MGLoggerStatus.MGLOGGER_OPEN_STATUS, code)
         } catch (e: UnsatisfiedLinkError) {
@@ -130,7 +130,7 @@ public object MGLoggerJni : ILoggerProtocol {
     public override fun logger_flush() {
         if (!isLoganOpen || !isMGLoggerOk) return
         try {
-            mglogger_flush()
+            LoggerFlush()
         } catch (e: UnsatisfiedLinkError) {
             e.printStackTrace()
         }
@@ -147,7 +147,7 @@ public object MGLoggerJni : ILoggerProtocol {
         if (!isLoganOpen || !isMGLoggerOk) return
         try {
             val code =
-                mglogger_write(flag, log, localTime, threadName, threadId, if (isMain) 1 else 0)
+                LoggerWrite(flag, log, localTime, threadName, threadId, if (isMain) 1 else 0)
             if (code != MGLoggerStatus.MGLOGGER_WRITE_SUCCESS || Logger.sDebug) {
                 loggerStatusCode(MGLoggerStatus.MGLOGGER_WRITE_STATUS, code)
             }

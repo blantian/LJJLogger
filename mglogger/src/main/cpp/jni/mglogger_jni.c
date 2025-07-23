@@ -1,6 +1,5 @@
 
 
-#include "mg/logger_fork_read.h"
 #include "jni.h"
 
 static JavaVM *g_vm = NULL;
@@ -46,7 +45,6 @@ Java_com_mgtv_logger_java_CLoganProtocol_clogan_1open(JNIEnv *env, jobject insta
                                                  jstring file_name_) {
     const char *file_name = (*env)->GetStringUTFChars(env, file_name_, 0);
 
-//    jint code = (jint) mg_logger_open(file_name);
 
     (*env)->ReleaseStringUTFChars(env, file_name_, file_name);
     return 0;
@@ -64,7 +62,6 @@ Java_com_mgtv_logger_java_CLoganProtocol_clogan_1debug(JNIEnv *env, jobject inst
     if (!is_debug) {
         i = 0;
     }
-//    mg_logger_debug(i);
 }
 
 
