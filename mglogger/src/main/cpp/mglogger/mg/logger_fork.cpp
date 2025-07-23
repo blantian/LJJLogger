@@ -144,6 +144,9 @@ int LoggerFork::handleForkLogs() {
     char buffer[MAX_MSG_LENGTH];
     while (s_running && fgets(buffer, sizeof(buffer), fp)) {
         // 处理读取到的日志
+        if (strstr(buffer, MGLOGGER_LOG_TAG) != nullptr) {
+            continue;
+        }
         MGLog mgLog;
         mgLog.ts = getCurrentTimeMillis(); // 获取当前时间戳
         strncpy(mgLog.msg, buffer, MAX_MSG_LENGTH - 1);

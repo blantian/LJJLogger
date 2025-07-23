@@ -6,6 +6,7 @@ import android.os.Environment;
 import android.util.Log;
 import com.mgtv.logger.kt.log.LoggerConfig;
 import com.mgtv.logger.kt.log.MGLogger;
+import com.mgtv.mglogger.log.utils.ContextProvider;
 
 import java.io.File;
 
@@ -23,9 +24,12 @@ public class MyApplication extends Application {
         super.onCreate();
         path = Environment.getExternalStorageDirectory().getAbsolutePath()
                 + File.separator + "mgtv" + File.separator + FILE_NAME;
-        initLogan();
+//        initLogan();
+        MGLog.initLogManager(getApplicationContext());
+        ContextProvider.init(this);
 //        MGLogger.w("TAG",1);
         Log.i(TAG, "Logan path: " + path);
+        readThread = AssetReader.logTextFileAsync(this); // 默认路径
     }
 
     private void initLogan() {
@@ -52,7 +56,7 @@ public class MyApplication extends Application {
                 .build();
         MGLogger.init(loggerConfig, (cmd, code) -> {
             Log.i(TAG, "Logger::" + cmd + " | " + "code : " + code);
-            readThread = AssetReader.logTextFileAsync(this); // 默认路径
+
         });
 
 //        LoganConfig config = new LoganConfig.Builder()

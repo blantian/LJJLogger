@@ -34,7 +34,7 @@ public class AssetReader {
             String line;
             int lineNum = 1;
             while ((line = br.readLine()) != null) {
-                Log.d(TAG, "line " + lineNum++ + ": " + line);
+                MGLog.d(TAG, "line " + lineNum++ + ": " + line);
                 try {
                     Thread.sleep(INTERVAL_MS); // 每 20 ms 停顿
                 } catch (InterruptedException e) {

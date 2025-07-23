@@ -48,12 +48,12 @@ namespace MGLogger {
         }
 
         SDL_LockMutex(m_mutex);
+        clogan_debug(0);
         result = clogan_init(cache_path ? cache_path : "",
                                  dir_path ? dir_path : "",
                                  max_file,
                                  key16 ? key16 : "",
                                  iv16 ? iv16 : "");
-        SDL_UnlockMutex(m_mutex);
         if (result == CLOGAN_INIT_SUCCESS_MMAP || result == CLOGAN_INIT_SUCCESS_MEMORY) {
             int code = 0;
             ALOGD("MGLogger::init - CLogan initialized successfully (code=%d)", result);
@@ -65,6 +65,7 @@ namespace MGLogger {
             if (code == CLOGAN_WRITE_SUCCESS) {
                 ALOGI("MGLogger::init - Write initial log success (code=%d)", code);
             }
+            SDL_UnlockMutex(m_mutex);
             // 创建日志处理器
             mLogger = BaseLogger::CreateLogger(log_cache_s);
             if (!mLogger) {
