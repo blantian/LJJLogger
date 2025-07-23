@@ -39,7 +39,8 @@ public class MyApplication extends Application {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             internalDir = new File(getApplicationContext().getFilesDir(), "LoganLogs");
         } else {
-            internalDir = new File(Environment.getExternalStorageDirectory(), "mgtv");
+            internalDir = new File(Environment.getExternalStorageDirectory(),
+                    "/Android/data/" + getPackageName() + "/cache/");
         }
 
         if (!internalDir.exists()) {
