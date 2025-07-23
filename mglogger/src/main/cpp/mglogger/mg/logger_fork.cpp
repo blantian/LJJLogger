@@ -6,9 +6,45 @@
  *
  */
 #include <sys/wait.h>
+#include <cstdio>
+#include <cstring>
 #include "logger_fork.h"
 
 using namespace MGLogger;
+
+namespace {
+    static void parseThreadtimeLine(const char *line, MGLog *out) {
+        if (!line || !out) {
+            return;
+        }
+        char date[16] = {0};
+        char time[16] = {0};
+        int pid = 0;
+        long long tid = 0;
+        char level = 'D';
+        char tagBuf[MAX_TAG_LENGTH] = {0};
+        char msgBuf[MAX_MSG_LENGTH] = {0};
+
+        int matched = sscanf(line,
+                             "%15s %15s %d %lld %c %63[^:]: %1025[^\n]",
+                             date, time, &pid, &tid, &level, tagBuf, msgBuf);
+        if (matched >= 6) {
+            out->tid = tid;
+            strncpy(out->tag, tagBuf, MAX_TAG_LENGTH - 1);
+            out->tag[MAX_TAG_LENGTH - 1] = '\0';
+            char finalMsg[MAX_MSG_LENGTH];
+            snprintf(finalMsg, sizeof(finalMsg), "%c %s", level, msgBuf);
+            strncpy(out->msg, finalMsg, MAX_MSG_LENGTH - 1);
+            out->msg[MAX_MSG_LENGTH - 1] = '\0';
+        } else {
+            out->tid = 0;
+            out->tag[0] = '\0';
+            strncpy(out->msg, line, MAX_MSG_LENGTH - 1);
+            out->msg[MAX_MSG_LENGTH - 1] = '\0';
+        }
+        out->ts = BaseLogger::getCurrentTimeMillis();
+    }
+}
 
 LoggerFork::LoggerFork() {
     ALOGD("LoggerFork::LoggerFork - initialized");
@@ -145,15 +181,12 @@ int LoggerFork::handleForkLogs() {
     ALOGD("LoggerFork::handleForkLogs - logcat pipe opened successfully pid=%d", s_child_pid);
     char buffer[MAX_MSG_LENGTH];
     while (s_running && fgets(buffer, sizeof(buffer), fp)) {
-        // 处理读取到的日志
         if (strstr(buffer, MGLOGGER_LOG_TAG) != nullptr) {
             continue;
         }
-        MGLog mgLog;
-        mgLog.ts = getCurrentTimeMillis(); // 获取当前时间戳
-        strncpy(mgLog.msg, buffer, MAX_MSG_LENGTH - 1);
-        mgLog.msg[MAX_MSG_LENGTH - 1] = '\0'; // 确保字符串以 null 结尾
-        writeLog(&mgLog, LOG_SRC_FORK); // 写入日志
+        MGLog mgLog{};
+        parseThreadtimeLine(buffer, &mgLog);
+        writeLog(&mgLog, LOG_SRC_FORK);
     }
     fclose(fp);
     int status = 0;
