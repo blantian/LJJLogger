@@ -71,6 +71,14 @@ namespace MGLogger {
             return getpid();
         }
 
+        bool inline filiterBlackList(MGLog *log) {
+            if (!m_blackList.empty() && m_blackList.find(log->tag) != m_blackList.end()) {
+                ALOGD("BaseLogger::filterBlackList - Log tag '%s' is in the blacklist, skipping", log->tag);
+                return true;
+            }
+            return false;
+        }
+
     protected:
         static std::shared_ptr<BaseLogger> logger;
         std::shared_ptr<LoggerQueue> m_loggerQueue{nullptr};

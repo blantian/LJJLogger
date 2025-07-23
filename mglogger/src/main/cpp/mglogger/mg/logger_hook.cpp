@@ -97,12 +97,8 @@ void LoggerHook::writeLog(MGLog *log, int sourceType) {
         ALOGE("LoggerHook::writeLog - LoggerQueue not initialized");
         return;
     }
-    if (!m_blackList.empty()) {
-        // 检查黑名单
-        if (m_blackList.find(log->tag) != m_blackList.end()) {
-            ALOGD("LoggerHook::writeLog - Log tag '%s' is in the blacklist, skipping", log->tag);
-            return;
-        }
+    if (filiterBlackList(log)){
+        return;
     }
     // 将日志封装入队列
     BaseLogger::enqueue(log, sourceType);

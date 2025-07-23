@@ -8,6 +8,7 @@
 #include <sys/wait.h>
 #include <cstdio>
 #include <cstring>
+#include <cctype>
 #include "logger_fork.h"
 
 using namespace MGLogger;
@@ -170,12 +171,18 @@ void LoggerFork::parseThreadTimeLine(const char *line, MGLog *out) {
     char level = 'D';
     char tagBuf[MAX_TAG_LENGTH] = {0};
     char msgBuf[MAX_MSG_LENGTH] = {0};
-
+    // 使用 sscanf 解析日志行
     int matched = sscanf(line,
                          "%15s %15s %d %lld %c %63[^:]: %1025[^\n]",
                          date, time, &pid, &tid, &level, tagBuf, msgBuf);
     if (matched >= 6) {
         out->tid = tid;
+        size_t tagLen = strlen(tagBuf);
+        // 去除 tagBuf 末尾的空格
+        while (tagLen > 0 && isspace(static_cast<unsigned char>(tagBuf[tagLen - 1]))) {
+            tagBuf[tagLen - 1] = '\0';
+            --tagLen;
+        }
         strncpy(out->tag, tagBuf, MAX_TAG_LENGTH - 1);
         out->tag[MAX_TAG_LENGTH - 1] = '\0';
         char finalMsg[MAX_MSG_LENGTH];
@@ -196,14 +203,9 @@ void LoggerFork::writeLog(MGLog *log, int sourceType) {
         ALOGE("LoggerFork::writeLog - LoggerQueue not initialized");
         return;
     }
-    if (!m_blackList.empty()) {
-        // 检查黑名单
-        if (m_blackList.find(log->tag) != m_blackList.end()) {
-            ALOGD("LoggerFork::writeLog - Log tag '%s' is in the blacklist, skipping", log->tag);
-            return;
-        }
+    if (filiterBlackList(log)){
+        return;
     }
-    // 将日志封装入队列
     ALOGD("LoggerFork::writeLog - Enqueuing logTag: %s msg: %s",log->tag, log->msg);
     BaseLogger::enqueue(log, sourceType);
 }
@@ -218,7 +220,6 @@ int LoggerFork::dequeue(MGLog *log) {
 }
 
 void LoggerFork::stop() {
-    // 实现内容
     s_running = false;
     if (s_child_pid > 0) {
         kill(s_child_pid, SIGTERM);
