@@ -103,5 +103,27 @@ namespace MGLogger {
     Java_com_mgtv_logger_kt_log_MGLoggerJni_LoggerFlush(JNIEnv *env, jobject thiz) {
         logger->flush();
     }
+
+    extern "C"
+    JNIEXPORT void JNICALL
+    Java_com_mgtv_logger_kt_log_MGLoggerJni_LoggerSetBlackList(JNIEnv *env,
+                                                               jobject thiz,
+                                                               jobjectArray list) {
+        if (logger == nullptr) {
+            return;
+        }
+        std::list<std::string> vec;
+        if (list != nullptr) {
+            jsize len = env->GetArrayLength(list);
+            for (jsize i = 0; i < len; ++i) {
+                jstring item = (jstring) env->GetObjectArrayElement(list, i);
+                const char *c_str = env->GetStringUTFChars(item, 0);
+                vec.emplace_back(c_str);
+                env->ReleaseStringUTFChars(item, c_str);
+                env->DeleteLocalRef(item);
+            }
+        }
+        logger->setBlackList(vec);
+    }
 }
 

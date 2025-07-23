@@ -65,6 +65,7 @@ public class MGLoggerJni : ILoggerProtocol {
     ): Int
 
     private external fun LoggerFlush()
+    private external fun LoggerSetBlackList(list: Array<String>)
 
     // ----------------------------
     // LoganProtocolHandler impl
@@ -132,6 +133,15 @@ public class MGLoggerJni : ILoggerProtocol {
         if (!isLoganOpen || !isMGLoggerOk) return
         try {
             LoggerFlush()
+        } catch (e: UnsatisfiedLinkError) {
+            e.printStackTrace()
+        }
+    }
+
+    public override fun setBlackList(blackList: List<String>) {
+        if (!isMGLoggerOk) return
+        try {
+            LoggerSetBlackList(blackList.toTypedArray())
         } catch (e: UnsatisfiedLinkError) {
             e.printStackTrace()
         }

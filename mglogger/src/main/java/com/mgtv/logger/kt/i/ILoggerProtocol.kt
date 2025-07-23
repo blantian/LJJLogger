@@ -66,4 +66,10 @@ public interface ILoggerProtocol {
      * @param listener The listener to be notified of logger status changes.
      */
     public fun setOnLoggerStatus(listener: ILoggerStatus)
+
+    /**
+     * Update logger blacklist.
+     * @param blackList Tags that should be ignored when capturing logcat.
+     */
+    public fun setBlackList(blackList: List<String>)
 }
