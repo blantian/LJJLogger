@@ -74,6 +74,7 @@ namespace MGLogger {
                 ALOGE("MGLogger::init - Failed to create ILogger instance");
                 return MG_ERROR;
             }
+            mMaxSingleFileSize = max_file; // 设置单个文件最大大小
             mMaxSDCardFileSize = max_sdcard_size; // 设置sdCard最大文件大小
             mCacheFilePath = dir_path; // 设置缓存文件路径
             // 初始化日志钩子/logcat 进程
@@ -195,8 +196,7 @@ namespace MGLogger {
                         case CLOAGN_WRITE_FAIL_MAXFILE:
                             ALOGE("MGLogger::run - Failed to write log (tid=%lld, tag=%s, code=%d)",
                                   item.tid, item.tag, code);
-                            clogan_open(utils::LoggerUtils::toCString(utils::LoggerUtils::nowMs()));
-                            if (write(&item) == CLOGAN_WRITE_SUCCESS) {
+                            if (reWrite(&item) == CLOGAN_WRITE_SUCCESS) {
                                 ALOGD("MGLogger::run - Retried log write after max file limit (tid=%lld, tag=%s)",
                                       item.tid, item.tag);
                             } else {
