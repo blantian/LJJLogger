@@ -6,7 +6,7 @@
 #define MGLOGGER_LOGGER_COMMON_H
 
 #define MG_LOGGER_VERSION "1.0.0"
-#define DEBUG_LOG 1
+#define DEBUG_LOG 0
 
 #define LOGGER_TYPE_HOOK 0 // 使用 Hook 方式记录日志
 #define LOGGER_TYPE_FORK 1 // 使用 Fork 方式记录日志

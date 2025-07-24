@@ -206,7 +206,6 @@ void LoggerFork::writeLog(MGLog *log, int sourceType) {
     if (filiterBlackList(log)){
         return;
     }
-    ALOGD("LoggerFork::writeLog - Enqueuing logTag: %s msg: %s",log->tag, log->msg);
     BaseLogger::enqueue(log, sourceType);
 }
 

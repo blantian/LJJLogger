@@ -101,6 +101,7 @@ namespace MGLogger {
     extern "C"
     JNIEXPORT void JNICALL
     Java_com_mgtv_logger_kt_log_MGLoggerJni_LoggerFlush(JNIEnv *env, jobject thiz) {
+        ALOGD("Flushing logger");
         logger->flush();
     }
 

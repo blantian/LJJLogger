@@ -50,10 +50,10 @@ namespace MGLogger {
         SDL_LockMutex(m_mutex);
         clogan_debug(0);
         result = clogan_init(cache_path ? cache_path : "",
-                                 dir_path ? dir_path : "",
-                                 max_file,
-                                 key16 ? key16 : "",
-                                 iv16 ? iv16 : "");
+                             dir_path ? dir_path : "",
+                             max_file,
+                             key16 ? key16 : "",
+                             iv16 ? iv16 : "");
         if (result == CLOGAN_INIT_SUCCESS_MMAP || result == CLOGAN_INIT_SUCCESS_MEMORY) {
             int code = 0;
             ALOGD("MGLogger::init - CLogan initialized successfully (code=%d)", result);
@@ -174,14 +174,14 @@ namespace MGLogger {
 
             mBatchBuf.emplace_back(logEntry);   // 放进批量容器
             uint64_t now = nowMs(); // 获取当前时间戳（毫秒）
-            bool sizeLimit   = mBatchBuf.size() >= BATCH_SIZE;
+            bool sizeLimit = mBatchBuf.size() >= BATCH_SIZE;
             bool timeExpired = now - mLastFlushTs >= FLUSH_INTERVAL_MS;
             ALOGD("MGLogger::run - Log entry received (tid=%lld, tag=%s, sizeLimit=%d, timeExpired=%d)",
                   logEntry.tid, logEntry.tag, sizeLimit, timeExpired);
             // 写入获取的日志到持久化存储
             if (sizeLimit || timeExpired) {
                 SDL_LockMutex(m_mutex);
-                for (auto &item : mBatchBuf) {
+                for (auto &item: mBatchBuf) {
                     int code = write(&item);
                     if (code == CLOGAN_WRITE_SUCCESS) {
                         ALOGI("MGLogger::run - Log written successfully (tid=%lld, tag=%s, writeRet=%d)",
@@ -199,7 +199,7 @@ namespace MGLogger {
         }
         SDL_LockMutex(m_mutex);
         //处理残留日志
-        for (auto &item : mBatchBuf) {
+        for (auto &item: mBatchBuf) {
             write(&item);
         }
         mBatchBuf.clear();
@@ -326,6 +326,7 @@ namespace MGLogger {
     }
 
     int MGLogger::flush() {
+        ALOGI("MGLogger::handleMessage - Flush requested");
         SDL_LockMutex(m_mutex);
         int code = clogan_flush();
         if (code == CLOGAN_FLUSH_SUCCESS) {

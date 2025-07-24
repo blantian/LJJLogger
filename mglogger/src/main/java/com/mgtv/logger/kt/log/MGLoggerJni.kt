@@ -130,8 +130,9 @@ public class MGLoggerJni : ILoggerProtocol {
     }
 
     public override fun logger_flush() {
-        if (!isLoganOpen || !isMGLoggerOk) return
+//        if (!isLoganOpen || !isMGLoggerOk) return
         try {
+            Log.i("MGLoggerJni", "logger_flush called")
             LoggerFlush()
         } catch (e: UnsatisfiedLinkError) {
             e.printStackTrace()
