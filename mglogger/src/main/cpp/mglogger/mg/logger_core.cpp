@@ -375,7 +375,8 @@ namespace MGLogger {
         while (freeSpace < mMaxSingleFileSize && !fileInfo.empty()) {
             auto oldest = std::min_element(
                     fileInfo.begin(), fileInfo.end(),
-                    [](const auto &a, const auto &b) {
+                    [](const std::pair<const std::string, long long>  &a,
+                       const std::pair<const std::string, long long> &b) {
                         return utils::LoggerUtils::parseTsFromFileName(a.first) <
                                utils::LoggerUtils::parseTsFromFileName(b.first);
                     });
