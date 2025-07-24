@@ -8,6 +8,7 @@
 #include "ilogger.h"
 #include "logger_common.h"
 #include "logger_status.h"
+#include "logger_utils.h"
 #include "vector"
 
 namespace MGLogger {

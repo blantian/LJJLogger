@@ -16,7 +16,7 @@
 #include "logger_listener.h"
 #include "vector"
 #include "logger_status.h"
-
+#include "logger_utils.h"
 #include <chrono>
 #include <cstdint>
 
@@ -70,13 +70,6 @@ namespace MGLogger {
         SDL_Thread *createMessageTh();
 
         void handleMessage(const std::shared_ptr<MGMessage> &msg);
-
-        static inline uint64_t nowMs() {
-            using namespace std::chrono;
-            return duration_cast<milliseconds>(
-                    steady_clock::now().time_since_epoch()
-            ).count();          // 单位：毫秒
-        }
 
     private:
         std::shared_ptr<ILogger> mLogger{nullptr};

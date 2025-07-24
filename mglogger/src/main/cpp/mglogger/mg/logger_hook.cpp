@@ -192,7 +192,7 @@ int LoggerHook::hookLogPrint(int prio, const char *tag, const char *fmt, ...) {
     snprintf(finalMsg, sizeof(finalMsg), "%c %s", levelChar, msgBuf);
     strncpy(log.msg, finalMsg, sizeof(log.msg) - 1);
     log.msg[sizeof(log.msg) - 1] = '\0';
-    log.ts = getCurrentTimeMillis();
+    log.ts = utils::LoggerUtils::nowMs(); // 获取当前时间戳（毫秒）
     // 过滤掉内部日志
     if (s_instance && tag && strcmp(tag, MGLOGGER_LOG_TAG) != 0) {
         s_instance->writeLog(&log, LOG_SRC_PRINT);
@@ -281,7 +281,7 @@ int LoggerHook::hookLogBufWrite(int bufID, int prio, const char *tag, const char
         snprintf(finalMsg, sizeof(finalMsg), "%c %s", levelChar, text);
         strncpy(log.msg, finalMsg, sizeof(log.msg) - 1);
         log.msg[sizeof(log.msg) - 1] = '\0';
-        log.ts = getCurrentTimeMillis();
+        log.ts = utils::LoggerUtils::nowMs(); // 获取当前时间戳（毫秒）
         // 将日志加入队列（过滤内部的 MG_LOGGER 日志）
         if (s_instance && tag && strcmp(tag, MGLOGGER_LOG_TAG) != 0) {
             s_instance->writeLog(&log, LOG_SRC_BUF_WRITE);

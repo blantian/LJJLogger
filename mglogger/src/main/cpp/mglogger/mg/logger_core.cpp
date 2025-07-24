@@ -58,7 +58,8 @@ namespace MGLogger {
         if (result == CLOGAN_INIT_SUCCESS_MMAP || result == CLOGAN_INIT_SUCCESS_MEMORY) {
             int code = 0;
             ALOGD("MGLogger::init - CLogan initialized successfully (code=%d)", result);
-            code = clogan_open(MG_LOGGER_LOG);
+            const char *fileName = utils::LoggerUtils::toCString(utils::LoggerUtils::nowMs());
+            code = clogan_open(fileName);
             ALOGD("MGLogger::init - CLogan opened logan (code=%d)", code);
             code = clogan_flush();
             ALOGD("MGLogger::init - CLogan flushed logan (code=%d)", code);
@@ -176,7 +177,7 @@ namespace MGLogger {
             }
 
             mBatchBuf.emplace_back(logEntry);   // 放进批量容器
-            uint64_t now = nowMs(); // 获取当前时间戳（毫秒）
+            uint64_t now = utils::LoggerUtils::nowMs(); // 获取当前时间戳（毫秒）
             bool sizeLimit = mBatchBuf.size() >= BATCH_SIZE;
             bool timeExpired = now - mLastFlushTs >= FLUSH_INTERVAL_MS;
             ALOGD("MGLogger::run - Log entry received (tid=%lld, tag=%s, sizeLimit=%d, timeExpired=%d)",

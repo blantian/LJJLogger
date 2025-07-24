@@ -195,7 +195,7 @@ void LoggerFork::parseThreadTimeLine(const char *line, MGLog *out) {
         strncpy(out->msg, line, MAX_MSG_LENGTH - 1);
         out->msg[MAX_MSG_LENGTH - 1] = '\0';
     }
-    out->ts = BaseLogger::getCurrentTimeMillis();
+    out->ts = utils::LoggerUtils::nowMs();
 }
 
 void LoggerFork::writeLog(MGLog *log, int sourceType) {

@@ -31,8 +31,6 @@
 #define LOG_MAX_LENGTH 1024 // 日志最大长度
 #define ANDROID_API_LEVEL 19 // Android API level
 
-#define MG_LOGGER_LOG "MGLogger.zip" // 日志文件名
-
 
 
 #define LOG_READ_TIME_OUT 20 // ms

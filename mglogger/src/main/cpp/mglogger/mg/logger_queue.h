@@ -29,7 +29,7 @@ typedef struct Log {
     long long tid;                   // 线程 ID
     char tag[MAX_TAG_LENGTH];        // 日志标签
     char msg[MAX_MSG_LENGTH];        // 日志内容
-    long long ts;                    // 时间戳（毫秒）
+    uint64_t ts;                    // 时间戳（毫秒）
 } MGLog;
 
 namespace MGLogger {
