@@ -62,6 +62,7 @@ set(SOURCE_LOGGER
         mglogger/mg/message_queue.cpp
         mglogger/mg/logger_core.cpp
         mglogger/mg/logger_listener.cpp
+        mglogger/mg/file_utils.cpp
 )
 
 set(SRC_J4A
