@@ -8,6 +8,8 @@
 #include "logger_core.h"
 
 #include <utility>
+#include <algorithm>
+#include <cstdio>
 
 namespace MGLogger {
 
@@ -361,17 +363,45 @@ namespace MGLogger {
             ALOGE("MGLogger::reWrite - Cache file path is empty, cannot rewrite log");
             return MG_ERROR;
         }
-        std::map<std::string, long long> fileInfo = utils::LoggerUtils::collectFileInfo(mCacheFilePath);
-        if (fileInfo.empty()) {
-            ALOGE("MGLogger::reWrite - No log files found in cache path: %s", mCacheFilePath);
-            return MG_ERROR;
+        std::map<std::string, long long> fileInfo =
+                utils::LoggerUtils::collectFileInfo(mCacheFilePath);
+
+        long long totalSize = 0;
+        for (const auto &kv: fileInfo) {
+            totalSize += kv.second;
         }
-        // 遍历文件信息，统计文件大小
 
+        long long freeSpace = static_cast<long long>(mMaxSDCardFileSize) - totalSize;
+        while (freeSpace < mMaxSingleFileSize && !fileInfo.empty()) {
+            auto oldest = std::min_element(
+                    fileInfo.begin(), fileInfo.end(),
+                    [](const auto &a, const auto &b) {
+                        return utils::LoggerUtils::parseTsFromFileName(a.first) <
+                               utils::LoggerUtils::parseTsFromFileName(b.first);
+                    });
+            if (oldest == fileInfo.end()) {
+                break;
+            }
+            std::string fullPath = std::string(mCacheFilePath) + "/" + oldest->first;
+            if (std::remove(fullPath.c_str()) == 0) {
+                totalSize -= oldest->second;
+            } else {
+                ALOGE("MGLogger::reWrite - Failed to delete file: %s", fullPath.c_str());
+            }
+            fileInfo.erase(oldest);
+            freeSpace = static_cast<long long>(mMaxSDCardFileSize) - totalSize;
+        }
 
-        // 重新创建一个文件
-        clogan_open(utils::LoggerUtils::toCString(utils::LoggerUtils::nowMs()));
-
+        const char *fileName = utils::LoggerUtils::toCString(utils::LoggerUtils::nowMs());
+        clogan_open(fileName);
+        int is_main = (log->tid == getpid()) ? 1 : 0;
+        int code = clogan_write(0,
+                                log->msg,
+                                log->ts,
+                                const_cast<char *>(log->tag),
+                                log->tid,
+                                is_main);
+        return code;
     }
 
     int MGLogger::flush() {
