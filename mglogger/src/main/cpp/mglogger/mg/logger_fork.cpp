@@ -173,7 +173,7 @@ void LoggerFork::parseThreadTimeLine(const char *line, MGLog *out) {
     char msgBuf[MAX_MSG_LENGTH] = {0};
     // 使用 sscanf 解析日志行
     int matched = sscanf(line,
-                         "%15s %15s %d %lld %c %63[^:]: %1025[^\n]",
+                         "%15s %15s %d %lld %c %63[^:]: %2049[^\n]",
                          date, time, &pid, &tid, &level, tagBuf, msgBuf);
     if (matched >= 6) {
         out->tid = tid;
