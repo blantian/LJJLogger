@@ -223,7 +223,7 @@ int LoggerHook::hookLogPrint(int prio, const char *tag, const char *fmt, ...) {
 
 #if OPEN_VPRINT
 int LoggerHook::hookLogVPrint(int prio, const char *tag, const char *fmt, va_list ap) {
-        char msgBuf[1024];
+        char msgBuf[LOG_MAX_LENGTH];
         vsnprintf(msgBuf, sizeof(msgBuf), fmt, ap);
         MGLog log{};
         log.tid = my_tid();
@@ -328,13 +328,13 @@ int LoggerHook::hookLogBufWrite(int bufID, int prio, const char *tag, const char
 #if OPEN_ASSERT
 void LoggerHook::hookLogAssert(const char *cond, const char *tag, const char *fmt, ...) {
         // 格式化断言日志消息
-        char msgBuf[1024];
+        char msgBuf[LOG_MAX_LENGTH];
         va_list args, args_copy;
         va_start(args, fmt);
         va_copy(args_copy, args);
         vsnprintf(msgBuf, sizeof(msgBuf), fmt, args);
         va_end(args);
-        char fullMsg[1280];
+        char fullMsg[LOG_MAX_LENGTH + 256];
         snprintf(fullMsg, sizeof(fullMsg), "[ASSERT:%s] %s",
                  cond ? cond : "null", msgBuf);
         MGLog log{};
