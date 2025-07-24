@@ -32,6 +32,7 @@ namespace MGLogger {
                        const char *dir_path,
                        int log_cache_s,
                        int max_file,
+                       int max_sdcard_size,
                        const char *key16,
                        const char *iv16) {
 
@@ -72,6 +73,8 @@ namespace MGLogger {
                 ALOGE("MGLogger::init - Failed to create ILogger instance");
                 return MG_ERROR;
             }
+            mMaxSDCardFileSize = max_sdcard_size; // 设置sdCard最大文件大小
+            mCacheFilePath = dir_path; // 设置缓存文件路径
             // 初始化日志钩子/logcat 进程
             result = mLogger->init();
             if (result != MG_OK) {

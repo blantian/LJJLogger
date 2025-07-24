@@ -49,6 +49,7 @@ public class MGLoggerJni : ILoggerProtocol {
         dirPath: String?,
         logCacheSelector: Int,
         maxFile: Int,
+        maxSdCardSize:Int,
         encryptKey16: String?,
         encryptIv16: String?
     ): Int
@@ -76,6 +77,7 @@ public class MGLoggerJni : ILoggerProtocol {
         dirPath: String?,
         logCacheSelector: Int,
         maxFile: Int,
+        maxSdCardSize: Int,
         encryptKey16: String?,
         encryptIv16: String?
     ) {
@@ -89,7 +91,7 @@ public class MGLoggerJni : ILoggerProtocol {
         }
 
         try {
-            val code = LoggerInit(cachePath, dirPath,logCacheSelector, maxFile, encryptKey16, encryptIv16)
+            val code = LoggerInit(cachePath, dirPath,logCacheSelector, maxFile,maxSdCardSize, encryptKey16, encryptIv16)
             isLoganInit = true
             loggerStatusCode(MGLoggerStatus.MGLOGGER_INIT_STATUS, code)
         } catch (e: UnsatisfiedLinkError) {

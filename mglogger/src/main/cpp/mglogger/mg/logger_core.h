@@ -35,6 +35,7 @@ namespace MGLogger {
                  const char *dir_path,
                  int log_cache_s,
                  int max_file,
+                 int max_sdcard_size,
                  const char *key16,
                  const char *iv16);
 
@@ -90,6 +91,8 @@ namespace MGLogger {
         SDL_cond *m_cond{nullptr};
         bool running{false};
         bool alive{false};
+        int mMaxSDCardFileSize{0};
+        const char *mCacheFilePath{}; // 文件路径
     };
 }
 

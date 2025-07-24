@@ -51,6 +51,7 @@ public interface ILoggerProtocol {
         dir_path: String?,
         logCacheSelector: Int,
         max_file: Int,
+        max_sd_card_size: Int,
         encrypt_key_16: String?,
         encrypt_iv_16: String?
     )

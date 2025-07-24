@@ -21,6 +21,7 @@ namespace MGLogger {
                                                        jstring dir_path,
                                                        jint log_cache_s,
                                                        jint max_file,
+                                                       jint max_sdcard_size,
                                                        jstring encrypt_key16,
                                                        jstring encrypt_iv16) {
         const char *dir_path_ = env->GetStringUTFChars(dir_path, 0);
@@ -35,6 +36,7 @@ namespace MGLogger {
                                 dir_path_,
                                 log_cache_s,
                                 max_file,
+                                max_sdcard_size,
                                 encrypt_key16_,
                                 encrypt_iv16_);
         if (code == MG_OK) {

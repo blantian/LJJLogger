@@ -43,7 +43,7 @@ internal class LoggerActor(
                 Logger.onListenerLogWriteStatus(cmd, code)
             }
         })
-        logger_init(cfg.cachePath, cfg.logDir,cfg.logCacheS, cfg.maxFile.toInt(), cfg.key16, cfg.iv16)
+        logger_init(cfg.cachePath, cfg.logDir,cfg.logCacheS, cfg.maxFile.toInt(),cfg.minSdCard.toInt(), cfg.key16, cfg.iv16)
         if (cfg.logcatBlackList.isNotEmpty()) {
             setBlackList(cfg.logcatBlackList)
         }
