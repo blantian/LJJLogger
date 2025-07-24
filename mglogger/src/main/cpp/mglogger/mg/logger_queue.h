@@ -22,7 +22,7 @@ extern "C" {
 #endif
 
 constexpr size_t MAX_TAG_LENGTH = 64;
-constexpr size_t MAX_MSG_LENGTH = 1026;
+constexpr size_t MAX_MSG_LENGTH = 2048;
 
 // 日志条目结构
 typedef struct Log {
@@ -30,6 +30,7 @@ typedef struct Log {
     char tag[MAX_TAG_LENGTH];        // 日志标签
     char msg[MAX_MSG_LENGTH];        // 日志内容
     uint64_t ts;                    // 时间戳（毫秒）
+    int level;                      // 日志级别
 } MGLog;
 
 namespace MGLogger {

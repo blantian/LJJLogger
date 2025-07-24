@@ -40,10 +40,11 @@ namespace MGLogger {
 
         int result = MG_OK;
         // 初始化 CLogan 环境，根据配置决定是否使用钩子线程
-        ALOGD("MGLogger::init - Initializing MGLogger with cache_path=%s, dir_path=%s, max_file=%d key16=%s, iv16=%s in Android API level %d",
+        ALOGD("MGLogger::init - Initializing MGLogger with cache_path=%s, dir_path=%s, max_file=%d max_sdcard_size=%d key16=%s, iv16=%s in Android API level %d",
               cache_path ? cache_path : "null",
               dir_path ? dir_path : "null",
-              max_file, key16 ? key16 : "null", iv16 ? iv16 : "null", SDL_Android_GetApiLevel());
+              max_file, max_sdcard_size, key16 ? key16 : "null", iv16 ? iv16 : "null",
+              SDL_Android_GetApiLevel());
 
         if (m_mutex == nullptr || m_cond == nullptr) {
             ALOGE("MGLogger::init - Mutex or Cond not initialized");
@@ -77,7 +78,7 @@ namespace MGLogger {
                 return MG_ERROR;
             }
             mMaxSingleFileSize = max_file; // 设置单个文件最大大小
-            mMaxSDCardFileSize = max_sdcard_size; // 设置sdCard最大文件大小
+            mMaxSDCardFileSize = max_sdcard_size + LOG_EXTERNAL_SIZE; // 设置sdCard最大文件大小
             mCacheFilePath = dir_path ? dir_path : ""; // 设置缓存文件路径
             // 初始化日志钩子/logcat 进程
             result = mLogger->init();
@@ -177,6 +178,12 @@ namespace MGLogger {
             if (sourceType < 0) {
                 // 返回 -1 表示队列已中止且无日志，退出循环
                 break;
+            }
+
+            if (logEntry.level == LEVEL_ERROR) {
+                write(&logEntry); // 直接写入错误日志
+                clogan_flush(); // 如果是错误日志，立即刷新
+                continue;
             }
 
             mBatchBuf.emplace_back(logEntry);   // 放进批量容器
@@ -375,7 +382,7 @@ namespace MGLogger {
         while (freeSpace < mMaxSingleFileSize && !fileInfo.empty()) {
             auto oldest = std::min_element(
                     fileInfo.begin(), fileInfo.end(),
-                    [](const std::pair<const std::string, long long>  &a,
+                    [](const std::pair<const std::string, long long> &a,
                        const std::pair<const std::string, long long> &b) {
                         return utils::LoggerUtils::parseTsFromFileName(a.first) <
                                utils::LoggerUtils::parseTsFromFileName(b.first);

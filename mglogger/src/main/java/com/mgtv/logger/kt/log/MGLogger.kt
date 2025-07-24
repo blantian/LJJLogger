@@ -23,6 +23,7 @@ public object MGLogger {
                 putLogDir(config.logDir)
                 putLogcatBlackList(config.logcatBlackList)
                 putLogCacheS(config.logCacheS)
+                putMaxFile(config.maxFile)
                 putMinSdCard(config.minSdCard)
 //                putKeepDays(config.keepDays)
 //                putMaxFile(config.maxFile)

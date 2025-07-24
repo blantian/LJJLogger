@@ -61,7 +61,7 @@ public class MyApplication extends Application {
                 .putCachePath(internalDir.getAbsolutePath())
                 .putLogDir(internalDir.getAbsolutePath() + File.separator + FILE_NAME)
                 .putLogcatBlackList(blackList)
-                .putLogCacheS(1) // 0: hook, 1: logcat
+                .putLogCacheS(0) // 0: hook, 1: logcat
                 .build();
         MGLogger.init(loggerConfig, (cmd, code) -> {
             Log.i(TAG, "Logger::" + cmd + " | " + "code : " + code);

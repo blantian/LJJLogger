@@ -40,6 +40,8 @@ public class MainActivity extends AppCompatActivity {
                 Log.i(TAG, "hello world");
             }
         });
+
+        throw new RuntimeException("Test Exception");
     }
 
 

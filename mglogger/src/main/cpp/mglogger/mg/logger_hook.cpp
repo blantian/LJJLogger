@@ -168,24 +168,31 @@ int LoggerHook::hookLogPrint(int prio, const char *tag, const char *fmt, ...) {
     switch (prio) {
         case ANDROID_LOG_DEBUG:
             levelChar = LOG_DEBUG;
+            log.level = LEVEL_DEBUG;
             break;
         case ANDROID_LOG_INFO:
             levelChar = LOG_INFO;
+            log.level = LEVEL_INFO;
             break;
         case ANDROID_LOG_WARN:
             levelChar = LOG_WARN;
+            log.level = LEVEL_WARN;
             break;
         case ANDROID_LOG_ERROR:
             levelChar = LOG_ERROR;
+            log.level = LEVEL_ERROR;
             break;
         case ANDROID_LOG_FATAL:
             levelChar = LOG_FATAL;
+            log.level = LEVEL_FATAL;
             break;
         case ANDROID_LOG_VERBOSE:
             levelChar = LOG_VERBOSE;
+            log.level = LEVEL_VERBOSE;
             break;
         default:
             levelChar = LOG_UNKNOWN; // 未知级别
+            log.level = LEVEL_UNKNOWN;
             break;
     }
     char finalMsg[LOG_MAX_LENGTH + 2]; // +2 for levelChar and space
@@ -257,24 +264,31 @@ int LoggerHook::hookLogBufWrite(int bufID, int prio, const char *tag, const char
         switch (prio) {
             case ANDROID_LOG_DEBUG:
                 levelChar = LOG_DEBUG;
+                log.level = LEVEL_DEBUG;
                 break;
             case ANDROID_LOG_INFO:
                 levelChar = LOG_INFO;
+                log.level = LEVEL_INFO;
                 break;
             case ANDROID_LOG_WARN:
                 levelChar = LOG_WARN;
+                log.level = LEVEL_WARN;
                 break;
             case ANDROID_LOG_ERROR:
                 levelChar = LOG_ERROR;
+                log.level = LEVEL_ERROR;
                 break;
             case ANDROID_LOG_FATAL:
                 levelChar = LOG_FATAL;
+                log.level = LEVEL_FATAL;
                 break;
             case ANDROID_LOG_VERBOSE:
                 levelChar = LOG_VERBOSE;
+                log.level = LEVEL_VERBOSE;
                 break;
             default:
                 levelChar = LOG_UNKNOWN;
+                log.level = LEVEL_UNKNOWN;
                 break;
         }
         char finalMsg[LOG_MAX_LENGTH + 2]; // +2 for levelChar and space

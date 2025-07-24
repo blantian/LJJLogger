@@ -28,8 +28,17 @@
 #define LOG_VERBOSE 'V'
 #define LOG_UNKNOWN 'U'
 
+#define LEVEL_DEBUG 0
+#define LEVEL_INFO 1
+#define LEVEL_WARN 2
+#define LEVEL_ERROR 3
+#define LEVEL_FATAL 4
+#define LEVEL_VERBOSE 5
+#define LEVEL_UNKNOWN -1
+
 #define LOG_MAX_LENGTH 1024 // 日志最大长度
 #define ANDROID_API_LEVEL 19 // Android API level
+#define LOG_EXTERNAL_SIZE (1 * 1024 * 1024) // 扩展大小 1MB
 
 
 

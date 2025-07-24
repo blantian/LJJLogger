@@ -91,6 +91,7 @@ public class MGLoggerJni : ILoggerProtocol {
         }
 
         try {
+            Log.i("MGLoggerJni", "logger_init called with cachePath: $cachePath, dirPath: $dirPath, logCacheSelector: $logCacheSelector, maxFile: $maxFile, maxSdCardSize: $maxSdCardSize, encryptKey16: $encryptKey16, encryptIv16: $encryptIv16")
             val code = LoggerInit(cachePath, dirPath,logCacheSelector, maxFile,maxSdCardSize, encryptKey16, encryptIv16)
             isLoganInit = true
             loggerStatusCode(MGLoggerStatus.MGLOGGER_INIT_STATUS, code)
