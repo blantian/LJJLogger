@@ -187,13 +187,28 @@ namespace MGLogger {
                 SDL_LockMutex(m_mutex);
                 for (auto &item: mBatchBuf) {
                     int code = write(&item);
-                    if (code == CLOGAN_WRITE_SUCCESS) {
-                        ALOGI("MGLogger::run - Log written successfully (tid=%lld, tag=%s, writeRet=%d)",
-                              logEntry.tid, logEntry.tag, code);
-                    } else {
-                        ALOGE("MGLogger::run - Failed to write log (tid=%lld, tag=%s, writeRet=%d)",
-                              logEntry.tid, logEntry.tag, code);
-                        // todo 处理写入失败的情况,暂时忽略
+                    switch (code) {
+                        case CLOGAN_WRITE_SUCCESS:
+                            ALOGD("MGLogger::run - Log written successfully (tid=%lld, tag=%s)",
+                                  item.tid, item.tag);
+                            break;
+                        case CLOAGN_WRITE_FAIL_MAXFILE:
+                            ALOGE("MGLogger::run - Failed to write log (tid=%lld, tag=%s, code=%d)",
+                                  item.tid, item.tag, code);
+                            clogan_open(utils::LoggerUtils::toCString(utils::LoggerUtils::nowMs()));
+                            if (write(&item) == CLOGAN_WRITE_SUCCESS) {
+                                ALOGD("MGLogger::run - Retried log write after max file limit (tid=%lld, tag=%s)",
+                                      item.tid, item.tag);
+                            } else {
+                                ALOGE("MGLogger::run - Retried log write failed (tid=%lld, tag=%s)",
+                                      item.tid, item.tag);
+                            }
+                            break;
+                        default:
+                            ALOGE("MGLogger::run - Unknown write result (tid=%lld, tag=%s, code=%d)",
+                                  item.tid, item.tag, code);
+                            // todo 处理写入失败的情况,暂时忽略
+                            break;
                     }
                 }
                 mBatchBuf.clear();
@@ -327,6 +342,36 @@ namespace MGLogger {
                                 log->tid,
                                 is_main);
         return code;
+    }
+
+    int MGLogger::reWrite(MGLog *log) {
+        if (!log) {
+            ALOGE("MGLogger::write - Invalid log (null)");
+            return MG_ERROR;
+        }
+        // 确保日志字段合法
+        if (log->tag[0] == '\0') {
+            strncpy(log->tag, "default", sizeof(log->tag) - 1);
+            log->tag[sizeof(log->tag) - 1] = '\0';
+        }
+        if (log->ts <= 0) {
+            log->ts = static_cast<long long>(time(nullptr)) * 1000LL;
+        }
+        if (mCacheFilePath[0] == '\0') {
+            ALOGE("MGLogger::reWrite - Cache file path is empty, cannot rewrite log");
+            return MG_ERROR;
+        }
+        std::map<std::string, long long> fileInfo = utils::LoggerUtils::collectFileInfo(mCacheFilePath);
+        if (fileInfo.empty()) {
+            ALOGE("MGLogger::reWrite - No log files found in cache path: %s", mCacheFilePath);
+            return MG_ERROR;
+        }
+        // 遍历文件信息，统计文件大小
+
+
+        // 重新创建一个文件
+        clogan_open(utils::LoggerUtils::toCString(utils::LoggerUtils::nowMs()));
+
     }
 
     int MGLogger::flush() {

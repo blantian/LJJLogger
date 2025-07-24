@@ -30,7 +30,7 @@ public class MyApplication extends Application {
         ContextProvider.init(this);
 //        MGLogger.w("TAG",1);
         Log.i(TAG, "Logan path: " + path);
-//        readThread = AssetReader.logTextFileAsync(this); // 默认路径
+        readThread = AssetReader.logTextFileAsync(this); // 默认路径
     }
 
     private void initLogan() {

@@ -44,8 +44,6 @@ namespace MGLogger {
         int write(int flag, const char *log, long long local_time,
                   const char *thread_name, long long thread_id, int is_main);
 
-        int write(MGLog *log);
-
         int flush();
 
         void debug(int debug);
@@ -71,6 +69,11 @@ namespace MGLogger {
 
         void handleMessage(const std::shared_ptr<MGMessage> &msg);
 
+        int write(MGLog *log);
+
+        int reWrite(MGLog *log);
+
+
     private:
         std::shared_ptr<ILogger> mLogger{nullptr};
         std::vector<MGLog> mBatchBuf;                     // 批量缓存
@@ -85,7 +88,7 @@ namespace MGLogger {
         bool running{false};
         bool alive{false};
         int mMaxSDCardFileSize{0};
-        const char *mCacheFilePath{}; // 文件路径
+        const char *mCacheFilePath{nullptr}; // 文件路径
     };
 }
 
