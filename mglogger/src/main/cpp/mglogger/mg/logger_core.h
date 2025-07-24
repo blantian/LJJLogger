@@ -89,7 +89,7 @@ namespace MGLogger {
         bool alive{false};
         int mMaxSingleFileSize{0}; // 单个文件最大大小
         int mMaxSDCardFileSize{0};
-        const char *mCacheFilePath{nullptr}; // 文件路径
+        std::string mCacheFilePath; // 文件路径
     };
 }
 

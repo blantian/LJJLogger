@@ -78,7 +78,7 @@ namespace MGLogger {
             }
             mMaxSingleFileSize = max_file; // 设置单个文件最大大小
             mMaxSDCardFileSize = max_sdcard_size; // 设置sdCard最大文件大小
-            mCacheFilePath = dir_path; // 设置缓存文件路径
+            mCacheFilePath = dir_path ? dir_path : ""; // 设置缓存文件路径
             // 初始化日志钩子/logcat 进程
             result = mLogger->init();
             if (result != MG_OK) {
@@ -359,12 +359,12 @@ namespace MGLogger {
         if (log->ts <= 0) {
             log->ts = static_cast<long long>(time(nullptr)) * 1000LL;
         }
-        if (mCacheFilePath[0] == '\0') {
+        if (mCacheFilePath.empty()) {
             ALOGE("MGLogger::reWrite - Cache file path is empty, cannot rewrite log");
             return MG_ERROR;
         }
         std::map<std::string, long long> fileInfo =
-                utils::LoggerUtils::collectFileInfo(mCacheFilePath);
+                utils::LoggerUtils::collectFileInfo(mCacheFilePath.c_str());
 
         long long totalSize = 0;
         for (const auto &kv: fileInfo) {
@@ -383,7 +383,7 @@ namespace MGLogger {
             if (oldest == fileInfo.end()) {
                 break;
             }
-            std::string fullPath = std::string(mCacheFilePath) + "/" + oldest->first;
+            std::string fullPath = mCacheFilePath + "/" + oldest->first;
             if (std::remove(fullPath.c_str()) == 0) {
                 totalSize -= oldest->second;
             } else {
