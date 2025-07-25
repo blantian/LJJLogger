@@ -36,7 +36,7 @@
 #define LEVEL_VERBOSE 5
 #define LEVEL_UNKNOWN -1
 
-#define LOG_MAX_LENGTH 2048 // 日志最大长度，保持与 MAX_MSG_LENGTH 一致
+#define LOG_MAX_LENGTH 2048 // 日志最大长度
 #define ANDROID_API_LEVEL 19 // Android API level
 #define LOG_EXTERNAL_SIZE (1 * 1024 * 1024) // 扩展大小 1MB
 
