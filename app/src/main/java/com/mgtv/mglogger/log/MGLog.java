@@ -1,45 +1,125 @@
 package com.mgtv.mglogger.log;
 
-import static android.util.Log.getStackTraceString;
-
+import android.content.Context;
 import android.util.Log;
 
+
+import com.mgtv.logger.mglog.ILogListener;
+import com.mgtv.logger.mglog.ILogProxy;
+import com.mgtv.logger.mglog.LogManager;
+import com.mgtv.mglogger.log.utils.ContextProvider;
+import com.mgtv.mglogger.log.utils.FileUtils;
 import com.mgtv.mglogger.log.utils.StringUtils;
-import com.mgtv.mglogger.log.utils.TimeUtils;
+import com.mgtv.mglogger.log.utils.ThreadUtils;
 
-/**
- * @author Zhouguang on 2017/10/23
- * @description 日志打印通用类
- * @Email zhouguang@mgtv.com
- */
+import java.io.File;
+import java.io.OutputStream;
+import java.util.List;
+
 public class MGLog {
-    private static final String VALUE_ON = "1";
-    private static final String VALUE_OFF = "0";
-    private static final String DEFAULT_TAG = "mgtv-ott";
-    private static MGLogListener mLogListener;
-    public static boolean sIsDebug;//是否为debug版本
-    private static final String KEY_OPEN_DEBUG_LOG = "basecore_openDebugLog";
-    private static final String TIME_TEMPLATE = "yyyy-MM-dd HH:mm:ss.SSS";
 
-    /**
-     * 视达科外部调用，初始化日志打印监听
-     *
-     * @param logListener
-     */
-    public static void initMGLogListener(MGLogListener logListener) {
-        mLogListener = logListener;
+    private static ILogListener mLogListener;
+
+    public static void initLogManager() {
+        ILogProxy proxy = new ILogProxy() {
+            @Override
+            public Context getAppContext() {
+                return ContextProvider.getApplicationContext();
+            }
+
+            @Override
+            public String getPackageName() {
+                return ContextProvider.getApplicationContext().getPackageName();
+            }
+
+            @Override
+            public void killLogcatProcess() {
+//                ContextProvider.getApplicationContext().killLogcatProcess(getPackageName());
+
+            }
+
+            @Override
+            public void initMGLogListener(ILogListener iLogListener) {
+                MGLog.initMGLogListener(iLogListener);
+            }
+
+            @Override
+            public void d(String s, String s1) {
+                MGLog.d(s,s1);
+            }
+
+            @Override
+            public void i(String s, String s1) {
+                MGLog.i(s,s1);
+            }
+
+            @Override
+            public boolean isDebugOn() {
+                return true;
+            }
+
+            @Override
+            public boolean isEqualsNull(String s) {
+                return true;
+            }
+
+            @Override
+            public String getCurrentTime(String format) {
+                return String.valueOf(System.currentTimeMillis());
+            }
+
+            @Override
+            public File getExternalCacheDir() {
+                return FileUtils.getExternalCacheDir(ContextProvider.getApplicationContext());
+            }
+
+            @Override
+            public File getInternalCacheDir() {
+                return FileUtils.getInternalCacheDir(ContextProvider.getApplicationContext());
+            }
+
+            @Override
+            public File getFileByAbsolutePath(String path) {
+                return FileUtils.getFileByAbsolutePath(path);
+            }
+
+            @Override
+            public File[] orderByDate(String dirPath) {
+                return FileUtils.orderByDate(dirPath);
+            }
+
+            @Override
+            public void closeIOStream(OutputStream outputStream) {
+//                IOUtils.closeStream(outputStream);
+            }
+
+            @Override
+            public void doZipFilesWithPassword(File zipFile, char[] chars, List<File> list, String appendName, File file) {
+                if (zipFile == null || list == null){
+                    return;
+                }
+                chars = null;
+//                if (!StringUtils.equalsNull(appendName)){
+//                    try {
+//                        ZipUtil.doZipFilesWithPassword(new FileOutputStream(zipFile), chars, list
+//                                , appendName, file);
+//                    } catch (FileNotFoundException e) {
+//                        e.printStackTrace();
+//                    }
+//                } else {
+//                    // 文件拼接名为空时表示不需要拼接文件，直接压缩即可
+//                    ZipUtil.doZipFileListWithPassword(list,zipFile.getAbsolutePath(),chars);
+//                }
+            }
+
+            @Override
+            public void runInThread(Runnable runnable) {
+                ThreadUtils.startRunInThread(runnable);
+            }
+        };
+        LogManager.getInstance().init(proxy);
     }
 
-    public static void init(boolean isDebug) {
-        String sharePreferIsDebug = SharedPreferenceUtils.getString(null, KEY_OPEN_DEBUG_LOG, null);
-        if (VALUE_ON.equals(sharePreferIsDebug)) {
-            sIsDebug = true;
-        } else if (VALUE_OFF.equals(sharePreferIsDebug)) {
-            sIsDebug = false;
-        } else {
-            sIsDebug = isDebug;
-        }
-    }
 
     public static void i(String tag, String msg) {
         if (StringUtils.equalsNull(tag) || StringUtils.equalsNull(msg)) {
@@ -77,6 +157,25 @@ public class MGLog {
         w(tag, msg, null);
     }
 
+
+    public static void w(String tag, String msg, Throwable tr) {
+        if (StringUtils.equalsNull(tag) || StringUtils.equalsNull(msg)) {
+            return;
+        }
+        try {
+            if (mLogListener != null) {
+                mLogListener.w(tag, msg, tr);
+            } else {
+//                if (sFilterMac) {
+//                    msg = filterMsg(msg);
+//                }
+                Log.w(tag, msg, tr);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
     public static void i(String tag, String msg, Throwable tr) {
         if (StringUtils.equalsNull(tag) || StringUtils.equalsNull(msg)) {
             return;
@@ -85,6 +184,9 @@ public class MGLog {
             if (mLogListener != null) {
                 mLogListener.i(tag, msg, tr);
             } else {
+//                if (sFilterMac) {
+//                    msg = filterMsg(msg);
+//                }
                 Log.i(tag, msg, tr);
             }
         } catch (Exception e) {
@@ -100,6 +202,9 @@ public class MGLog {
             if (mLogListener != null) {
                 mLogListener.e(tag, msg, tr);
             } else {
+//                if (sFilterMac) {
+//                    msg = filterMsg(msg);
+//                }
                 Log.e(tag, msg, tr);
             }
         } catch (Exception e) {
@@ -116,10 +221,8 @@ public class MGLog {
                 mLogListener.v(tag, msg, tr);
             } else {
                 // debug版本才能输出verbose级别日志
-                if (sIsDebug) {
+                if (true) {
                     Log.v(tag, msg, tr);
-                    String time = TimeUtils.transformToString(TimeUtils.getCurrentTime(), TIME_TEMPLATE);
-                    LogManager.getInstance().bufferLog(time + " V/" + tag + ": " + msg + '\n' + getStackTraceString(tr));
                 }
             }
         } catch (Exception e) {
@@ -136,10 +239,8 @@ public class MGLog {
                 mLogListener.d(tag, msg, tr);
             } else {
                 // debug版本才能输出debug级别日志
-                if (sIsDebug) {
+                if (true) {
                     Log.d(tag, msg, tr);
-                    String time = TimeUtils.transformToString(TimeUtils.getCurrentTime(), TIME_TEMPLATE);
-                    LogManager.getInstance().bufferLog(time + " D/" + tag + ": " + msg + '\n' + getStackTraceString(tr));
                 }
             }
         } catch (Exception e) {
@@ -147,90 +248,9 @@ public class MGLog {
         }
     }
 
-    public static void w(String tag, String msg, Throwable tr) {
-        if (StringUtils.equalsNull(tag) || StringUtils.equalsNull(msg)) {
-            return;
-        }
-        try {
-            if (mLogListener != null) {
-                mLogListener.w(tag, msg, tr);
-            } else {
-                Log.w(tag, msg, tr);
-                String time = TimeUtils.transformToString(TimeUtils.getCurrentTime(), TIME_TEMPLATE);
-                LogManager.getInstance().bufferLog(time + " W/" + tag + ": " + msg + '\n' + getStackTraceString(tr));
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
 
-    public static void w(String tag, Throwable throwable) {
-        if (StringUtils.equalsNull(tag)) {
-            return;
-        }
-        try {
-            if (mLogListener != null) {
-                mLogListener.w(tag, throwable);
-            } else {
-                Log.w(tag, throwable);
-                String time = TimeUtils.transformToString(TimeUtils.getCurrentTime(), TIME_TEMPLATE);
-                LogManager.getInstance().bufferLog(time + " W/" + tag + ": " + getStackTraceString(throwable));
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    public static void e(String tag, Throwable throwable) {
-        if (StringUtils.equalsNull(tag)) {
-            return;
-        }
-        try {
-            if (mLogListener != null) {
-                mLogListener.e(tag, throwable);
-            } else {
-                Log.e(tag, "", throwable);
-                String time = TimeUtils.transformToString(TimeUtils.getCurrentTime(), TIME_TEMPLATE);
-                LogManager.getInstance().bufferLog(time + " E/" + tag + ": " + getStackTraceString(throwable));
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    public static void i(String msg) {
-        i(DEFAULT_TAG, msg);
-    }
-
-    public static void e(String msg) {
-        e(DEFAULT_TAG, msg);
-    }
-
-    public static void v(String msg) {
-        v(DEFAULT_TAG, msg);
-    }
-
-    public static void d(String msg) {
-        d(DEFAULT_TAG, msg);
-    }
-
-    public static void w(String msg) {
-        w(DEFAULT_TAG, msg);
-    }
-
-    /**
-     * 设置日志打印级别，0release 1debug
-     *
-     * @param isDebug
-     */
-    public static void setMglogIsDebug(String isDebug) {
-        if (VALUE_ON.equals(isDebug)) {
-            sIsDebug = true;
-        } else if (VALUE_OFF.equals(isDebug)) {
-            sIsDebug = false;
-        }
-        MGLog.i("--->setStringValue value:" + isDebug + ",key:" + KEY_OPEN_DEBUG_LOG);
-        SharedPreferenceUtils.put(null, KEY_OPEN_DEBUG_LOG, isDebug);
+    public static void initMGLogListener(ILogListener logListener) {
+        mLogListener = logListener;
     }
 
 }

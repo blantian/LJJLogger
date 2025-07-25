@@ -10,7 +10,7 @@
 #endif
 
 #if !defined(__APPLE__)
-// using ios implement for autorelease
+
 static void *SDL_RunThread(void *data)
 {
     SDL_Thread *thread = data;

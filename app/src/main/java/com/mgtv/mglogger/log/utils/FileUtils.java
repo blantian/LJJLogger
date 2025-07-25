@@ -1,4 +1,4 @@
-package com.mgtv.mglogger;
+package com.mgtv.mglogger.log.utils;
 
 import android.content.Context;
 import android.os.Environment;

@@ -41,7 +41,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        throw new RuntimeException("Test Exception");
+//        throw new RuntimeException("Test Exception");
     }
 
 
