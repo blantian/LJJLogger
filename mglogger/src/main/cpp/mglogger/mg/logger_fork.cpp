@@ -189,11 +189,35 @@ void LoggerFork::parseThreadTimeLine(const char *line, MGLog *out) {
         snprintf(finalMsg, sizeof(finalMsg), "%c %s", level, msgBuf);
         strncpy(out->msg, finalMsg, MAX_MSG_LENGTH - 1);
         out->msg[MAX_MSG_LENGTH - 1] = '\0';
+        switch (level) {
+            case LOG_DEBUG:
+                out->level = LEVEL_DEBUG;
+                break;
+            case LOG_INFO:
+                out->level = LEVEL_INFO;
+                break;
+            case LOG_WARN:
+                out->level = LEVEL_WARN;
+                break;
+            case LOG_ERROR:
+                out->level = LEVEL_ERROR;
+                break;
+            case LOG_FATAL:
+                out->level = LEVEL_FATAL;
+                break;
+            case LOG_VERBOSE:
+                out->level = LEVEL_VERBOSE;
+                break;
+            default:
+                out->level = LEVEL_UNKNOWN;
+                break;
+        }
     } else {
         out->tid = 0;
         out->tag[0] = '\0';
         strncpy(out->msg, line, MAX_MSG_LENGTH - 1);
         out->msg[MAX_MSG_LENGTH - 1] = '\0';
+        out->level = LEVEL_UNKNOWN;
     }
     out->ts = utils::LoggerUtils::nowMs();
 }
