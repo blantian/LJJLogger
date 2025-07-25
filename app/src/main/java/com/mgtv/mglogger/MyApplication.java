@@ -26,7 +26,7 @@ public class MyApplication extends Application {
         path = Environment.getExternalStorageDirectory().getAbsolutePath()
                 + File.separator + "mgtv" + File.separator + FILE_NAME;
         initLogan();
-//        MGLog.initLogManager(getApplicationContext());
+        MGLog.initLogManager(getApplicationContext());
         ContextProvider.init(this);
 //        MGLogger.w("TAG",1);
         Log.i(TAG, "Logan path: " + path);
