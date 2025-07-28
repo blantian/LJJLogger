@@ -6,7 +6,7 @@
 #define MGLOGGER_LOGGER_CORE_H
 
 
-#include <asm/unistd-common.h>
+//#include <asm/unistd-common.h>
 #include <string>
 #include "mglogger/logan/clogan_core.h"  // CLogan API header
 #include "clogan_status.h"

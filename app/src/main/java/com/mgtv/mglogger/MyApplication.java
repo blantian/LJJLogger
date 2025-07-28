@@ -17,7 +17,7 @@ import java.util.ArrayList;
 public class MyApplication extends Application {
 
     private static final String TAG = "MyApplication";
-    private static final String FILE_NAME = "logan_v1";
+    private static final String FILE_NAME = "mglog";
 
     private String path;
 
@@ -30,14 +30,14 @@ public class MyApplication extends Application {
                 + File.separator + "mgtv" + File.separator + FILE_NAME;
         initLogan(false);
         Log.i(TAG, "Logan path: " + path);
-        readThread = AssetReader.logTextFileAsync(this); // 默认路径
+//        readThread = AssetReader.logTextFileAsync(this); // 默认路径
     }
 
     private void initLogan(boolean isNative) {
         if (isNative) {
             File internalDir;
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                internalDir = new File(getApplicationContext().getFilesDir(), "LoganLogs");
+                internalDir = new File(getApplicationContext().getFilesDir(), "logcache/");
             } else {
                 internalDir = new File(Environment.getExternalStorageDirectory(),
                         "/Android/data/" + getPackageName() + "/cache/");
@@ -66,21 +66,6 @@ public class MyApplication extends Application {
             MGLogger.init(loggerConfig, (cmd, code) -> {
                 Log.i(TAG, "Logger::" + cmd + " | " + "code : " + code);
             });
-
-//        LoganConfig config = new LoganConfig.Builder()
-//                .setCachePath(internalDir.getAbsolutePath())
-//                .setPath(internalDir.getAbsolutePath() + File.separator + FILE_NAME)
-//                .setEncryptKey16("0123456789012345".getBytes())
-//                .setEncryptIV16("0123456789012345".getBytes())
-//                .build();
-//        Logan.init(config);
-//        Logan.setDebug(true);
-//        Logan.setOnLoganProtocolStatus(new OnLoganProtocolStatus() {
-//            @Override
-//            public void loganProtocolStatus(String cmd, int code) {
-//                MGLog.d(TAG, "clogan > cmd : " + cmd + " | " + "code : " + code);
-//            }
-//        });
         } else {
             ContextProvider.init(this);
             MGLog.initLogManager();

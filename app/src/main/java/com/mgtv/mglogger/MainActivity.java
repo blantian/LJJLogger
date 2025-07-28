@@ -11,6 +11,7 @@ import android.view.View;
 import com.mgtv.logger.kt.i.ILoggerStatus;
 import com.mgtv.logger.kt.log.Logger;
 import com.mgtv.logger.kt.log.MGLogger;
+import com.mgtv.mglogger.log.utils.LogPrinter;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -40,6 +41,7 @@ public class MainActivity extends AppCompatActivity {
                 Log.i(TAG, "hello world");
             }
         });
+        LogPrinter.start();
 
 //        throw new RuntimeException("Test Exception");
     }
@@ -51,6 +53,7 @@ public class MainActivity extends AppCompatActivity {
         super.onPause();
 //        MGLogger.w("MainActivity onPause", 3);
         MGLogger.flush();
+        LogPrinter.stop();
     }
 
     @Override

@@ -78,7 +78,7 @@ public object Logger : CoroutineScope {
 
 
     internal var sDebug = false
-    internal var statusListener: ILoggerStatus? = null
+    private var statusListener: ILoggerStatus? = null
     internal fun onListenerLogWriteStatus(cmd: String, code: Int) {
         statusListener?.loggerStatus(cmd, code)
     }
