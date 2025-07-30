@@ -59,15 +59,6 @@ public class MyApplication extends Application {
             blackList.add("art");
             blackList.add("IPCThreadState");
 
-//            LoggerConfig loggerConfig = new LoggerConfig.Builder()
-//                    .putCachePath(internalDir.getAbsolutePath())
-//                    .putLogDir(internalDir.getAbsolutePath() + File.separator + FILE_NAME)
-//                    .putLogcatBlackList(blackList)
-//                    .putLogCacheS(0) // 0: hook, 1: logcat
-//                    .build();
-//            MGLogger.init(loggerConfig, (cmd, code) -> {
-//                Log.i(TAG, "Logger::" + cmd + " | " + "code : " + code);
-//            });
             LoggerConfig loggerConfig = LoggerConfig
                     .builder(internalDir.getAbsolutePath(), internalDir.getAbsolutePath() + File.separator + FILE_NAME)
                     .nativeLogCacheSelector(0) // 0: hook, 1: logcat

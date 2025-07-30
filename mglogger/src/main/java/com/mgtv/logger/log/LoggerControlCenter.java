@@ -7,6 +7,7 @@ import java.io.File;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -61,6 +62,7 @@ public final class LoggerControlCenter {
         long maxQueueSize = config.getMaxQueue();
         String encryptKey16 = new String(config.getKey16().getBytes());
         String encryptIv16 = new String(config.getIv16().getBytes());
+        List<String> blackList = config.getLogcatBlackList();
 
         this.logQueue = new LinkedBlockingQueue<>((int) maxQueueSize);
 
@@ -72,7 +74,8 @@ public final class LoggerControlCenter {
                 maxLogFileSize,
                 maxSdCardSpace,
                 encryptKey16,
-                encryptIv16
+                encryptIv16,
+                blackList
         );
     }
 

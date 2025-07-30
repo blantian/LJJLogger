@@ -83,6 +83,7 @@ public class LoggerNativeBridge implements ILogger {
 
     @Override
     public void setBlackList(List<String> blackList) {
+        Log.d(TAG, "setBlackList called with size: " + blackList.size());
         if (!isMGLoggerOk) return;
         try {
             LoggerSetBlackList(blackList.toArray(new String[0]));

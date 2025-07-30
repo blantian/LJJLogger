@@ -10,6 +10,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.channels.FileChannel;
 import java.nio.file.StandardOpenOption;
+import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -36,6 +37,7 @@ final class LoggerWorker implements Runnable {
     private final int logCacheSelector;
     private final String encryptKey16;
     private final String encryptIv16;
+    private final List<String> logcatBlackList;
     private final long saveTimeMs = 7 * 24 * 60 * 60 * 1000L; // 默认保存7天
 
     /** 发送中缓存 */
@@ -65,7 +67,8 @@ final class LoggerWorker implements Runnable {
                  long maxLogFile,
                  long minSdCardBytes,
                  String encryptKey16,
-                 String encryptIv16) {
+                 String encryptIv16,
+                 List<String> logcatBlackList) {
         this.queue = Objects.requireNonNull(queue);
         this.cachePath = cachePath;
         this.logPath = logPath;
@@ -74,7 +77,7 @@ final class LoggerWorker implements Runnable {
         this.maxSdCardBytes = minSdCardBytes;
         this.encryptKey16 = encryptKey16;
         this.encryptIv16 = encryptIv16;
-
+        this.logcatBlackList = logcatBlackList;
         ensureProtocolInit();
     }
 
@@ -139,6 +142,7 @@ final class LoggerWorker implements Runnable {
         protocol.setOnLoggerStatus((cmd, code) ->
                 MGLogger.onListenerLogWriteStatus(code, cmd));
         protocol.loggerInit(cachePath, logPath, logCacheSelector,(int) maxLogFile, (int) maxSdCardBytes, encryptKey16, encryptIv16);
+        protocol.setBlackList(logcatBlackList);
         protocol.loggerDebug(MGLogger.sDebug);
     }
 

@@ -46,7 +46,9 @@
 #define LEVEL_UNKNOWN -1
 
 #define LOG_MAX_LENGTH 2048 // 日志最大长度
-#define ANDROID_API_LEVEL 19 // Android API level
+#define ANDROID_API_LEVEL_19 19   // Android 4.4 (KitKat)
+#define ANDROID_API_LEVEL_26 26   // Android 8.0 (Oreo)
+#define ANDROID_API_LEVEL_34 34   // Android 14
 #define LOG_EXTERNAL_SIZE (1 * 1024 * 1024) // 扩展大小 1MB
 
 

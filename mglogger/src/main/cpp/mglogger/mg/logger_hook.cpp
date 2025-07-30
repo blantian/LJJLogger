@@ -25,6 +25,8 @@ LoggerHook::~LoggerHook() {
 }
 
 int LoggerHook::init() {
+
+    int api = SDL_Android_GetApiLevel();
     ALOGD("LoggerHook::init - registering log hooks");
     if (orig_log_print || orig_log_write || orig_log_buf_write || orig_log_vprint) {
         return MG_OK;
@@ -39,7 +41,7 @@ int LoggerHook::init() {
 #endif
 
 #if OPEN_PRINT
-    if (SDL_Android_GetApiLevel() <= ANDROID_API_LEVEL) {
+    if (api <= ANDROID_API_LEVEL_19 || api == ANDROID_API_LEVEL_34 ) {
         if (xhook_register(".*\\.so$", LOG_PRINT, (void *) hookLogPrint,
                            (void **) &orig_log_print) != 0) {
             ALOGE("LoggerHook::init - Failed to hook __android_log_print");
@@ -78,7 +80,7 @@ int LoggerHook::init() {
         ALOGE("LoggerHook::init - hook_refresh failed with error code: %d", ret);
         return MG_LOGGER_HOOK_FAILED;
     }
-    ALOGD("LoggerHook::init - log hooks installed");
+    ALOGD("LoggerHook::init - log hooks installed successfully");
     return BaseLogger::init();
 }
 
