@@ -25,7 +25,8 @@ package com.mgtv.mglogger;
 import android.text.TextUtils;
 import android.util.Log;
 
-import com.mgtv.logger.java.SendLogRunnable;
+
+import com.mgtv.logger.log.SendLogRunnable;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -57,7 +58,7 @@ public class RealSendLogRunnable extends SendLogRunnable {
         boolean success = doSendFileByAction(logFile);
         Log.d("上传日志测试", "日志上传测试结果：" + success);
         // Must Call finish after send log
-        finish();
+//        finish();
         if (logFile.getName().contains(".copy")) {
             logFile.delete();
         }

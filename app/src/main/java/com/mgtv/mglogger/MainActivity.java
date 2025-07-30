@@ -2,22 +2,12 @@ package com.mgtv.mglogger;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.content.Context;
-import android.content.res.AssetManager;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 
-import com.mgtv.logger.kt.i.ILoggerStatus;
-import com.mgtv.logger.kt.log.Logger;
-import com.mgtv.logger.kt.log.MGLogger;
+import com.mgtv.logger.log.MGLogger;
 import com.mgtv.mglogger.log.utils.LogPrinter;
-
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-
 
 public class MainActivity extends AppCompatActivity {
 
@@ -50,7 +40,6 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onPause() {
         super.onPause();
-//        MGLogger.w("MainActivity onPause", 3);
         MGLogger.flush();
         LogPrinter.stop();
     }

@@ -78,7 +78,7 @@ int J4A_loadClass__J4AC_com_mgtv_logger_kt_log_MGLoggerJni(JNIEnv *env)
     if (class_J4AC_com_mgtv_logger_kt_log_MGLoggerJni.id != NULL)
         return 0;
 
-    sign = "com/mgtv/logger/kt/log/MGLoggerJni";
+    sign = "com/mgtv/logger/log/LoggerNativeBridge";
     class_J4AC_com_mgtv_logger_kt_log_MGLoggerJni.id = J4A_FindClass__asGlobalRef__catchAll(env, sign);
     if (class_J4AC_com_mgtv_logger_kt_log_MGLoggerJni.id == NULL)
         goto fail;
@@ -90,7 +90,7 @@ int J4A_loadClass__J4AC_com_mgtv_logger_kt_log_MGLoggerJni(JNIEnv *env)
     if (class_J4AC_com_mgtv_logger_kt_log_MGLoggerJni.method_onLoggerStatus == NULL)
         goto fail;
 
-    J4A_ALOGD("J4ALoader: OK: '%s' loaded\n", "com.mgtv.logger.kt.log.MGLoggerJni");
+    J4A_ALOGD("J4ALoader: OK: '%s' loaded\n", "com.mgtv.logger.log.LoggerNativeBridge");
     ret = 0;
 fail:
     return ret;

@@ -1,9 +1,5 @@
 package com.mgtv.mglogger;
 
-import android.util.Log;
-
-import com.mgtv.logger.kt.log.MGLogger;
-
 public class CrashHandler implements Thread.UncaughtExceptionHandler {
 
     private final Thread.UncaughtExceptionHandler defaultHandler;
@@ -18,8 +14,6 @@ public class CrashHandler implements Thread.UncaughtExceptionHandler {
 
     @Override
     public void uncaughtException(Thread t, Throwable e) {
-//        logger.w(MGLog.getStackTraceString(e), 3);
-        MGLogger.flush();
         if (defaultHandler != null) {
             defaultHandler.uncaughtException(t, e);
         }
