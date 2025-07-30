@@ -57,3 +57,22 @@ android {
 dependencies {
     implementation("androidx.annotation:annotation:1.3.0")
 }
+
+afterEvaluate {
+    android.libraryVariants.all { variant ->
+        def capitalized = variant.name.capitalize()
+        def srcLib = file("$buildDir/intermediates/cmake/${variant.name}/obj/armeabi-v7a/libmglogger.so")
+        def destDir = file("$buildDir/intermediates/cmake/${variant.name}/obj/armeabi")
+
+        def copyTask = tasks.register("copy${capitalized}ArmeabiLib", Copy) {
+            from(srcLib)
+            into(destDir)
+            doFirst { destDir.mkdirs() }
+            onlyIf { srcLib.exists() }
+        }
+
+        tasks.named("externalNativeBuild${capitalized}").configure {
+            finalizedBy(copyTask)
+        }
+    }
+}
