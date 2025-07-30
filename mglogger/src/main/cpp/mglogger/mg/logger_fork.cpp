@@ -37,7 +37,7 @@ int LoggerFork::start() {
     forkThread = createForkThread();
     if (forkThread == nullptr) {
         ALOGE("LoggerFork::start - Failed to create fork thread");
-        return MG_ERROR;
+        return MG_LOGGER_FORK_THREAD_FAILED;
     }
     return MG_OK;
 }

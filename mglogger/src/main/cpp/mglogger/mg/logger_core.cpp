@@ -60,7 +60,11 @@ namespace MGLogger {
                              iv16 ? iv16 : "");
         if (result == CLOGAN_INIT_SUCCESS_MMAP || result == CLOGAN_INIT_SUCCESS_MEMORY) {
             int code = 0;
-            ALOGD("MGLogger::init - CLogan initialized successfully (code=%d)", result);
+            if (result == CLOGAN_INIT_SUCCESS_MMAP) {
+                ALOGD("MGLogger::init - CLogan initialized with mmap (code=%d)", result);
+            } else {
+                ALOGD("MGLogger::init - CLogan initialized with memory (code=%d)", result);
+            }
             const char *fileName = utils::LoggerUtils::toCString(utils::LoggerUtils::nowMs());
             code = clogan_open(fileName);
             ALOGD("MGLogger::init - CLogan opened logan (code=%d)", code);
@@ -75,7 +79,7 @@ namespace MGLogger {
             mLogger = BaseLogger::CreateLogger(log_cache_s);
             if (!mLogger) {
                 ALOGE("MGLogger::init - Failed to create ILogger instance");
-                return MG_ERROR;
+                return MG_LOGGER_CREATE_FAILED;
             }
             mMaxSingleFileSize = max_file; // 设置单个文件最大大小
             mMaxSDCardFileSize = max_sdcard_size + LOG_EXTERNAL_SIZE; // 设置sdCard最大文件大小
@@ -97,14 +101,14 @@ namespace MGLogger {
             m_worker_tid = createEnqueueTh();
             if (!m_worker_tid) {
                 ALOGE("MGLogger::init - Failed to create logger thread");
-                return MG_ERROR;
+                return MG_LOGGER_CREATE_WORKER_THREAD_FAILED;
             }
 
             // 创建消息处理线程
             m_message_tid = createMessageTh();
             if (!m_message_tid) {
                 ALOGE("MGLogger::init - Failed to create message thread");
-                return MG_ERROR;
+                return MG_LOGGER_CREATE_MESSAGE_THREAD_FAILED;
             }
         } else {
             ALOGE("MGLogger::init - CLogan initialization failed (code=%d)", result);

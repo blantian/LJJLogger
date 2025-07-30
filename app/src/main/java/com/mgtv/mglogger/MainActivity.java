@@ -41,8 +41,7 @@ public class MainActivity extends AppCompatActivity {
                 Log.i(TAG, "hello world");
             }
         });
-        LogPrinter.start();
-
+//        LogPrinter.start();
 //        throw new RuntimeException("Test Exception");
     }
 

@@ -24,7 +24,7 @@ public data class LoggerConfig(
         public var logCacheS: Int = 0
         public var keepDays: Long = 1 * 24 * 60 * 60 * 1000L
         public var maxFile: Long = 1 * 1024 * 1024
-        public var minSdCard: Long = 2 * 1024 * 1024
+        public var minSdCard: Long = 10 * 1024 * 1024
         public var maxQueue: Int = 10_000
         public var key16: String = "1234567890abcdef"
         public var iv16: String = "abcdef1234567890"

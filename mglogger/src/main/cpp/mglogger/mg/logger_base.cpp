@@ -60,14 +60,14 @@ int BaseLogger::init() {
     m_loggerQueue = std::make_shared<LoggerQueue>(500);
     if (!m_loggerQueue) {
         ALOGE("BaseLogger::init - Failed to create LoggerQueue");
-        return MG_ERROR;
+        return MG_LOGGER_CREATE_QUEUE_FAILED;
     } else {
         ALOGD("BaseLogger::init - LoggerQueue created successfully");
     }
     messageQueue = std::make_shared<MessageQueue>();
     if (!messageQueue) {
         ALOGE("BaseLogger::init - Failed to create MessageQueue");
-        return MG_ERROR;
+        return MG_LOGGER_MESSAGE_QUEUE_FAILED;
     } else {
         ALOGD("BaseLogger::init - MessageQueue created successfully");
     }

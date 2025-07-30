@@ -5,8 +5,9 @@ import android.content.Intent;
 import android.os.Build;
 import android.os.Environment;
 import android.util.Log;
-import com.mgtv.logger.kt.log.LoggerConfig;
-import com.mgtv.logger.kt.log.MGLogger;
+
+import com.mgtv.logger.log.LoggerConfig;
+import com.mgtv.logger.log.MGLogger;
 import com.mgtv.logger.mglog.LogService;
 import com.mgtv.mglogger.log.MGLog;
 import com.mgtv.mglogger.log.utils.ContextProvider;
@@ -28,7 +29,7 @@ public class MyApplication extends Application {
         super.onCreate();
         path = Environment.getExternalStorageDirectory().getAbsolutePath()
                 + File.separator + "mgtv" + File.separator + FILE_NAME;
-        initLogan(false);
+        initLogan(true);
         Log.i(TAG, "Logan path: " + path);
 //        readThread = AssetReader.logTextFileAsync(this); // 默认路径
     }
@@ -56,16 +57,25 @@ public class MyApplication extends Application {
             ArrayList<String> blackList = new ArrayList<>();
             blackList.add("MyApplication");
             blackList.add("art");
+            blackList.add("IPCThreadState");
 
-            LoggerConfig loggerConfig = new LoggerConfig.Builder()
-                    .putCachePath(internalDir.getAbsolutePath())
-                    .putLogDir(internalDir.getAbsolutePath() + File.separator + FILE_NAME)
-                    .putLogcatBlackList(blackList)
-                    .putLogCacheS(0) // 0: hook, 1: logcat
+//            LoggerConfig loggerConfig = new LoggerConfig.Builder()
+//                    .putCachePath(internalDir.getAbsolutePath())
+//                    .putLogDir(internalDir.getAbsolutePath() + File.separator + FILE_NAME)
+//                    .putLogcatBlackList(blackList)
+//                    .putLogCacheS(0) // 0: hook, 1: logcat
+//                    .build();
+//            MGLogger.init(loggerConfig, (cmd, code) -> {
+//                Log.i(TAG, "Logger::" + cmd + " | " + "code : " + code);
+//            });
+            LoggerConfig loggerConfig = LoggerConfig
+                    .builder(internalDir.getAbsolutePath(), internalDir.getAbsolutePath() + File.separator + FILE_NAME)
+                    .nativeLogCacheSelector(0) // 0: hook, 1: logcat
+                    .logcatBlackList(blackList)
                     .build();
-            MGLogger.init(loggerConfig, (cmd, code) -> {
-                Log.i(TAG, "Logger::" + cmd + " | " + "code : " + code);
-            });
+            MGLogger.setStatusListener((cmd, code) -> Log.i(TAG, "Logger::" + cmd + " | " + "code : " + code));
+            MGLogger.init(loggerConfig);
+
         } else {
             ContextProvider.init(this);
             MGLog.initLogManager();

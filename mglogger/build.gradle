@@ -70,8 +70,8 @@ dependencies {
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:$rootProject.kotlin_version")
     implementation("org.jetbrains.kotlin:kotlin-stdlib:$rootProject.kotlin_version")
     implementation("org.jetbrains.kotlin:kotlin-reflect:$rootProject.kotlin_version")
-    implementation("io.insert-koin:koin-android:$rootProject.koinVersion")
-    implementation("io.insert-koin:koin-android-scope:$rootProject.koinVersion")
+//    implementation("io.insert-koin:koin-android:$rootProject.koinVersion")
+//    implementation("io.insert-koin:koin-android-scope:$rootProject.koinVersion")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:$rootProject.kotlin_coroutines_version")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:$rootProject.kotlin_coroutines_version")
 }

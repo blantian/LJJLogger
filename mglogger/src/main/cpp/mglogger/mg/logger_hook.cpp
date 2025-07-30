@@ -76,7 +76,7 @@ int LoggerHook::init() {
     int ret = xhook_refresh(0);
     if (ret != 0) {
         ALOGE("LoggerHook::init - hook_refresh failed with error code: %d", ret);
-        return MG_ERROR;
+        return MG_LOGGER_HOOK_FAILED;
     }
     ALOGD("LoggerHook::init - log hooks installed");
     return BaseLogger::init();
