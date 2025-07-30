@@ -1,0 +1,57 @@
+//
+// Created by sky blue on 2025/7/18.
+//
+
+#ifndef MGLOGGER_LOGGER_COMMON_H
+#define MGLOGGER_LOGGER_COMMON_H
+
+#define MG_LOGGER_VERSION "1.0.0"
+#define DEBUG_LOG 0
+
+#define LOGGER_TYPE_HOOK 0 // 使用 Hook 方式记录日志
+#define LOGGER_TYPE_FORK 1 // 使用 Fork 方式记录日志
+
+#define OPEN_PRINT 1
+#define OPEN_WRITE 0
+#define OPEN_VPRINT 0
+#define OPEN_BUF_WRITE 1
+#define OPEN_ASSERT 0
+
+#define MG_OK 200
+#define MG_ERROR (-1)
+#define MG_LOGGER_CREATE_FAILED 400
+#define MG_LOGGER_CREATE_QUEUE_FAILED 410
+#define MG_LOGGER_MESSAGE_QUEUE_FAILED 420
+#define MG_LOGGER_FORK_THREAD_FAILED 430
+#define MG_LOGGER_HOOK_FAILED 440
+#define MG_LOGGER_CREATE_WORKER_THREAD_FAILED 450
+#define MG_LOGGER_CREATE_MESSAGE_THREAD_FAILED 460
+
+
+
+#define LOG_DEBUG 'D'
+#define LOG_INFO 'I'
+#define LOG_WARN 'W'
+#define LOG_ERROR 'E'
+#define LOG_FATAL 'F'
+#define LOG_VERBOSE 'V'
+#define LOG_UNKNOWN 'U'
+
+#define LEVEL_DEBUG 0
+#define LEVEL_INFO 1
+#define LEVEL_WARN 2
+#define LEVEL_ERROR 3
+#define LEVEL_FATAL 4
+#define LEVEL_VERBOSE 5
+#define LEVEL_UNKNOWN -1
+
+#define LOG_MAX_LENGTH 2048 // 日志最大长度
+#define ANDROID_API_LEVEL 19 // Android API level
+#define LOG_EXTERNAL_SIZE (1 * 1024 * 1024) // 扩展大小 1MB
+
+
+
+#define LOG_READ_TIME_OUT 20 // ms
+
+
+#endif //MGLOGGER_LOGGER_COMMON_H

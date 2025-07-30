@@ -1,69 +1,90 @@
 package com.mgtv.mglogger;
 
 import android.app.Application;
+import android.content.Intent;
+import android.os.Build;
 import android.os.Environment;
 import android.util.Log;
 
-
-import androidx.annotation.NonNull;
-
-import com.mgtv.logger.java.Logan;
-import com.mgtv.logger.java.LoganConfig;
-import com.mgtv.logger.java.OnLoganProtocolStatus;
-import com.mgtv.logger.kt.i.ILoggerStatus;
-import com.mgtv.logger.kt.log.LoggerConfig;
-import com.mgtv.logger.kt.log.MGLogger;
-
-import com.mgtv.mglogger.CrashHandler;
+import com.mgtv.logger.log.LoggerConfig;
+import com.mgtv.logger.log.MGLogger;
+import com.mgtv.logger.mglog.LogService;
+import com.mgtv.mglogger.log.MGLog;
+import com.mgtv.mglogger.log.utils.ContextProvider;
 
 import java.io.File;
+import java.util.ArrayList;
 
 public class MyApplication extends Application {
 
-    private static final String TAG = MyApplication.class.getName();
-    private static final String FILE_NAME = "logan_v1";
+    private static final String TAG = "MyApplication";
+    private static final String FILE_NAME = "mglog";
 
     private String path;
+
+    private Thread readThread;
 
     @Override
     public void onCreate() {
         super.onCreate();
         path = Environment.getExternalStorageDirectory().getAbsolutePath()
                 + File.separator + "mgtv" + File.separator + FILE_NAME;
-        initLogan();
-        CrashHandler.install();
+        initLogan(true);
+        Log.i(TAG, "Logan path: " + path);
+//        readThread = AssetReader.logTextFileAsync(this); // 默认路径
     }
 
-    private void initLogan() {
-        File internalDir = new File(getApplicationContext().getFilesDir(), "LoganLogs");
-        if (!internalDir.exists()) {
-            boolean isCreated = internalDir.mkdirs();
-            if (!isCreated) {
-                Log.e("Logan", "Failed to create directory: " + internalDir.getAbsolutePath());
+    private void initLogan(boolean isNative) {
+        if (isNative) {
+            File internalDir;
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                internalDir = new File(getApplicationContext().getFilesDir(), "logcache/");
+            } else {
+                internalDir = new File(Environment.getExternalStorageDirectory(),
+                        "/Android/data/" + getPackageName() + "/cache/");
+            }
+
+            if (!internalDir.exists()) {
+                boolean isCreated = internalDir.mkdirs();
+                if (!isCreated) {
+                    Log.e("Logan", "Failed to create directory: " + internalDir.getAbsolutePath());
+                }
+            }
+
+            Log.i(TAG, "save path: " + internalDir.getAbsolutePath());
+
+            // 配置黑名单
+            ArrayList<String> blackList = new ArrayList<>();
+            blackList.add("MyApplication");
+            blackList.add("art");
+            blackList.add("IPCThreadState");
+
+//            LoggerConfig loggerConfig = new LoggerConfig.Builder()
+//                    .putCachePath(internalDir.getAbsolutePath())
+//                    .putLogDir(internalDir.getAbsolutePath() + File.separator + FILE_NAME)
+//                    .putLogcatBlackList(blackList)
+//                    .putLogCacheS(0) // 0: hook, 1: logcat
+//                    .build();
+//            MGLogger.init(loggerConfig, (cmd, code) -> {
+//                Log.i(TAG, "Logger::" + cmd + " | " + "code : " + code);
+//            });
+            LoggerConfig loggerConfig = LoggerConfig
+                    .builder(internalDir.getAbsolutePath(), internalDir.getAbsolutePath() + File.separator + FILE_NAME)
+                    .nativeLogCacheSelector(0) // 0: hook, 1: logcat
+                    .logcatBlackList(blackList)
+                    .build();
+            MGLogger.setStatusListener((cmd, code) -> Log.i(TAG, "Logger::" + cmd + " | " + "code : " + code));
+            MGLogger.init(loggerConfig);
+
+        } else {
+            ContextProvider.init(this);
+            MGLog.initLogManager();
+            Intent intent = new Intent(this, LogService.class);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                this.startForegroundService(intent);
+            } else {
+                this.startService(intent);
             }
         }
-
-        LoggerConfig loggerConfig = new LoggerConfig.Builder()
-                .putCachePath(internalDir.getAbsolutePath())
-                .putLogDir(internalDir.getAbsolutePath() + File.separator + FILE_NAME)
-                .build();
-        MGLogger.init(loggerConfig, (cmd, code) -> {
-            Log.i(TAG, "clogan > cmd : " + cmd + " | " + "code : " + code);
-        });
-
-//        LoganConfig config = new LoganConfig.Builder()
-//                .setCachePath(internalDir.getAbsolutePath())
-//                .setPath(internalDir.getAbsolutePath() + File.separator + FILE_NAME)
-//                .setEncryptKey16("0123456789012345".getBytes())
-//                .setEncryptIV16("0123456789012345".getBytes())
-//                .build();
-//        Logan.init(config);
-//        Logan.setDebug(true);
-//        Logan.setOnLoganProtocolStatus(new OnLoganProtocolStatus() {
-//            @Override
-//            public void loganProtocolStatus(String cmd, int code) {
-//                Log.d(TAG, "clogan > cmd : " + cmd + " | " + "code : " + code);
-//            }
-//        });
     }
 }

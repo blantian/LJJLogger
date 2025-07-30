@@ -11,7 +11,7 @@ import kotlin.coroutines.CoroutineContext
 /**
  * Description:
  * Created by lantian
- * Date： 2025/6/26
+ * Date： 2025/7/3
  * Time： 14:36
  */
 public object Logger : CoroutineScope {
@@ -71,13 +71,14 @@ public object Logger : CoroutineScope {
         job.cancel()
     }
 
+
     private fun ensureReady() {
-        check(isReady) { "MGLogger is not initialized or has been closed" }
+        check(isReady) { "logger is not initialized or has been closed" }
     }
 
 
     internal var sDebug = false
-    internal var statusListener: ILoggerStatus? = null
+    private var statusListener: ILoggerStatus? = null
     internal fun onListenerLogWriteStatus(cmd: String, code: Int) {
         statusListener?.loggerStatus(cmd, code)
     }

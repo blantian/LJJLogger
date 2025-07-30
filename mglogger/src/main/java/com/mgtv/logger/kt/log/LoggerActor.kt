@@ -1,17 +1,19 @@
 package com.mgtv.logger.kt.log
 
-import android.os.Looper
 import android.os.StatFs
 import android.util.Log
+import android.os.Looper
 import com.mgtv.logger.java.Util
 import com.mgtv.logger.kt.i.ILoggerProtocol
 import com.mgtv.logger.kt.i.ILoggerStatus
-import com.mgtv.logger.kt.i.ISendLogCallback
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import android.os.Process
+import kotlinx.coroutines.Dispatchers
 import java.io.File
 import java.text.ParseException
 import java.text.SimpleDateFormat
@@ -21,8 +23,8 @@ import java.util.concurrent.atomic.AtomicBoolean
 /**
  * Description: Actor 负责顺序消费任务
  * Created by lantian
- * Date： 2025/6/26
- * Time： 14:25
+ * Date： 2025/7/3
+ * Time： 23:25
  */
 
 internal class LoggerActor(
@@ -35,14 +37,17 @@ internal class LoggerActor(
     private val long24h = 24 * 60 * 60 * 1000L
 
 
-    private val protocol: ILoggerProtocol = MGLoggerJni.also {
-        it.setOnLoggerStatus(object : ILoggerStatus {
+    private val protocol: ILoggerProtocol = MGLoggerJni().apply {
+        setOnLoggerStatus(object : ILoggerStatus {
             override fun loggerStatus(cmd: String, code: Int) {
                 Logger.onListenerLogWriteStatus(cmd, code)
             }
         })
-        it.logger_init(cfg.cachePath, cfg.logDir, cfg.maxFile.toInt(), cfg.key16, cfg.iv16)
-        it.logger_debug(Logger.sDebug)
+        logger_init(cfg.cachePath, cfg.logDir,cfg.logCacheS, cfg.maxFile.toInt(),cfg.minSdCard.toInt(), cfg.key16, cfg.iv16)
+        if (cfg.logcatBlackList.isNotEmpty()) {
+            setBlackList(cfg.logcatBlackList)
+        }
+//        it.logger_debug(Logger.sDebug)
     }
 
     private val isSdWritable = AtomicBoolean(true)
@@ -179,6 +184,35 @@ internal class LoggerActor(
             available > cfg.minSdCard
         } catch (e: IllegalArgumentException) {
             false
+        }
+    }
+
+    private suspend fun collectProcessLogcat() = withContext(Dispatchers.IO) {
+        try {
+            val cmd = listOf(
+                "logcat",
+                "-d",
+                "--pid",
+                Process.myPid().toString()
+            )
+            val proc = ProcessBuilder(cmd)
+                .redirectErrorStream(true)
+                .start()
+            proc.inputStream.bufferedReader().useLines { lines ->
+                lines.forEach { line ->
+                    protocol.logger_write(
+                        0,
+                        line,
+                        System.currentTimeMillis(),
+                        "adb_logcat",
+                        Process.myTid().toLong(),
+                        Looper.getMainLooper() == Looper.myLooper()
+                    )
+                }
+            }
+            proc.waitFor()
+        } catch (e: Exception) {
+            e.printStackTrace()
         }
     }
 }

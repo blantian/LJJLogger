@@ -2,11 +2,15 @@
 # 本文件对当前目录及子目录有效；若有子模块需特殊规则，可在该子模块再放一份 AGENTS.md 覆盖
 
 ---
-## ☕️ JDK & Android SDK
+## ☕️ JDK & Android SDK & NDK
 - JDK 1.8
-- Android Gradle Plugin 4.1.3 (可以适当升级，但跨度不能太大，因为要适配低版本Android 设备 API(14-28))
+- Android Gradle Plugin 4.1.3 (可以适当升级，但跨度不能太大，因为要适配低版本Android 设备 API(14-33))
 - compileSdk = 33, minSdk = 14
 - Android NDK 16.1.4479499（由 `mglogger/build.gradle → ndkVersion` 指定）
+- C++ Version 11（由 `mglogger/build.gradle → cppFlags` 指定）
+- CMake 3.10.2（由 `mglogger/build.gradle → cmakeVersion` 指定）
+- CMakeLists.txt 需要包含 `set(CMAKE_CXX_STANDARD 11)` 来指定 C++ 版本
+- CMakeLists.txt 需要包含 `set(CMAKE_CXX_STANDARD_REQUIRED ON)` 来确保 C++ 版本要求
 
 ## 📦 Gradle & Dependencies
 - Gradle 6.5 (可以升级，但是跨度不能太大，因为要适配低版本Android 设备 API(14-28))

@@ -3,7 +3,7 @@ package com.mgtv.logger.kt.i
 /**
  * Description:
  * Created by lantian
- * Date： 2025/6/25
+ * Date： 2025/7/3
  * Time： 18:44
  */
 public interface ILoggerProtocol {
@@ -49,7 +49,9 @@ public interface ILoggerProtocol {
     public fun logger_init(
         cache_path: String?,
         dir_path: String?,
+        logCacheSelector: Int,
         max_file: Int,
+        max_sd_card_size: Int,
         encrypt_key_16: String?,
         encrypt_iv_16: String?
     )
@@ -65,4 +67,10 @@ public interface ILoggerProtocol {
      * @param listener The listener to be notified of logger status changes.
      */
     public fun setOnLoggerStatus(listener: ILoggerStatus)
+
+    /**
+     * Update logger blacklist.
+     * @param blackList Tags that should be ignored when capturing logcat.
+     */
+    public fun setBlackList(blackList: List<String>)
 }

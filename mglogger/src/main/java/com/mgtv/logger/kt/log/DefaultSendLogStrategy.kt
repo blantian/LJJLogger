@@ -14,7 +14,7 @@ import javax.net.ssl.SSLSession
 /**
  * Description:
  * Created by lantian
- * Date： 2025/6/26
+ * Date： 2025/7/3
  * Time： 15:10
  */
 public class DefaultSendLogStrategy(

@@ -1,5 +1,7 @@
 package com.mgtv.logger.kt.log
 
+import android.util.Log
+import androidx.annotation.Keep
 import com.mgtv.logger.kt.common.MGLoggerStatus
 import com.mgtv.logger.kt.i.ILoggerProtocol
 import com.mgtv.logger.kt.i.ILoggerStatus
@@ -8,10 +10,10 @@ import java.util.Collections
 /**
  * Description:
  * Created by lantian
- * Date： 2025/6/26
+ * Date： 2025/7/3
  * Time： 09:20
  */
-public object MGLoggerJni : ILoggerProtocol {
+public class MGLoggerJni : ILoggerProtocol {
 
     @Volatile
     private var isMGLoggerOk = false
@@ -42,17 +44,19 @@ public object MGLoggerJni : ILoggerProtocol {
     // Native interface (JNI)
     // ----------------------------
 
-    private external fun mglogger_init(
+    private external fun LoggerInit(
         cachePath: String?,
         dirPath: String?,
+        logCacheSelector: Int,
         maxFile: Int,
+        maxSdCardSize:Int,
         encryptKey16: String?,
         encryptIv16: String?
     ): Int
 
-    private external fun mglogger_open(fileName: String?): Int
-    private external fun mglogger_debug(isDebug: Boolean)
-    private external fun mglogger_write(
+    private external fun LoggerOpen(fileName: String?): Int
+    private external fun LoggerDebug(isDebug: Boolean)
+    private external fun LoggerWrite(
         flag: Int,
         log: String?,
         localTime: Long,
@@ -61,7 +65,8 @@ public object MGLoggerJni : ILoggerProtocol {
         isMain: Int
     ): Int
 
-    private external fun mglogger_flush()
+    private external fun LoggerFlush()
+    private external fun LoggerSetBlackList(list: Array<String>)
 
     // ----------------------------
     // LoganProtocolHandler impl
@@ -70,7 +75,9 @@ public object MGLoggerJni : ILoggerProtocol {
     public override fun logger_init(
         cachePath: String?,
         dirPath: String?,
+        logCacheSelector: Int,
         maxFile: Int,
+        maxSdCardSize: Int,
         encryptKey16: String?,
         encryptIv16: String?
     ) {
@@ -84,7 +91,8 @@ public object MGLoggerJni : ILoggerProtocol {
         }
 
         try {
-            val code = mglogger_init(cachePath, dirPath, maxFile, encryptKey16, encryptIv16)
+            Log.i("MGLoggerJni", "logger_init called with cachePath: $cachePath, dirPath: $dirPath, logCacheSelector: $logCacheSelector, maxFile: $maxFile, maxSdCardSize: $maxSdCardSize, encryptKey16: $encryptKey16, encryptIv16: $encryptIv16")
+            val code = LoggerInit(cachePath, dirPath,logCacheSelector, maxFile,maxSdCardSize, encryptKey16, encryptIv16)
             isLoganInit = true
             loggerStatusCode(MGLoggerStatus.MGLOGGER_INIT_STATUS, code)
         } catch (e: UnsatisfiedLinkError) {
@@ -99,7 +107,7 @@ public object MGLoggerJni : ILoggerProtocol {
     public override fun logger_debug(debug: Boolean) {
         if (!isLoganInit || !isMGLoggerOk) return
         try {
-            mglogger_debug(debug)
+            LoggerDebug(debug)
         } catch (e: UnsatisfiedLinkError) {
             e.printStackTrace()
         }
@@ -112,7 +120,7 @@ public object MGLoggerJni : ILoggerProtocol {
     public override fun logger_open(fileName: String?) {
         if (!isLoganInit || !isMGLoggerOk) return
         try {
-            val code = mglogger_open(fileName)
+            val code = LoggerOpen(fileName)
             isLoganOpen = true
             loggerStatusCode(MGLoggerStatus.MGLOGGER_OPEN_STATUS, code)
         } catch (e: UnsatisfiedLinkError) {
@@ -125,9 +133,19 @@ public object MGLoggerJni : ILoggerProtocol {
     }
 
     public override fun logger_flush() {
-        if (!isLoganOpen || !isMGLoggerOk) return
+//        if (!isLoganOpen || !isMGLoggerOk) return
         try {
-            mglogger_flush()
+            Log.i("MGLoggerJni", "logger_flush called")
+            LoggerFlush()
+        } catch (e: UnsatisfiedLinkError) {
+            e.printStackTrace()
+        }
+    }
+
+    public override fun setBlackList(blackList: List<String>) {
+        if (!isMGLoggerOk) return
+        try {
+            LoggerSetBlackList(blackList.toTypedArray())
         } catch (e: UnsatisfiedLinkError) {
             e.printStackTrace()
         }
@@ -144,7 +162,7 @@ public object MGLoggerJni : ILoggerProtocol {
         if (!isLoganOpen || !isMGLoggerOk) return
         try {
             val code =
-                mglogger_write(flag, log, localTime, threadName, threadId, if (isMain) 1 else 0)
+                LoggerWrite(flag, log, localTime, threadName, threadId, if (isMain) 1 else 0)
             if (code != MGLoggerStatus.MGLOGGER_WRITE_SUCCESS || Logger.sDebug) {
                 loggerStatusCode(MGLoggerStatus.MGLOGGER_WRITE_STATUS, code)
             }
@@ -158,14 +176,28 @@ public object MGLoggerJni : ILoggerProtocol {
     }
 
     private fun loggerStatusCode(cmd: String, code: Int) {
+        Log.i("MGLoggerJni", "loggerStatusCode cmd: $cmd, code: $code")
         if (code < 0) {
             if (cmd.endsWith(MGLoggerStatus.MGLOGGER_WRITE_STATUS) &&
                 code != MGLoggerStatus.MGLOGGER_INIT_FAIL_JNI &&
-                !errorSet.add(code) /* already contained */
+                !errorSet.add(code)
             ) {
                 return
             }
             loggerStatus?.loggerStatus(cmd, code)
         }
+    }
+
+    @Keep
+    public fun onLoggerStatus(code: Int, cmd: String) {
+        loggerStatusCode(cmd, code)
+    }
+
+    @Keep
+    public fun onLogcatCollectorFail() {
+        loggerStatusCode(
+            MGLoggerStatus.MGLOGGER_LOGCAT_COLLECTOR_STATUS,
+            MGLoggerStatus.MGLOGGER_LOGCAT_COLLECTOR_FAIL
+        )
     }
 }

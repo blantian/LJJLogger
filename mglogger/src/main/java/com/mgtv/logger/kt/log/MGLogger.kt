@@ -1,14 +1,12 @@
 package com.mgtv.logger.kt.log
 
-import com.mgtv.logger.kt.di.createLoggerModule
 import com.mgtv.logger.kt.i.ILoggerStatus
-import org.koin.core.context.startKoin
 import com.mgtv.logger.kt.i.ISendLogCallback
 
 /**
- * Kotlin facade similar to [Logan] for easy access to [Logger].
+ * Description:
  * Created by lantian
- * Date： 2025/6/27
+ * Date： 2025/7/3
  * Time： 22:38
  */
 public object MGLogger {
@@ -19,23 +17,22 @@ public object MGLogger {
         config: LoggerConfig,
         loggerStatus: ILoggerStatus? = null
     ) {
-        startKoin {
-            modules(
-                createLoggerModule(
-                    {
-                        putCachePath(config.cachePath)
-                        putLogDir(config.logDir)
-//                        putKeepDays(config.keepDays)
-//                        putMaxFile(config.maxFile)
-//                        putMinSdCard(config.minSdCard)
-//                        putMaxQueue(config.maxQueue)
-//                        putKey16(config.key16)
-//                        putIv16(config.iv16)
-                    },
-                    loggerStatus = loggerStatus
-                )
-            )
-        }
+        createLoggerModule(
+            {
+                putCachePath(config.cachePath)
+                putLogDir(config.logDir)
+                putLogcatBlackList(config.logcatBlackList)
+                putLogCacheS(config.logCacheS)
+                putMaxFile(config.maxFile)
+                putMinSdCard(config.minSdCard)
+//                putKeepDays(config.keepDays)
+//                putMaxFile(config.maxFile)
+//                putMaxQueue(config.maxQueue)
+//                putKey16(config.key16)
+//                putIv16(config.iv16)
+            },
+            loggerStatus = loggerStatus
+        )
     }
 
     @JvmStatic

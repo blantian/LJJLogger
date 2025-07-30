@@ -3,7 +3,7 @@ package com.mgtv.logger.kt.i
 /**
  * Description:
  * Created by lantian
- * Date： 2025/6/25
+ * Date： 2025/7/3
  * Time： 18:55
  */
 public interface ISendLogCallback {
