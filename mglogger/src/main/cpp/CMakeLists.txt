@@ -254,7 +254,6 @@ add_library(mglogger SHARED
         ${CLOGAN_FILES}
         ${SRC_J4A}
         ${SRC_SDL}
-        jni/mglogger_jni.c
         jni/logger_jni.cpp
 )
 target_link_libraries(mglogger

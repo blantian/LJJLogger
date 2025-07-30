@@ -2,7 +2,6 @@ package com.mgtv.logger.log;
 
 import android.util.Log;
 
-import com.mgtv.logger.java.Util;
 import com.mgtv.logger.log.i.ILoggerStatus;
 import com.mgtv.logger.log.i.SendLogCallback;
 
