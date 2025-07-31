@@ -65,6 +65,7 @@ namespace MGLogger {
             } else {
                 ALOGD("MGLogger::init - CLogan initialized with memory (code=%d)", result);
             }
+            // 防止重启无线创建缓存文件，默认两个小时无更新不创建
             std::string reuseFile;
             if (dir_path && *dir_path) {
                 auto infos = utils::LoggerUtils::collectFileInfo(dir_path);
