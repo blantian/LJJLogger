@@ -20,4 +20,6 @@
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
 
- -keep class com.mgtv.logger.kt.log.MGLoggerJni { *; }
+ -keep class com.mgtv.logger.log.LoggerNativeBridge { *; }
+ -keep class com.mgtv.logger.log.LoggerConfig { *; }
+ -keep class com.mgtv.logger.log.MGLogger { *; }
