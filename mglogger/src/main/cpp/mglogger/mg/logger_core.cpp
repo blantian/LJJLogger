@@ -65,7 +65,34 @@ namespace MGLogger {
             } else {
                 ALOGD("MGLogger::init - CLogan initialized with memory (code=%d)", result);
             }
-            const char *fileName = utils::LoggerUtils::toCString(utils::LoggerUtils::nowMs());
+            std::string reuseFile;
+            if (dir_path && *dir_path) {
+                auto infos = utils::LoggerUtils::collectFileInfo(dir_path);
+                uint64_t now = utils::LoggerUtils::nowMs();
+                uint64_t latestTs = 0;
+                for (const auto &kv : infos) {
+                    uint64_t ts = 0;
+                    try {
+                        ts = utils::LoggerUtils::parseTsFromFileName(kv.first);
+                    } catch (...) {
+                        continue;
+                    }
+                    if (now > ts && now - ts <= 2ULL * 60 * 60 * 1000 &&
+                        kv.second < max_file && ts > latestTs) {
+                        latestTs = ts;
+                        reuseFile = kv.first;
+                    }
+                }
+            }
+
+            const char *fileName;
+            if (!reuseFile.empty()) {
+                fileName = reuseFile.c_str();
+                ALOGI("MGLogger::init - Reuse recent log file %s", fileName);
+            } else {
+                fileName = utils::LoggerUtils::toCString(utils::LoggerUtils::nowMs());
+            }
+
             code = clogan_open(fileName);
             ALOGD("MGLogger::init - CLogan opened logan (code=%d)", code);
             code = clogan_flush();
