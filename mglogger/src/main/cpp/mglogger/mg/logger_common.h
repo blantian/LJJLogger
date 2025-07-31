@@ -51,6 +51,8 @@
 #define ANDROID_API_LEVEL_34 34   // Android 14
 #define LOG_EXTERNAL_SIZE (1 * 1024 * 1024) // 扩展大小 1MB
 
+#define TWO_HOURS_MS 2ULL * 60 * 60 * 1000
+
 
 
 #define LOG_READ_TIME_OUT 20 // ms

@@ -77,7 +77,7 @@ namespace MGLogger {
                     } catch (...) {
                         continue;
                     }
-                    if (now > ts && now - ts <= 2ULL * 60 * 60 * 1000 &&
+                    if (now > ts && now - ts <= TWO_HOURS_MS &&
                         kv.second < max_file && ts > latestTs) {
                         latestTs = ts;
                         reuseFile = kv.first;
