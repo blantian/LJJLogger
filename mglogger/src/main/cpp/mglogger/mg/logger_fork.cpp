@@ -9,9 +9,20 @@
 #include <cstdio>
 #include <cstring>
 #include <cctype>
+#include <unistd.h>
 #include "logger_fork.h"
 
 using namespace MGLogger;
+
+static bool isLogcatAvailable() {
+    const char *paths[] = {"/system/bin/logcat", "/system/xbin/logcat", nullptr};
+    for (int i = 0; paths[i] != nullptr; ++i) {
+        if (access(paths[i], X_OK) == 0) {
+            return true;
+        }
+    }
+    return false;
+}
 
 LoggerFork::LoggerFork() {
     ALOGD("LoggerFork::LoggerFork - initialized");
@@ -84,6 +95,12 @@ int LoggerFork::forkThreadFunc(void *arg) {
 
 int LoggerFork::handleForkLogs() {
     ALOGD("LoggerFork::handleForkLogs - handling fork logs");
+    if (!isLogcatAvailable()) {
+        ALOGE("LoggerFork::handleForkLogs - logcat not available");
+        sendMessage(MG_LOGGER_STATUS_LOGCAT_UNAVAILABLE, "logcat not available");
+        s_running = false;
+        return MG_ERROR;
+    }
     int pipe_fd[2];
     if (pipe(pipe_fd) == MG_ERROR) {
         ALOGE("LoggerFork::handleForkLogs - pipe creation failed: %s", strerror(errno));

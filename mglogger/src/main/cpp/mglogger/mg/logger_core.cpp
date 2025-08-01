@@ -339,6 +339,12 @@ namespace MGLogger {
                     _eventListener->onEvent(MG_LOGGER_STATUS_FORK_FAILED, msg->msg.c_str());
                 }
                 break;
+            case MG_LOGGER_STATUS_LOGCAT_UNAVAILABLE:
+                ALOGE("MGLogger::handleMessage - Logcat unavailable: %s", msg->msg.c_str());
+                if (_eventListener) {
+                    _eventListener->onEvent(MG_LOGGER_STATUS_LOGCAT_UNAVAILABLE, msg->msg.c_str());
+                }
+                break;
             case MG_LOGGER_STATUS_PIPE_OPEN_FAILED:
                 ALOGE("MGLogger::handleMessage - Pipe open failed: %s", msg->msg.c_str());
                 if (_eventListener) {
