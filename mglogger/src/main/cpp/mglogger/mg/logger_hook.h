@@ -16,7 +16,7 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
-#include "xhook.h"
+#include "external/hook/xhook.h"
 #ifdef __cplusplus
 }
 #endif

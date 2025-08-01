@@ -11,7 +11,7 @@ cmake_minimum_required(VERSION 3.8.0)
 # build script scope).
 project("mglogger")
 
-set(CMAKE_BUILD_TYPE DEBUG)
+#set(CMAKE_BUILD_TYPE DEBUG)
 
 
 # Set C++ standard
@@ -27,6 +27,7 @@ include_directories(./)
 include_directories(mglogger)
 include_directories(mglogger/mg)
 include_directories(mglogger/logan)
+include_directories(external/hook)
 include_directories(external/include)
 include_directories(external/include/mbedtls)
 include_directories(external/j4a)
@@ -53,6 +54,15 @@ set(CLOGAN_FILES
         mglogger/logan/main.c
 )
 
+set(SRC_XHOOK
+        external/hook/xh_core.c
+        external/hook/xh_elf.c
+        external/hook/xh_jni.c
+        external/hook/xh_log.c
+        external/hook/xh_util.c
+        external/hook/xh_version.c
+        external/hook/xhook.c
+)
 
 set(SOURCE_LOGGER
         mglogger/mg/logger_base.cpp
@@ -240,13 +250,13 @@ if (USE_STATIC_MBEDTLS_LIBRARY AND USE_SHARED_MBEDTLS_LIBRARY)
     add_dependencies(lib mbedcrypto_static mbedx509_static mbedtls_static)
 endif ()
 
-add_library(xhook SHARED IMPORTED)
-set_target_properties(xhook
-        PROPERTIES
-        IMPORTED_LOCATION
-        ${CMAKE_CURRENT_SOURCE_DIR}/../jniLibs/${CMAKE_ANDROID_ARCH_ABI}/libxhook.so
-        IMPORTED_NO_SONAME TRUE  # 禁止携带路径
-)
+#add_library(xhook SHARED IMPORTED)
+#set_target_properties(xhook
+#        PROPERTIES
+#        IMPORTED_LOCATION
+#        ${CMAKE_CURRENT_SOURCE_DIR}/../jniLibs/${CMAKE_ANDROID_ARCH_ABI}/libxhook.so
+#        IMPORTED_NO_SONAME TRUE  # 禁止携带路径
+#)
 
 # Build main mglogger library
 add_library(mglogger SHARED
@@ -254,10 +264,11 @@ add_library(mglogger SHARED
         ${CLOGAN_FILES}
         ${SRC_J4A}
         ${SRC_SDL}
+        ${SRC_XHOOK}
         jni/logger_jni.cpp
 )
+
 target_link_libraries(mglogger
-        xhook
         ${log-lib}
         z
         ${mbedcrypto_static_target}

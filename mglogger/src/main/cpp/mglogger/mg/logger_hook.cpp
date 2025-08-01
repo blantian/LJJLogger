@@ -42,11 +42,18 @@ int LoggerHook::init() {
 
 #if OPEN_PRINT
     if (api <= ANDROID_API_LEVEL_19 || api == ANDROID_API_LEVEL_34 ) {
-        if (xhook_register(".*\\.so$", LOG_PRINT, (void *) hookLogPrint,
+        if (xhook_register("^/system/.*\\.so$", LOG_PRINT, (void *) hookLogPrint,
                            (void **) &orig_log_print) != 0) {
             ALOGE("LoggerHook::init - Failed to hook __android_log_print");
         } else {
             ALOGD("LoggerHook::init - Hooked __android_log_print");
+        }
+
+        if (xhook_register("^/vendor/.*\\.so$", LOG_PRINT, (void *) hookLogPrint,
+                           (void **) &orig_log_print) != 0) {
+            ALOGE("LoggerHook::init - Failed to hook __android_log_print in vendor libs");
+        } else {
+            ALOGD("LoggerHook::init - Hooked __android_log_print in vendor libs");
         }
     }
 #endif
@@ -59,11 +66,18 @@ int LoggerHook::init() {
 #endif
 
 #if OPEN_BUF_WRITE
-    if (xhook_register(".*\\.so$", LOG_BUF_WRITE, (void *) hookLogBufWrite,
+    if (xhook_register("^/system/.*\\.so$", LOG_BUF_WRITE, (void *) hookLogBufWrite,
                        (void **) &orig_log_buf_write) != 0) {
         ALOGE("LoggerHook::init - Failed to hook __android_log_buf_write");
     } else {
         ALOGD("LoggerHook::init - Hooked __android_log_buf_write");
+    }
+
+    if (xhook_register("^/vendor/.*\\.so$", LOG_BUF_WRITE, (void *) hookLogBufWrite,
+                       (void **) &orig_log_buf_write) != 0) {
+        ALOGE("LoggerHook::init - Failed to hook __android_log_buf_write in vendor libs");
+    } else {
+        ALOGD("LoggerHook::init - Hooked __android_log_buf_write in vendor libs");
     }
 #endif
 
@@ -74,10 +88,18 @@ int LoggerHook::init() {
             ALOGD("LoggerHook::init - Hooked __android_log_assert");
         }
 #endif
+
     xhook_ignore(".*/liblog\\.so$", "__android_log_print");
     xhook_ignore(".*/libjavacore\\.so$", NULL);
+    xhook_ignore(".*/libc++_shared\\.so$", NULL);
+    xhook_ignore(".*/libgralloc_metadata\\.so$", NULL);
+    xhook_ignore(".*/android.hardware.graphics.common@1.2\\.so$", NULL);
+    xhook_ignore(".*/arm.graphics-V1-ndk_platform\\.so$", NULL);
+    xhook_ignore(".*/android.hardware.graphics.common@1.1\\.so$", NULL);
+    xhook_ignore(".*/libhardware\\.so$", NULL);
+
     // 应用所有挂钩
-    int ret = xhook_refresh(1);
+    int ret = xhook_refresh(0);
     if (ret != 0) {
         ALOGE("LoggerHook::init - hook_refresh failed with error code: %d", ret);
         return MG_LOGGER_HOOK_FAILED;
