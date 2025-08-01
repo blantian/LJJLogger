@@ -7,10 +7,9 @@
 #include "logger_fork.h"
 
 using namespace MGLogger;
-std::shared_ptr<BaseLogger> BaseLogger::logger = nullptr;
-
 std::shared_ptr<BaseLogger> BaseLogger::CreateLogger(const int type) {
     ALOGD("%s: create %d", __func__, type);
+    std::shared_ptr<BaseLogger> logger = nullptr;
     switch (type) {
         case LOGGER_TYPE_HOOK:
             // 使用 Hook 方式拦截日志

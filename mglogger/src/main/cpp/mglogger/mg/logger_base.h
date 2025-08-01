@@ -81,7 +81,6 @@ namespace MGLogger {
         }
 
     protected:
-        static std::shared_ptr<BaseLogger> logger;
         std::shared_ptr<LoggerQueue> m_loggerQueue{nullptr};
         std::shared_ptr<MessageQueue> messageQueue{nullptr};
         std::unordered_set<std::string> m_blackList;  // 黑名单列表
