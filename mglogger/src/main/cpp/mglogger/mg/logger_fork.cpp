@@ -17,6 +17,8 @@ using namespace MGLogger;
 static bool isLogcatAvailable() {
     const char *paths[] = {"/system/bin/logcat", "/system/xbin/logcat", nullptr};
     for (int i = 0; paths[i] != nullptr; ++i) {
+        ALOGD("LoggerFork::isLogcatAvailable - checking path: %s isOk: %s", paths[i],
+              access(paths[i], F_OK) == 0 ? "true" : "false");
         if (access(paths[i], X_OK) == 0) {
             return true;
         }

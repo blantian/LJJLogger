@@ -37,12 +37,14 @@ public class MyApplication extends Application {
     private void initLogan(boolean isNative) {
         if (isNative) {
             File internalDir;
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                internalDir = new File(getApplicationContext().getFilesDir(), "logcache/");
-            } else {
-                internalDir = new File(Environment.getExternalStorageDirectory(),
-                        "/Android/data/" + getPackageName() + "/cache/");
-            }
+//            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+//                internalDir = new File(getApplicationContext().getFilesDir(), "logcache/");
+//            } else {
+//                internalDir = new File(Environment.getExternalStorageDirectory(),
+//                        "/Android/data/" + getPackageName() + "/cache/");
+//            }
+
+            internalDir = new File(getApplicationContext().getFilesDir(), "logcache/");
 
             if (!internalDir.exists()) {
                 boolean isCreated = internalDir.mkdirs();
