@@ -357,6 +357,23 @@ namespace MGLogger {
                     _eventListener->onEvent(MG_LOGGER_STATUS_FORK_EXITED, msg->msg.c_str());
                 }
                 break;
+            case MG_LOGGER_STATUS_FORK_TIMEOUT:
+                ALOGE("MGLogger::handleMessage - Fork timeout: %s", msg->msg.c_str());
+                if (_eventListener) {
+                    _eventListener->onEvent(MG_LOGGER_STATUS_FORK_TIMEOUT, msg->msg.c_str());
+                }
+                if (mLogger) {
+                    mLogger->stop();
+                }
+                mLogger = BaseLogger::CreateLogger(LOGGER_TYPE_HOOK);
+                if (mLogger) {
+                    if (mLogger->init() == MG_OK) {
+                        mLogger->start();
+                    } else {
+                        ALOGE("MGLogger::handleMessage - Switch to Hook mode failed");
+                    }
+                }
+                break;
             case MG_LOGGER_STATUS_FORK_STARTED:
             default:
                 ALOGW("MGLogger::handleMessage - Unknown message type: %d", msg->what);
