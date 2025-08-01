@@ -180,6 +180,10 @@ int LoggerFork::handleForkLogs() {
             MGLog mgLog{};
             parseThreadTimeLine(buffer, &mgLog);
             writeLog(&mgLog, LOG_SRC_FORK);
+        } else if (pollRet > 0 && (pfd.revents & (POLLHUP | POLLERR))) {
+            ALOGE("LoggerFork::handleForkLogs - poll hangup or error");
+            sendMessage(MG_LOGGER_STATUS_FORK_EXITED, "logcat hangup");
+            break;
         } else if (pollRet == 0) { // timeout
             if (!firstDataRead) {
                 ALOGE("LoggerFork::handleForkLogs - logcat no output, timeout");
