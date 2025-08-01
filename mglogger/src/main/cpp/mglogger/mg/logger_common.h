@@ -56,6 +56,7 @@
 
 
 #define LOG_READ_TIME_OUT 20 // ms
+#define LOGCAT_OUTPUT_TIMEOUT_MS 5000
 
 
 #endif //MGLOGGER_LOGGER_COMMON_H

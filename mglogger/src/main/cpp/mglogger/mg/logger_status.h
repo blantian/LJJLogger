@@ -17,5 +17,6 @@ constexpr const int MG_LOGGER_STATUS_FORK_FAILED = 1004;
 constexpr const int MG_LOGGER_STATUS_FORK_EXITED = 1005;
 constexpr const int MG_LOGGER_STATUS_FORK_STARTED = 1006;
 constexpr const int MG_LOGGER_STATUS_LOGCAT_UNAVAILABLE = 1007;
+constexpr const int MG_LOGGER_STATUS_FORK_TIMEOUT = 1008;
 
 #endif //MGLOGGER_LOGGER_STATUS_H

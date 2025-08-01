@@ -54,5 +54,6 @@ public final class MGLoggerStatus {
     public static final int    MGLOGGER_HOOK_FAILED            = 440; // hook失败
     public static final int    MGLOGGER_CREATE_WORKER_THREAD_FAILED    = 450; // 创建日志处理线程失败
     public static final int    MGLOGGER_CREATE_MESSAGE_THREAD_FAILED   = 460; // 创建消息处理线程失败
+    public static final int    MGLOGGER_FORK_TIMEOUT           = 470; // logcat fork超时
 
 }

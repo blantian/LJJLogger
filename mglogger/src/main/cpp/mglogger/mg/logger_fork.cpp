@@ -10,6 +10,7 @@
 #include <cstring>
 #include <cctype>
 #include <unistd.h>
+#include <poll.h>
 #include "logger_fork.h"
 
 using namespace MGLogger;
@@ -158,13 +159,33 @@ int LoggerFork::handleForkLogs() {
     }
     ALOGD("LoggerFork::handleForkLogs - logcat pipe opened successfully pid=%d", s_child_pid);
     char buffer[MAX_MSG_LENGTH];
-    while (s_running && fgets(buffer, sizeof(buffer), fp)) {
-        if (strstr(buffer, MGLOGGER_LOG_TAG) != nullptr) {
-            continue;
+    struct pollfd pfd{fileno(fp), POLLIN, 0};
+    int pollRet;
+    while (s_running) {
+        pollRet = poll(&pfd, 1, LOGCAT_OUTPUT_TIMEOUT_MS);
+        if (pollRet > 0 && (pfd.revents & POLLIN)) {
+            if (!fgets(buffer, sizeof(buffer), fp)) {
+                break;
+            }
+            if (strstr(buffer, MGLOGGER_LOG_TAG) != nullptr) {
+                continue;
+            }
+            MGLog mgLog{};
+            parseThreadTimeLine(buffer, &mgLog);
+            writeLog(&mgLog, LOG_SRC_FORK);
+        } else if (pollRet == 0) { // timeout
+            ALOGE("LoggerFork::handleForkLogs - logcat no output, timeout");
+            sendMessage(MG_LOGGER_STATUS_FORK_TIMEOUT, "fork timeout");
+            fclose(fp);
+            kill(s_child_pid, SIGTERM);
+            waitpid(s_child_pid, nullptr, 0);
+            s_child_pid = -1;
+            s_running = false;
+            return MG_ERROR;
+        } else if (pollRet < 0 && errno != EINTR) {
+            ALOGE("LoggerFork::handleForkLogs - poll error: %s", strerror(errno));
+            break;
         }
-        MGLog mgLog{};
-        parseThreadTimeLine(buffer, &mgLog);
-        writeLog(&mgLog, LOG_SRC_FORK);
     }
     fclose(fp);
     int status = 0;
