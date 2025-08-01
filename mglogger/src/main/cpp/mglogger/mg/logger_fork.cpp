@@ -163,12 +163,15 @@ int LoggerFork::handleForkLogs() {
     char buffer[MAX_MSG_LENGTH];
     struct pollfd pfd{fileno(fp), POLLIN, 0};
     int pollRet;
+    bool firstDataRead = false;
     while (s_running) {
-        pollRet = poll(&pfd, 1, LOGCAT_OUTPUT_TIMEOUT_MS);
+        int timeout = firstDataRead ? -1 : LOGCAT_OUTPUT_TIMEOUT_MS;
+        pollRet = poll(&pfd, 1, timeout);
         if (pollRet > 0 && (pfd.revents & POLLIN)) {
             if (!fgets(buffer, sizeof(buffer), fp)) {
                 break;
             }
+            firstDataRead = true;
             if (strstr(buffer, MGLOGGER_LOG_TAG) != nullptr) {
                 continue;
             }
@@ -176,14 +179,18 @@ int LoggerFork::handleForkLogs() {
             parseThreadTimeLine(buffer, &mgLog);
             writeLog(&mgLog, LOG_SRC_FORK);
         } else if (pollRet == 0) { // timeout
-            ALOGE("LoggerFork::handleForkLogs - logcat no output, timeout");
-            sendMessage(MG_LOGGER_STATUS_FORK_TIMEOUT, "fork timeout");
-            fclose(fp);
-            kill(s_child_pid, SIGTERM);
-            waitpid(s_child_pid, nullptr, 0);
-            s_child_pid = -1;
-            s_running = false;
-            return MG_ERROR;
+            if (!firstDataRead) {
+                ALOGE("LoggerFork::handleForkLogs - logcat no output, timeout");
+                sendMessage(MG_LOGGER_STATUS_FORK_TIMEOUT, "fork timeout");
+                fclose(fp);
+                kill(s_child_pid, SIGTERM);
+                waitpid(s_child_pid, nullptr, 0);
+                s_child_pid = -1;
+                s_running = false;
+                return MG_ERROR;
+            }
+            // ignore timeout after first log has been read
+            continue;
         } else if (pollRet < 0 && errno != EINTR) {
             ALOGE("LoggerFork::handleForkLogs - poll error: %s", strerror(errno));
             break;
