@@ -245,10 +245,29 @@ namespace MGLogger {
                                       item.tid, item.tag);
                             }
                             break;
+                        case CLOGAN_WRITE_FAIL_HEADER:
+                            ALOGE("MGLogger::run - Failed to write log header (tid=%lld, tag=%s, code=%d)",
+                                  item.tid, item.tag, code);
+                            _eventListener->onEvent(MG_LOGGER_STATUS_WRITE,
+                                                      "Failed to write log header");
+                            break;
+                        case CLOGAN_WRITE_FAIL_MALLOC:
+                            ALOGE("MGLogger::run - Failed to write log due to malloc error (tid=%lld, tag=%s, code=%d)",
+                                  item.tid, item.tag, code);
+                            _eventListener->onEvent(MG_LOGGER_STATUS_WRITE,
+                                                      "Failed to write log due to malloc error");
+                            break;
+                        case CLOGAN_WRITE_FAIL_PARAM:
+                            ALOGE("MGLogger::run - Failed to write log due to parameter error (tid=%lld, tag=%s, code=%d)",
+                                  item.tid, item.tag, code);
+                            _eventListener->onEvent(MG_LOGGER_STATUS_WRITE,
+                                                      "Failed to write log due to parameter error");
+                            break;
                         default:
                             ALOGE("MGLogger::run - Unknown write result (tid=%lld, tag=%s, code=%d)",
                                   item.tid, item.tag, code);
-                            // todo 处理写入失败的情况,暂时忽略
+                            _eventListener->onEvent(MG_LOGGER_STATUS_WRITE,
+                                                      "Unknown write result");
                             break;
                     }
                 }

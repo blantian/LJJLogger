@@ -74,8 +74,10 @@ int LoggerHook::init() {
             ALOGD("LoggerHook::init - Hooked __android_log_assert");
         }
 #endif
+    xhook_ignore(".*/liblog\\.so$", "__android_log_print");
+    xhook_ignore(".*/libjavacore\\.so$", NULL);
     // 应用所有挂钩
-    int ret = xhook_refresh(0);
+    int ret = xhook_refresh(1);
     if (ret != 0) {
         ALOGE("LoggerHook::init - hook_refresh failed with error code: %d", ret);
         return MG_LOGGER_HOOK_FAILED;

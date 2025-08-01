@@ -10,7 +10,7 @@ set -euo pipefail
 
 PKG="com.mgtv.tv"      # 目标包名
 EVENTS=30000           # Monkey 事件总数
-THROTTLE=200           # 事件间隔 (ms)
+THROTTLE=1500           # 事件间隔 (ms)
 SEED=$(date +%s)       # 随机种子
 
 LOG_DIR="${HOME}/monkey_logs"
