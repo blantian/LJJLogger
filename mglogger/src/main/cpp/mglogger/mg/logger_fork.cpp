@@ -154,6 +154,9 @@ int LoggerFork::handleForkLogs() {
     waitpid(s_child_pid, &status, 0);
     if (WIFEXITED(status) && WEXITSTATUS(status) != 0) {
         sendMessage(MG_LOGGER_STATUS_FORK_EXITED, "child process exited with error");
+        s_child_pid = -1;
+        s_running = false;
+        return MG_ERROR;
     }
     s_child_pid = -1;
     s_running = false;

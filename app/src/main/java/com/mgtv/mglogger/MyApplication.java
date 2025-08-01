@@ -61,7 +61,7 @@ public class MyApplication extends Application {
 
             LoggerConfig loggerConfig = LoggerConfig
                     .builder(internalDir.getAbsolutePath(), internalDir.getAbsolutePath() + File.separator + FILE_NAME)
-                    .nativeLogCacheSelector(0) // 0: hook, 1: logcat
+                    .nativeLogCacheSelector(1) // 0: hook, 1: logcat
                     .logcatBlackList(blackList)
                     .build();
             MGLogger.setStatusListener((cmd, code) -> Log.i(TAG, "Logger::" + cmd + " | " + "code : " + code));

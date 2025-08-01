@@ -22,7 +22,7 @@ extern "C" {
 #endif
 
 constexpr size_t MAX_TAG_LENGTH = 64;
-constexpr size_t MAX_MSG_LENGTH = 2048;
+constexpr size_t MAX_MSG_LENGTH = 2050;
 
 // 日志条目结构
 typedef struct Log {
