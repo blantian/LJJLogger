@@ -169,6 +169,35 @@ namespace MGLogger {
                                   "logan_message_worker");
     }
 
+    void MGLogger::stopThreads() {
+        running = false;
+        alive = false;
+        if (m_worker_tid) {
+            SDL_WaitThread(m_worker_tid, nullptr);
+            m_worker_tid = nullptr;
+        }
+        if (m_message_tid) {
+            SDL_WaitThread(m_message_tid, nullptr);
+            m_message_tid = nullptr;
+        }
+    }
+
+    bool MGLogger::startThreads() {
+        m_worker_tid = createEnqueueTh();
+        if (!m_worker_tid) {
+            ALOGE("MGLogger::startThreads - Failed to create worker thread");
+            return false;
+        }
+        m_message_tid = createMessageTh();
+        if (!m_message_tid) {
+            ALOGE("MGLogger::startThreads - Failed to create message thread");
+            SDL_WaitThread(m_worker_tid, nullptr);
+            m_worker_tid = nullptr;
+            return false;
+        }
+        return true;
+    }
+
     /**
      * 日志处理线程函数
      * @param arg
@@ -365,10 +394,14 @@ namespace MGLogger {
                 if (mLogger) {
                     mLogger->stop();
                 }
+                stopThreads();
                 mLogger = BaseLogger::CreateLogger(LOGGER_TYPE_HOOK);
                 if (mLogger) {
                     if (mLogger->init() == MG_OK) {
                         mLogger->start();
+                        if (!startThreads()) {
+                            ALOGE("MGLogger::handleMessage - Failed to restart threads");
+                        }
                     } else {
                         ALOGE("MGLogger::handleMessage - Switch to Hook mode failed");
                     }

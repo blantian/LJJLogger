@@ -67,6 +67,17 @@ namespace MGLogger {
 
         SDL_Thread *createMessageTh();
 
+        /**
+         * Stop worker and message threads
+         */
+        void stopThreads();
+
+        /**
+         * Start worker and message threads
+         * @return true if both threads created successfully
+         */
+        bool startThreads();
+
         void handleMessage(const std::shared_ptr<MGMessage> &msg);
 
         int write(MGLog *log);
