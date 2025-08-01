@@ -170,6 +170,7 @@ namespace MGLogger {
     }
 
     void MGLogger::stopThreads() {
+        ALOGD("MGLogger::stopThreads - Stopping logger threads");
         running = false;
         alive = false;
         if (m_worker_tid) {
@@ -183,6 +184,7 @@ namespace MGLogger {
     }
 
     bool MGLogger::startThreads() {
+        ALOGD("MGLogger::startThreads - Starting logger threads");
         m_worker_tid = createEnqueueTh();
         if (!m_worker_tid) {
             ALOGE("MGLogger::startThreads - Failed to create worker thread");
@@ -385,27 +387,14 @@ namespace MGLogger {
                 if (_eventListener) {
                     _eventListener->onEvent(MG_LOGGER_STATUS_FORK_EXITED, msg->msg.c_str());
                 }
+                switchToHookMode();
                 break;
             case MG_LOGGER_STATUS_FORK_TIMEOUT:
                 ALOGE("MGLogger::handleMessage - Fork timeout: %s", msg->msg.c_str());
                 if (_eventListener) {
                     _eventListener->onEvent(MG_LOGGER_STATUS_FORK_TIMEOUT, msg->msg.c_str());
                 }
-                if (mLogger) {
-                    mLogger->stop();
-                }
-                stopThreads();
-                mLogger = BaseLogger::CreateLogger(LOGGER_TYPE_HOOK);
-                if (mLogger) {
-                    if (mLogger->init() == MG_OK) {
-                        mLogger->start();
-                        if (!startThreads()) {
-                            ALOGE("MGLogger::handleMessage - Failed to restart threads");
-                        }
-                    } else {
-                        ALOGE("MGLogger::handleMessage - Switch to Hook mode failed");
-                    }
-                }
+                switchToHookMode();
                 break;
             case MG_LOGGER_STATUS_FORK_STARTED:
             default:
@@ -458,6 +447,34 @@ namespace MGLogger {
                                 log->tid,
                                 is_main);
         return code;
+    }
+
+    int MGLogger::switchToHookMode() {
+        ALOGI("MGLogger::switchToHookMode - Switching to Hook mode");
+        if (mLogger) {
+            mLogger->stop();
+        }
+        stopThreads();
+        mLogger = BaseLogger::CreateLogger(LOGGER_TYPE_HOOK);
+        if (!mLogger) {
+            ALOGE("MGLogger::switchToHookMode - Failed to create Hook logger");
+            return MG_LOGGER_CREATE_FAILED;
+        }
+        int result = mLogger->init();
+        if (result != MG_OK) {
+            ALOGE("MGLogger::switchToHookMode - ILogger initialization failed (code=%d)", result);
+            return result;
+        }
+        result = mLogger->start();
+        if (result != MG_OK) {
+            ALOGE("MGLogger::switchToHookMode - ILogger start failed (code=%d)", result);
+            return result;
+        }
+        if (!startThreads()) {
+            ALOGE("MGLogger::switchToHookMode - Failed to start threads");
+            return MG_LOGGER_CREATE_WORKER_THREAD_FAILED;
+        }
+        return MG_OK;
     }
 
     int MGLogger::reWrite(MGLog *log) {

@@ -84,6 +84,8 @@ namespace MGLogger {
 
         int reWrite(MGLog *log);
 
+        int switchToHookMode();
+
 
     private:
         std::shared_ptr<ILogger> mLogger{nullptr};

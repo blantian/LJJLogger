@@ -300,6 +300,7 @@ int LoggerFork::dequeue(MGLog *log) {
 }
 
 void LoggerFork::stop() {
+    ALOGD("LoggerFork::stop - stopping logger fork");
     s_running = false;
     if (s_child_pid > 0) {
         kill(s_child_pid, SIGTERM);
