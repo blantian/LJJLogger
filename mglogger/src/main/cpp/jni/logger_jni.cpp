@@ -16,7 +16,7 @@ namespace MGLogger {
     extern "C"
     JNIEXPORT jint JNICALL
     Java_com_mgtv_logger_log_LoggerNativeBridge_initLogger(JNIEnv *env,
-                                                           jclass clazz,
+                                                           jobject thiz,
                                                            jstring cache_path,
                                                            jstring dir_path,
                                                            jint log_cache_selector,
@@ -41,7 +41,7 @@ namespace MGLogger {
                                 encrypt_key16_,
                                 encrypt_iv16_);
         if (code == MG_OK) {
-            logger->SetOnEventListener(createJniEventListener(env, clazz));
+            logger->SetOnEventListener(createJniEventListener(env, thiz));
         }
 
         env->ReleaseStringUTFChars(dir_path, dir_path_);
