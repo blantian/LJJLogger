@@ -94,10 +94,6 @@ void BaseLogger::stop() {
         messageQueue->abort();
     }
     messageQueue = nullptr;
-    if (!m_blackList.empty()) {
-        ALOGD("BaseLogger::stop - clearing blacklist");
-        m_blackList.clear();
-    }
 }
 
 

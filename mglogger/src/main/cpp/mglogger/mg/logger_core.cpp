@@ -173,15 +173,28 @@ namespace MGLogger {
         ALOGD("MGLogger::stopThreads - Stopping logger threads");
         running = false;
         alive = false;
+        if (mLogger) {
+            mLogger->stop();
+        }
+
         if (m_worker_tid) {
-            ALOGD("MGLogger::stopThreads - Waiting for worker thread to finish");
-            SDL_WaitThread(m_worker_tid, nullptr);
+            if (!pthread_equal(m_worker_tid->id, pthread_self())) {
+                ALOGD("MGLogger::stopThreads - Waiting for worker thread to finish");
+                SDL_WaitThread(m_worker_tid, nullptr);
+            } else {
+                ALOGW("MGLogger::stopThreads - Called from worker thread, skipping wait");
+            }
             m_worker_tid = nullptr;
             ALOGD("MGLogger::stopThreads - Worker thread stopped");
         }
+
         if (m_message_tid) {
-            ALOGD("MGLogger::stopThreads - Waiting for message thread to finish");
-            SDL_WaitThread(m_message_tid, nullptr);
+            if (!pthread_equal(m_message_tid->id, pthread_self())) {
+                ALOGD("MGLogger::stopThreads - Waiting for message thread to finish");
+                SDL_WaitThread(m_message_tid, nullptr);
+            } else {
+                ALOGW("MGLogger::stopThreads - Called from message thread, skipping wait");
+            }
             m_message_tid = nullptr;
             ALOGD("MGLogger::stopThreads - Message thread stopped");
         }
@@ -458,6 +471,7 @@ namespace MGLogger {
     int MGLogger::switchToHookMode() {
         ALOGI("MGLogger::switchToHookMode - Switching to Hook mode");
         stopThreads();
+        mLogger.reset();
         if (mLogger) {
             mLogger->stop();
         }
@@ -564,19 +578,7 @@ namespace MGLogger {
     void MGLogger::stop() {
         ALOGI("MGLogger::stop - Stopping logger");
         flush();
-        if (mLogger) {
-            mLogger->stop();
-        }
-        if (m_worker_tid) {
-            SDL_WaitThread(m_worker_tid, nullptr);
-            m_worker_tid = nullptr;
-        }
-
-        if (m_message_tid) {
-            SDL_WaitThread(m_message_tid, nullptr);
-            m_message_tid = nullptr;
-        }
-
+        stopThreads();
         // 销毁同步资源
         if (m_mutex) {
             SDL_DestroyMutex(m_mutex);
