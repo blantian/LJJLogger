@@ -12,11 +12,11 @@
 #endif
 
 #ifndef LOGAN_MMAP_LENGTH
-#define LOGAN_MMAP_LENGTH 150 * 1024 //150k
+#define LOGAN_MMAP_LENGTH 50 * 1024 //50k
 #endif
 
 #ifndef LOGAN_MEMORY_LENGTH
-#define LOGAN_MEMORY_LENGTH 150 * 1024 //150k
+#define LOGAN_MEMORY_LENGTH 50 * 1024 //50k
 #endif
 
 #ifndef CLOGAN_MMAP_UTIL_H

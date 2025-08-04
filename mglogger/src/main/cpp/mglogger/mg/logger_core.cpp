@@ -266,11 +266,12 @@ namespace MGLogger {
                 break;
             }
 
-            if (logEntry.level == LEVEL_ERROR) {
-                write(&logEntry); // 直接写入错误日志
-                clogan_flush(); // 如果是错误日志，立即刷新
-                continue;
-            }
+            //todo 先不开，会出现频繁flush，导致日志丢失 （最大缓存2M，mmap缓存150k，当文件达到2.85M以上的时候，mmap如果是150k会出现丢失问题）
+//            if (logEntry.level == LEVEL_ERROR) {
+//                write(&logEntry); // 直接写入错误日志
+//                clogan_flush(); // 如果是错误日志，立即刷新
+//                continue;
+//            }
 
             mBatchBuf.emplace_back(logEntry);   // 放进批量容器
             uint64_t now = utils::LoggerUtils::nowMs(); // 获取当前时间戳（毫秒）

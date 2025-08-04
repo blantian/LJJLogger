@@ -163,7 +163,6 @@ int LoggerFork::handleForkLogs() {
     while (s_running) {
         int timeout = firstDataRead ? -1 : LOGCAT_OUTPUT_TIMEOUT_MS;
         pollRet = poll(&pfd, 1, timeout);
-        ALOGD("LoggerFork::handleForkLogs - poll returned %d, revents: %d", pollRet, pfd.revents);
         if (pollRet > 0 && (pfd.revents & POLLIN)) {
             if (!fgets(buffer, sizeof(buffer), fp)) {
                 ALOGD("LoggerFork::handleForkLogs - fgets failed or EOF reached");

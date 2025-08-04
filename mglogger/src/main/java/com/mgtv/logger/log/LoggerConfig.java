@@ -116,7 +116,7 @@ public final class LoggerConfig {
     /* =================== 默认常量集中管理 =================== */
     public static final class Defaults {
         public static final int          LOG_CACHE_S  = 0;
-        public static final long         MAX_FILE     = 2 * 1024 * 1024;           // 2 MiB
+        public static final long         MAX_FILE     = 1024 * 1024;           // 1 MiB
         public static final long         MIN_SD_CARD  = 10L * 1024 * 1024;         // 10 MiB
         public static final int          MAX_QUEUE    = 500;                       // 队列最大长度
         public static final String       KEY16        = "1234567890abcdef";
