@@ -55,5 +55,15 @@ public final class MGLoggerStatus {
     public static final int    MGLOGGER_CREATE_WORKER_THREAD_FAILED    = 450; // 创建日志处理线程失败
     public static final int    MGLOGGER_CREATE_MESSAGE_THREAD_FAILED   = 460; // 创建消息处理线程失败
     public static final int    MGLOGGER_FORK_TIMEOUT           = 470; // logcat fork超时
+    public static final int    MG_LOGGER_STATUS_THREAD_CREATION_FAILED            = 1001; // logcat fork退出
+    public static final int    MG_LOGGER_STATUS_PIPE_CREATION_FAILED             = 1002; // 管道创建失败
+    public static final int    MG_LOGGER_STATUS_PIPE_OPEN_FAILED                 = 1003; // 管道打开失败
+    public static final int    MG_LOGGER_STATUS_FORK_FAILED                      = 1004; // fork失败
+    public static final int    MG_LOGGER_STATUS_FORK_EXITED                      = 1005; // fork退出
+
+    public static final int    MG_LOGGER_STATUS_FORK_STARTED                     = 1006; // fork开始
+    public static final int    MG_LOGGER_STATUS_LOGCAT_UNAVAILABLE                = 1007; // logcat不可用
+    public static final int    MG_LOGGER_STATUS_FORK_TIMEOUT                      = 1008; // fork超时
+
 
 }
