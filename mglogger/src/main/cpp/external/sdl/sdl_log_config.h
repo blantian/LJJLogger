@@ -16,5 +16,9 @@
 #define LOG_LEVEL_ERROR   (4)
 #define LOG_LEVEL_FATAL   (5)
 
+#ifdef NDEBUG
+#define MGLOGGER_LOG_LEVEL (LOG_LEVEL_INFO)
+#else
 #define MGLOGGER_LOG_LEVEL (LOG_LEVEL_DEBUG)
+#endif
 #endif //MGLOGGER_SDL_LOG_CONFIG_H
