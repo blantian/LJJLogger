@@ -35,10 +35,6 @@ LoggerFork::LoggerFork() {
 LoggerFork::~LoggerFork() {
     ALOGD("LoggerFork::~LoggerFork - shutting down");
     stop();
-    if (forkThread) {
-        SDL_WaitThread(forkThread, NULL);
-        forkThread = nullptr;
-    }
 }
 
 int LoggerFork::init() {
@@ -308,7 +304,9 @@ void LoggerFork::stop() {
         s_child_pid = -1;
     }
     if (forkThread) {
+        ALOGD("LoggerFork::stop - waiting for fork thread to finish");
         SDL_WaitThread(forkThread, nullptr);
+        ALOGD("LoggerFork::stop - fork thread finished");
         forkThread = nullptr;
     }
     BaseLogger::stop();

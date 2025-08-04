@@ -284,8 +284,6 @@ namespace MGLogger {
                     int code = write(&item);
                     switch (code) {
                         case CLOGAN_WRITE_SUCCESS:
-                            ALOGD("MGLogger::run - Log written successfully (tid=%lld, tag=%s)",
-                                  item.tid, item.tag);
                             break;
                         case CLOAGN_WRITE_FAIL_MAXFILE:
                             ALOGE("MGLogger::run - Failed to write log (tid=%lld, tag=%s, code=%d)",

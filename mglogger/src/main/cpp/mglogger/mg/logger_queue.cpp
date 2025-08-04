@@ -90,11 +90,13 @@ int LoggerQueue::dequeue(MGLog *outLog) {
 
 
 void LoggerQueue::abort() {
+    ALOGD("LoggerQueue::abort - Aborting logger queue");
     SDL_LockMutex(m_mutex);
     // 标记停止，并唤醒线程退出
     abort_request = 1;
     SDL_CondSignal(m_cond);
     SDL_UnlockMutex(m_mutex);
+    ALOGD("LoggerQueue::abort - Logger queue aborted");
 }
 
 void LoggerQueue::clear() {

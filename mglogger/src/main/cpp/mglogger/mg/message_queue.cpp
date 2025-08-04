@@ -88,6 +88,7 @@ namespace MGLogger {
         abort_request = 1;
         SDL_CondSignal(cond);
         SDL_UnlockMutex(mutex);
+        ALOGD("MessageQueue::abort - message queue aborted");
     }
 
     void MessageQueue::sendMessageLocked(const std::shared_ptr<MGMessage>& msg) {

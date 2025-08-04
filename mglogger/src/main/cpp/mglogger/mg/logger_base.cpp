@@ -52,6 +52,16 @@ BaseLogger::BaseLogger() {
 BaseLogger::~BaseLogger() {
     ALOGD("BaseLogger::~BaseLogger - shutting down");
     stop();
+    if (m_loggerQueue) {
+        m_loggerQueue->clear();
+        m_loggerQueue.reset();
+    }
+    m_loggerQueue = nullptr;
+    if (messageQueue) {
+        messageQueue.reset();
+    }
+    messageQueue = nullptr;
+    ALOGD("BaseLogger::~BaseLogger - shut down");
 }
 
 int BaseLogger::init() {
@@ -84,16 +94,14 @@ void BaseLogger::enqueue(MGLog *log, int tag) {
 
 
 void BaseLogger::stop() {
-    ALOGD("BaseLogger::stop - stopping logger");
+    ALOGD("BaseLogger::stop - stopping logger queue and message queue");
     if (m_loggerQueue) {
         m_loggerQueue->abort();
-        m_loggerQueue->clear();
     }
-    m_loggerQueue = nullptr;
     if (messageQueue) {
         messageQueue->abort();
     }
-    messageQueue = nullptr;
+    ALOGD("BaseLogger::stop - logger queue and message queue stopped");
 }
 
 
