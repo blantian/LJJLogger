@@ -1,7 +1,7 @@
 
 
-#ifndef AV_ENGINE_SDL__STDINC_H
-#define AV_ENGINE_SDL__STDINC_H
+#ifndef MGLOGGER_SDL__STDINC_H
+#define MGLOGGER_SDL__STDINC_H
 
 #include <stddef.h>
 #include <stdint.h>

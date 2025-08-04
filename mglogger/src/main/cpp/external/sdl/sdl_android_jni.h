@@ -1,7 +1,7 @@
 
 
-#ifndef AV_ENGINE_SDL_ANDROID_JNI_H
-#define AV_ENGINE_SDL_ANDROID_JNI_H
+#ifndef MGLOGGER_SDL_ANDROID_JNI_H
+#define MGLOGGER_SDL_ANDROID_JNI_H
 
 #include <jni.h>
 #include "external/j4a/j4a_base.h"
@@ -10,29 +10,29 @@
 #ifdef __cplusplus
 extern "C" {
 #endif /* __cplusplus */
-#define AV_ENGINE_API_1_BASE                      1   // 1.0
-#define AV_ENGINE_API_2_BASE_1_1                  2   // 1.1
-#define AV_ENGINE_API_3_CUPCAKE                   3   // 1.5
-#define AV_ENGINE_API_4_DONUT                     4   // 1.6
-#define AV_ENGINE_API_5_ECLAIR                    5   // 2.0
-#define AV_ENGINE_API_6_ECLAIR_0_1                6   // 2.0.1
-#define AV_ENGINE_API_7_ECLAIR_MR1                7   // 2.1
-#define AV_ENGINE_API_8_FROYO                     8   // 2.2
-#define AV_ENGINE_API_9_GINGERBREAD               9   // 2.3
-#define AV_ENGINE_API_10_GINGERBREAD_MR1          10  // 2.3.3
-#define AV_ENGINE_API_11_HONEYCOMB                11  // 3.0
-#define AV_ENGINE_API_12_HONEYCOMB_MR1            12  // 3.1
-#define AV_ENGINE_API_13_HONEYCOMB_MR2            13  // 3.2
-#define AV_ENGINE_API_14_ICE_CREAM_SANDWICH       14  // 4.0
-#define AV_ENGINE_API_15_ICE_CREAM_SANDWICH_MR1   15  // 4.0.3
-#define AV_ENGINE_API_16_JELLY_BEAN               16  // 4.1
-#define AV_ENGINE_API_17_JELLY_BEAN_MR1           17  // 4.2
-#define AV_ENGINE_API_18_JELLY_BEAN_MR2           18  // 4.3
-#define AV_ENGINE_API_19_KITKAT                   19  // 4.4
-#define AV_ENGINE_API_20_KITKAT_WATCH             20  // 4.4W
-#define AV_ENGINE_API_21_LOLLIPOP                 21  // 5.0
-#define AV_ENGINE_API_22_LOLLIPOP_MR1             22  // 5.1
-#define AV_ENGINE_API_23_M                        23  // 6.0
+#define MGLOGGER_API_1_BASE                      1   // 1.0
+#define MGLOGGER_API_2_BASE_1_1                  2   // 1.1
+#define MGLOGGER_API_3_CUPCAKE                   3   // 1.5
+#define MGLOGGER_API_4_DONUT                     4   // 1.6
+#define MGLOGGER_API_5_ECLAIR                    5   // 2.0
+#define MGLOGGER_API_6_ECLAIR_0_1                6   // 2.0.1
+#define MGLOGGER_API_7_ECLAIR_MR1                7   // 2.1
+#define MGLOGGER_API_8_FROYO                     8   // 2.2
+#define MGLOGGER_API_9_GINGERBREAD               9   // 2.3
+#define MGLOGGER_API_10_GINGERBREAD_MR1          10  // 2.3.3
+#define MGLOGGER_API_11_HONEYCOMB                11  // 3.0
+#define MGLOGGER_API_12_HONEYCOMB_MR1            12  // 3.1
+#define MGLOGGER_API_13_HONEYCOMB_MR2            13  // 3.2
+#define MGLOGGER_API_14_ICE_CREAM_SANDWICH       14  // 4.0
+#define MGLOGGER_API_15_ICE_CREAM_SANDWICH_MR1   15  // 4.0.3
+#define MGLOGGER_API_16_JELLY_BEAN               16  // 4.1
+#define MGLOGGER_API_17_JELLY_BEAN_MR1           17  // 4.2
+#define MGLOGGER_API_18_JELLY_BEAN_MR2           18  // 4.3
+#define MGLOGGER_API_19_KITKAT                   19  // 4.4
+#define MGLOGGER_API_20_KITKAT_WATCH             20  // 4.4W
+#define MGLOGGER_API_21_LOLLIPOP                 21  // 5.0
+#define MGLOGGER_API_22_LOLLIPOP_MR1             22  // 5.1
+#define MGLOGGER_API_23_M                        23  // 6.0
 
 JavaVM *SDL_JNI_GetJvm();
 
@@ -49,7 +49,7 @@ void    SDL_JNI_DeleteLocalRefP(JNIEnv *env, jobject *obj_ptr);
 
 int     SDL_Android_GetApiLevel();
 
-#define AV_ENGINE_FIND_JAVA_CLASS(env__, var__, classsign__) \
+#define MGLOGGER_FIND_JAVA_CLASS(env__, var__, classsign__) \
     do { \
         jclass clazz = (*env__)->FindClass(env__, classsign__); \
         if (J4A_ExceptionCheck__catchAll(env) || !(clazz)) { \

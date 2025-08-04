@@ -91,14 +91,19 @@ namespace MGLogger {
                 fileName = reuseFile.c_str();
                 ALOGI("MGLogger::init - Reuse recent log file %s", fileName);
             } else {
-                fileName = utils::LoggerUtils::toCString(utils::LoggerUtils::nowMs());
+                uint64_t now = utils::LoggerUtils::nowMs();
+                fileName = utils::LoggerUtils::toCString(now);
+                ALOGI("MGLogger::init - No recent log file found, using new file %s", fileName);
             }
-
             code = clogan_open(fileName);
-            ALOGD("MGLogger::init - CLogan opened logan (code=%d)", code);
+            ALOGD("MGLogger::init - Logger CLogan opened file (fileName=%s,code=%d)",fileName, code);
             code = clogan_flush();
-            ALOGD("MGLogger::init - CLogan flushed logan (code=%d)", code);
-            code = clogan_write(0, "MGLogger initialized", 0, "MGLogger", getpid(), 1);
+            ALOGD("MGLogger::init - Logger CLogan flushed logan (code=%d)", code);
+            char log_buf[256];
+            snprintf(log_buf, sizeof(log_buf), "MGLogger initialized with file %s", fileName);
+            // 获取当前线程名
+//            const char *thread_name = SDL_ThreadGetName(SDL_ThreadID());
+            code = clogan_write(0, log_buf, 0, "MGLogger", getpid(), 1);
             if (code == CLOGAN_WRITE_SUCCESS) {
                 ALOGI("MGLogger::init - Write initial log success (code=%d)", code);
             }

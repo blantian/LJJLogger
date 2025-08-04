@@ -186,10 +186,6 @@ JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM *vm, void *reserved)
         ALOGI("Failed to get JNIEnv");
         return JNI_ERR;
     }
-//    g_env = env;
-//    // 然后检查API级别
-//    int apiLevel = SDL_Android_GetApiLevel();
-//    ALOGI("Android API Level: %d", apiLevel);
 
     retval = J4A_LoadAll__catchAll(env);
     JNI_CHECK_RET(retval == 0, env, NULL, NULL, -1);

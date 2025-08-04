@@ -1,5 +1,5 @@
-#ifndef AV_ENGINE_SDL__THREAD_H
-#define AV_ENGINE_SDL__THREAD_H
+#ifndef MGLOGGER_SDL__THREAD_H
+#define MGLOGGER_SDL__THREAD_H
 
 #include <stdint.h>
 #include <pthread.h>
