@@ -168,15 +168,13 @@ Usage: $0 install [options]
 
   -s SERIAL        设备序列号，默认 ${DEFAULT_SERIAL}
   -b TYPE          构建类型 debug/release，默认 debug
-  -f FLAVOR        Product Flavor (可选)，如 demo/qa
+  -f FLAVOR        Product Flavor (可选)
   -p PATH          使用已有 APK，跳过本地构建
   -i METHOD        安装方式 install/put，默认 install
-                   install: 传统 adb install 方式
-                   put/push: 直接推送到 /data/app/ 目录
   --pkg NAME       包名 (默认 $pkg)
   --activity CLS   主 Activity (默认 $activity)
 
-若未用 -p 指定 PATH，将执行 ./gradlew assemble<Flavor><BuildType>
+说明：执行 install 前会先构建并投放 playercore AAR 到 /Users/skyblue/imgo/code/MGLogger/app/libs
 EOF
             return ;;
             *) echo "未知参数 $1"; return 1;;
@@ -196,6 +194,18 @@ EOF
     echo "安装方式: $install_method"
     echo "========================================"
 
+    # ---------- 预构建并投放 playercore AAR ----------
+    local LIB_DIR="/Users/skyblue/imgo/code/MGLogger/app/libs"
+    local AAR_NAME="mglogger_1.0.0.aar"
+
+    echo "📦 预构建 playercore → $LIB_DIR ($AAR_NAME)"
+    mkdir -p "$LIB_DIR"
+    # 清理旧 AAR，避免重复打包导致依赖冲突
+    rm -f "$LIB_DIR"/mglogger-*.aar
+
+    # 直接调用本脚本内的 cmd_playercore
+    cmd_playercore -b "$build_type" -p "$LIB_DIR" -n "$AAR_NAME"
+
     # ---------- 构建 APK ----------
     if [[ -z "$custom_path" ]]; then
         echo "🧹 清理构建残留..."
@@ -204,12 +214,10 @@ EOF
 
         echo "🔨 开始构建 ${flavor}${build_type}..."
         # 构造 gradle 任务名称，处理首字母大写
-        gradle_task="assemble"
+        local gradle_task="assemble"
         if [[ -n "$flavor" ]]; then
-            # 首字母大写
             gradle_task="${gradle_task}$(echo "${flavor:0:1}" | tr 'a-z' 'A-Z')${flavor:1}"
         fi
-        # build_type 首字母大写
         gradle_task="${gradle_task}$(echo "${build_type:0:1}" | tr 'a-z' 'A-Z')${build_type:1}"
         ./gradlew "$gradle_task"
 
@@ -222,20 +230,17 @@ EOF
 
     # ---------- 安装到设备 ----------
     if [[ "$install_method" == "install" ]]; then
-        # 传统 adb install 方式
         echo "🚮 卸载旧包 (如存在)..."
         adb -s "$serial" uninstall "$pkg" || true
 
         echo "⬆️  安装 APK (adb install)..."
         adb -s "$serial" install -r "$custom_path"
     else
-        # push 方式
         echo "🚮 清理旧版本应用文件..."
         adb -s "$serial" shell "find /data/app/ -name '*${build_type}*' -exec rm -rf {} \;" || true
 
         echo "⬆️  推送 APK 到设备 (adb push)..."
         adb -s "$serial" push "$custom_path" /data/app/
-
         echo "⏱️  等待安装完成..."
         sleep 5
     fi
@@ -245,13 +250,14 @@ EOF
     echo "✅ 安装并启动完成!"
 }
 
+
 #--------------------------------------
 # playercore 子命令
 #--------------------------------------
 cmd_playercore() {
     local build_type="debug"   # debug / release
     local target_dir="$HOME/Desktop"
-    local aar_name="iptv-playercore1.0.0.aar"
+    local aar_name="mglogger_1.0.0.aar"
     local run_install=false
 
     # 解析参数
@@ -266,7 +272,7 @@ Usage: $0 playercore [options]
 
   -b TYPE          构建类型 debug/release，默认 debug
   -p PATH          目标目录，默认 ~/Desktop
-  -n NAME          AAR文件名，默认 iptv-playercore1.0.0.aar
+  -n NAME          AAR文件名，默认 mglogger_1.0.0.aar
   --install        构建完成后执行安装脚本
 
 示例:
@@ -297,17 +303,17 @@ EOF
     mkdir -p "$target_dir"
 
     # 清理之前的构建
-    echo "🧹 清理 playercore 模块构建残留..."
-    rm -rf playercore/build/outputs/aar/
+    echo "🧹 清理 mglogger 模块构建残留..."
+    rm -rf mglogger/build/outputs/aar/
 
     # 构建 AAR
-    echo "🔨 开始构建 playercore ${build_type}..."
+    echo "🔨 开始构建 mglogger ${build_type}..."
     if [[ "$build_type" == "debug" ]]; then
-        ./gradlew :playercore:assembleDebug
-        source_aar="playercore/build/outputs/aar/playercore-debug.aar"
+        ./gradlew :mglogger:assembleDebug
+        source_aar="mglogger/build/outputs/aar/mglogger-debug.aar"
     else
-        ./gradlew :playercore:assembleRelease
-        source_aar="playercore/build/outputs/aar/playercore-release.aar"
+        ./gradlew :mglogger:assembleRelease
+        source_aar="mglogger/build/outputs/aar/mglogger-release.aar"
     fi
 
     # 检查AAR文件是否生成成功
