@@ -11,7 +11,7 @@ cmake_minimum_required(VERSION 3.8.0)
 # build script scope).
 project("mglogger")
 
-#set(CMAKE_BUILD_TYPE DEBUG)
+set(CMAKE_BUILD_TYPE Release)
 
 
 # Set C++ standard
