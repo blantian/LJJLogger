@@ -34,6 +34,9 @@ ext {
     targetSdkVersion = 33 // <-- 从 28 更新
     compileSdkVersion = 33 // <-- 从 28 更新
     buildToolsVersion = '33.0.2' // <-- 建议更新，或移除让 AGP 自动选择
+
+    // Toggle to use mglogger AAR in app module instead of project dependency
+    useLocalMgloggerAar = false
 }
 
 tasks.register('clean', Delete) {
