@@ -174,12 +174,16 @@ namespace MGLogger {
         running = false;
         alive = false;
         if (m_worker_tid) {
+            ALOGD("MGLogger::stopThreads - Waiting for worker thread to finish");
             SDL_WaitThread(m_worker_tid, nullptr);
             m_worker_tid = nullptr;
+            ALOGD("MGLogger::stopThreads - Worker thread stopped");
         }
         if (m_message_tid) {
+            ALOGD("MGLogger::stopThreads - Waiting for message thread to finish");
             SDL_WaitThread(m_message_tid, nullptr);
             m_message_tid = nullptr;
+            ALOGD("MGLogger::stopThreads - Message thread stopped");
         }
     }
 
@@ -453,10 +457,10 @@ namespace MGLogger {
 
     int MGLogger::switchToHookMode() {
         ALOGI("MGLogger::switchToHookMode - Switching to Hook mode");
+        stopThreads();
         if (mLogger) {
             mLogger->stop();
         }
-        stopThreads();
         mLogger = BaseLogger::CreateLogger(LOGGER_TYPE_HOOK);
         if (!mLogger) {
             ALOGE("MGLogger::switchToHookMode - Failed to create Hook logger");
