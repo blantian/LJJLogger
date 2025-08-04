@@ -2,6 +2,16 @@ apply plugin: 'com.android.application'
 
 android {
     compileSdkVersion rootProject.ext.compileSdkVersion
+
+    signingConfigs {
+        release {
+            storeFile file("release.keystore")
+            storePassword "password"
+            keyAlias "release_key"
+            keyPassword "password"
+        }
+    }
+
     defaultConfig {
         applicationId "com.mgtv.mglogger"
         minSdkVersion rootProject.ext.minSdkVersion
