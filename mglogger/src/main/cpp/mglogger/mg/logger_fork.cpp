@@ -307,5 +307,10 @@ void LoggerFork::stop() {
         waitpid(s_child_pid, nullptr, 0);
         s_child_pid = -1;
     }
+    if (forkThread) {
+        SDL_WaitThread(forkThread, nullptr);
+        forkThread = nullptr;
+    }
+    BaseLogger::stop();
 }
 
