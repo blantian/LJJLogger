@@ -116,9 +116,9 @@ public final class LoggerConfig {
     /* =================== 默认常量集中管理 =================== */
     public static final class Defaults {
         public static final int          LOG_CACHE_S  = 0;
-        public static final long         MAX_FILE     = (long) 1024 * 1024;        // 1 MiB
+        public static final long         MAX_FILE     = 2 * 1024 * 1024;           // 2 MiB
         public static final long         MIN_SD_CARD  = 10L * 1024 * 1024;         // 10 MiB
-        public static final int          MAX_QUEUE    = 10_000;
+        public static final int          MAX_QUEUE    = 500;                       // 队列最大长度
         public static final String       KEY16        = "1234567890abcdef";
         public static final String       IV16         = "abcdef1234567890";
         public static final List<String> LOGCAT_BLACK = Collections.emptyList();

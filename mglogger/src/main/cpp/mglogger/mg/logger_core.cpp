@@ -484,7 +484,7 @@ namespace MGLogger {
             ALOGE("MGLogger::switchToHookMode - Failed to create Hook logger");
             return MG_LOGGER_CREATE_FAILED;
         }
-        // restore blacklist for new logger
+
         if (!mBlackList.empty()) {
             mLogger->setBlackList(mBlackList);
         }
