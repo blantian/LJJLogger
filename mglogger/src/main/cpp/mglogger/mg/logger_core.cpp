@@ -61,11 +61,11 @@ namespace MGLogger {
         if (result == CLOGAN_INIT_SUCCESS_MMAP || result == CLOGAN_INIT_SUCCESS_MEMORY) {
             int code = 0;
             if (result == CLOGAN_INIT_SUCCESS_MMAP) {
-                ALOGD("MGLogger::init - CLogan initialized with mmap (code=%d)", result);
+                ALOGI("MGLogger::init - MGLogger initialized with mmap (code=%d)", result);
             } else {
-                ALOGD("MGLogger::init - CLogan initialized with memory (code=%d)", result);
+                ALOGI("MGLogger::init - MGLogger initialized with memory (code=%d)", result);
             }
-            // 防止重启无线创建缓存文件，默认两个小时无更新不创建
+            // 防止重启无限创建缓存文件，默认两个小时无更新不创建
             std::string reuseFile;
             if (dir_path && *dir_path) {
                 auto infos = utils::LoggerUtils::collectFileInfo(dir_path);
@@ -96,16 +96,16 @@ namespace MGLogger {
                 ALOGI("MGLogger::init - No recent log file found, using new file %s", fileName);
             }
             code = clogan_open(fileName);
-            ALOGD("MGLogger::init - Logger CLogan opened file (fileName=%s,code=%d)",fileName, code);
+            ALOGI("MGLogger::init - MGLogger opened file (fileName=%s,code=%d)",fileName, code);
             code = clogan_flush();
-            ALOGD("MGLogger::init - Logger CLogan flushed logan (code=%d)", code);
+            ALOGD("MGLogger::init - MGLogger flushed logan (code=%d)", code);
             char log_buf[256];
             snprintf(log_buf, sizeof(log_buf), "MGLogger initialized with file %s", fileName);
             // 获取当前线程名
 //            const char *thread_name = SDL_ThreadGetName(SDL_ThreadID());
             code = clogan_write(0, log_buf, 0, "MGLogger", getpid(), 1);
             if (code == CLOGAN_WRITE_SUCCESS) {
-                ALOGI("MGLogger::init - Write initial log success (code=%d)", code);
+                ALOGI("MGLogger::init - MGLogger cache file create success");
             }
             SDL_UnlockMutex(m_mutex);
             // 创建日志处理器
