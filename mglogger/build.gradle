@@ -19,6 +19,13 @@ android {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            externalNativeBuild {
+                cmake {
+                    cppFlags "-Os -ffunction-sections -fdata-sections -fvisibility=hidden -flto"
+                    ldFlags "-Wl,--gc-sections"
+                    arguments "-DCMAKE_BUILD_TYPE=Release"
+                }
+            }
         }
 
         debug {
