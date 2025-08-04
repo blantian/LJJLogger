@@ -60,6 +60,7 @@ public class MyApplication extends Application {
             blackList.add("MyApplication");
             blackList.add("art");
             blackList.add("IPCThreadState");
+            blackList.add("dalvikvm");
 
             LoggerConfig loggerConfig = LoggerConfig
                     .builder(internalDir.getAbsolutePath(), internalDir.getAbsolutePath() + File.separator + FILE_NAME)
