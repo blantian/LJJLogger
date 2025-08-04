@@ -154,8 +154,9 @@ namespace MGLogger {
     void MGLogger::setBlackList(const std::list<std::string> &blackList) {
         ALOGD("MGLogger::setBlackList - Setting blacklist with %zu items", blackList.size());
         SDL_LockMutex(m_mutex);
+        mBlackList = blackList;
         if (mLogger) {
-            mLogger->setBlackList(blackList);
+            mLogger->setBlackList(mBlackList);
         } else {
             ALOGE("MGLogger::setBlackList - Logger not initialized, cannot set blacklist");
         }
@@ -474,15 +475,20 @@ namespace MGLogger {
     int MGLogger::switchToHookMode() {
         ALOGI("MGLogger::switchToHookMode - Switching to Hook mode");
         stopThreads();
-        mLogger.reset();
         if (mLogger) {
             mLogger->stop();
+            mLogger.reset();
         }
         mLogger = BaseLogger::CreateLogger(LOGGER_TYPE_HOOK);
         if (!mLogger) {
             ALOGE("MGLogger::switchToHookMode - Failed to create Hook logger");
             return MG_LOGGER_CREATE_FAILED;
         }
+        // restore blacklist for new logger
+        if (!mBlackList.empty()) {
+            mLogger->setBlackList(mBlackList);
+        }
+
         int result = mLogger->init();
         if (result != MG_OK) {
             ALOGE("MGLogger::switchToHookMode - ILogger initialization failed (code=%d)", result);

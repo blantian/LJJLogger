@@ -15,6 +15,7 @@
 #include "logger_common.h"
 #include "logger_listener.h"
 #include "vector"
+#include <list>
 #include "logger_status.h"
 #include "logger_utils.h"
 #include <chrono>
@@ -103,6 +104,7 @@ namespace MGLogger {
         int mMaxSingleFileSize{0}; // 单个文件最大大小
         int mMaxSDCardFileSize{0};
         std::string mCacheFilePath; // 文件路径
+        std::list<std::string> mBlackList{};               // 当前黑名单
     };
 }
 
