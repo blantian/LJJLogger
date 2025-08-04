@@ -385,6 +385,7 @@ namespace MGLogger {
             case MG_LOGGER_STATUS_FORK_EXITED:
                 ALOGI("MGLogger::handleMessage - Fork exited with error: %s", msg->msg.c_str());
                 if (_eventListener) {
+                    ALOGD("MGLogger::handleMessage - Notifying event listener about fork exit");
                     _eventListener->onEvent(MG_LOGGER_STATUS_FORK_EXITED, msg->msg.c_str());
                 }
                 switchToHookMode();
@@ -392,6 +393,7 @@ namespace MGLogger {
             case MG_LOGGER_STATUS_FORK_TIMEOUT:
                 ALOGE("MGLogger::handleMessage - Fork timeout: %s", msg->msg.c_str());
                 if (_eventListener) {
+                    ALOGD("MGLogger::handleMessage - Notifying event listener about fork timeout");
                     _eventListener->onEvent(MG_LOGGER_STATUS_FORK_TIMEOUT, msg->msg.c_str());
                 }
                 switchToHookMode();

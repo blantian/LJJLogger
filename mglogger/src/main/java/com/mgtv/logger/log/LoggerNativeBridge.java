@@ -195,6 +195,7 @@ public class LoggerNativeBridge implements ILogger {
 
     @Keep
     public void onLoggerStatus(int code, String cmd) {
+        Log.i(TAG, "onLoggerStatus cmd: " + cmd + ", code: " + code);
         loggerStatusCode(cmd, code);
     }
 
