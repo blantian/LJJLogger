@@ -102,6 +102,13 @@ public final class LoggerConfig {
         public Builder key16(@NonNull String key)             { this.key16 = key; return this; }
         public Builder iv16(@NonNull String iv)               { this.iv16  = iv;  return this; }
         public Builder logcatBlackList(@Nullable List<String> list) {
+            if (list != null) {
+                list.add("MGLogger");
+                list.add("LoggerNativeBridge");
+                list.add("LoggerControlCenter");
+                list.add("LoggerConfig");
+                list.add("LoggerWorker");
+            }
             this.logcatBlackList = list == null ? Defaults.LOGCAT_BLACK : list;
             return this;
         }
