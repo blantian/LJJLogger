@@ -231,7 +231,7 @@ namespace MGLogger {
         auto self = static_cast<MGLogger *>(arg);
         ALOGI("MGLogger::threadFunc - Logger thread started");
         int ret = self->run();
-        ALOGI("MGLogger::threadFunc - Logger thread exiting (ret=%d)", ret);
+        ALOGI("MGLogger::threadFunc - Logger thread exited (ret=%d)", ret);
         return ret;
     }
 
