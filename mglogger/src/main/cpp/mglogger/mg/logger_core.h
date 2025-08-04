@@ -50,6 +50,9 @@ namespace MGLogger {
 
         void stop();
 
+        // 切换到 Hook 模式
+        int switchToHookMode();
+
         void setBlackList(const std::list<std::string> &blackList);
 
         static int threadFunc(void *arg);
@@ -72,6 +75,9 @@ namespace MGLogger {
         int write(MGLog *log);
 
         int reWrite(MGLog *log);
+
+        // 停止工作线程和消息线程
+        void stopThreads();
 
 
     private:

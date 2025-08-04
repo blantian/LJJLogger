@@ -10,6 +10,7 @@
 #include <utility>
 #include <algorithm>
 #include <cstdio>
+#include <pthread.h>
 
 namespace MGLogger {
 
@@ -434,22 +435,78 @@ namespace MGLogger {
         clogan_debug(debug);
         SDL_UnlockMutex(m_mutex);
     }
-
-    void MGLogger::stop() {
-        ALOGI("MGLogger::stop - Stopping logger");
-        flush();
+    
+    void MGLogger::stopThreads() {
+        ALOGD("MGLogger::stopThreads - Stopping logger threads");
+        running = false;
+        alive = false;
         if (mLogger) {
             mLogger->stop();
         }
         if (m_worker_tid) {
-            SDL_WaitThread(m_worker_tid, nullptr);
+            if (!pthread_equal(m_worker_tid->id, pthread_self())) {
+                ALOGD("MGLogger::stopThreads - Waiting for worker thread to finish");
+                SDL_WaitThread(m_worker_tid, nullptr);
+            } else {
+                ALOGW("MGLogger::stopThreads - Called from worker thread, skipping wait");
+            }
             m_worker_tid = nullptr;
         }
-
         if (m_message_tid) {
-            SDL_WaitThread(m_message_tid, nullptr);
+            if (!pthread_equal(m_message_tid->id, pthread_self())) {
+                ALOGD("MGLogger::stopThreads - Waiting for message thread to finish");
+                SDL_WaitThread(m_message_tid, nullptr);
+            } else {
+                ALOGW("MGLogger::stopThreads - Called from message thread, skipping wait");
+            }
             m_message_tid = nullptr;
         }
+    }
+
+    int MGLogger::switchToHookMode() {
+        ALOGI("MGLogger::switchToHookMode - Switching to Hook mode");
+        // 停止当前线程并释放现有 logger
+        stopThreads();
+        mLogger.reset();
+
+        // 创建 Hook 模式的 logger
+        mLogger = BaseLogger::CreateLogger(LOGGER_TYPE_HOOK);
+        if (!mLogger) {
+            ALOGE("MGLogger::switchToHookMode - Failed to create LoggerHook");
+            return MG_LOGGER_CREATE_FAILED;
+        }
+
+        int result = mLogger->init();
+        if (result != MG_OK) {
+            ALOGE("MGLogger::switchToHookMode - LoggerHook init failed (code=%d)", result);
+            return result;
+        }
+
+        result = mLogger->start();
+        if (result != MG_OK) {
+            ALOGE("MGLogger::switchToHookMode - LoggerHook start failed (code=%d)", result);
+            return result;
+        }
+
+        m_worker_tid = createEnqueueTh();
+        if (!m_worker_tid) {
+            ALOGE("MGLogger::switchToHookMode - Failed to create worker thread");
+            return MG_LOGGER_CREATE_WORKER_THREAD_FAILED;
+        }
+
+        m_message_tid = createMessageTh();
+        if (!m_message_tid) {
+            ALOGE("MGLogger::switchToHookMode - Failed to create message thread");
+            return MG_LOGGER_CREATE_MESSAGE_THREAD_FAILED;
+        }
+
+        return MG_OK;
+    }
+
+    void MGLogger::stop() {
+        ALOGI("MGLogger::stop - Stopping logger");
+        flush();
+        stopThreads();
 
         // 销毁同步资源
         if (m_mutex) {
