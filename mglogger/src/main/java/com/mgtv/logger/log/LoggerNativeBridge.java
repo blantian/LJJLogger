@@ -55,13 +55,13 @@ public class LoggerNativeBridge implements ILogger {
         return isMGLoggerOk;
     }
 
-    public static native int initLogger( String cachePath,
-                                          String dirPath,
-                                          int    logCacheSelector,
-                                          int    maxFile,
-                                          int    maxSdCardSize,
-                                          String encryptKey16,
-                                          String encryptIv16);
+    private native int initLogger( String cachePath,
+                                   String dirPath,
+                                   int    logCacheSelector,
+                                   int    maxFile,
+                                   int    maxSdCardSize,
+                                   String encryptKey16,
+                                   String encryptIv16);
 
 
     private native int  LoggerOpen(String fileName);
