@@ -18,6 +18,7 @@ public class MGLogger {
 
     public static void init(LoggerConfig config) {
         loggerControlCenter = LoggerControlCenter.getInstance(config);
+//        CrashHandler.install();
     }
 
 

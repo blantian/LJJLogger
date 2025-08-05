@@ -36,25 +36,13 @@ public class MyApplication extends Application {
 
     private void initLogan(boolean isNative) {
         if (isNative) {
-            File internalDir;
-//            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-//                internalDir = new File(getApplicationContext().getFilesDir(), "logcache/");
-//            } else {
-//                internalDir = new File(Environment.getExternalStorageDirectory(),
-//                        "/Android/data/" + getPackageName() + "/cache/");
-//            }
-
-            internalDir = new File(getApplicationContext().getFilesDir(), "logcache/");
-
+            File internalDir = new File(getApplicationContext().getFilesDir(), "logcache/");
             if (!internalDir.exists()) {
                 boolean isCreated = internalDir.mkdirs();
                 if (!isCreated) {
                     Log.e("Logan", "Failed to create directory: " + internalDir.getAbsolutePath());
                 }
             }
-
-            Log.i(TAG, "save path: " + internalDir.getAbsolutePath());
-
             // 配置黑名单
             ArrayList<String> blackList = new ArrayList<>();
             blackList.add("MyApplication");
@@ -69,6 +57,8 @@ public class MyApplication extends Application {
                     .build();
             MGLogger.setStatusListener((cmd, code) -> Log.i(TAG, "Logger::" + cmd + " | " + "code : " + code));
             MGLogger.init(loggerConfig);
+
+            MGLogger.write("write from app ", 1);
 
         } else {
             ContextProvider.init(this);

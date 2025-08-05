@@ -27,7 +27,7 @@ public class MainActivity extends AppCompatActivity {
         findViewById(R.id.write).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-//                MGLogger.w("hello world", 2);
+                MGLogger.write("write from activity ", 1);
                 Log.i(TAG, "hello world");
             }
         });
