@@ -22,7 +22,7 @@ public class MGLogger {
     }
 
 
-    private void start() {
+    public static void start() {
         if (loggerControlCenter == null) {
             throw new RuntimeException("Please initialize MGLogger first");
         }

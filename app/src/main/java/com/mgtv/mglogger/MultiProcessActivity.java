@@ -8,6 +8,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.mgtv.logger.log.LoggerConfig;
 import com.mgtv.logger.log.MGLogger;
+import com.mgtv.logger.log.MGLoggerStatus;
 
 import java.io.File;
 
@@ -51,7 +52,14 @@ public class MultiProcessActivity extends AppCompatActivity {
                 .builder(internalDir.getAbsolutePath(), internalDir.getAbsolutePath() + File.separator + "multi_mglog")
                 .nativeLogCacheSelector(1)
                 .build();
+        MGLogger.setStatusListener((code, msg) -> {
+            if (msg.equals(MGLoggerStatus.MGLOGGER_INIT_STATUS) && code == MGLoggerStatus.MGLOGGER_OK) {
+                Log.i("MultiProcessActivity", "Logger initialized successfully");
+                MGLogger.start();
+            } else {
+                Log.e("MultiProcessActivity", "Logger initialization failed with code: " + code);
+            }
+        });
         MGLogger.init(loggerConfig);
-        MGLogger.start();
     }
 }
