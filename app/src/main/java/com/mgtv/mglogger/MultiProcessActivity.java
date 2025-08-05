@@ -25,9 +25,10 @@ public class MultiProcessActivity extends AppCompatActivity {
             internalDir.mkdirs();
         }
         LoggerConfig loggerConfig = LoggerConfig
-                .builder(internalDir.getAbsolutePath(), internalDir.getAbsolutePath() + File.separator + "mglog")
+                .builder(internalDir.getAbsolutePath(), internalDir.getAbsolutePath() + File.separator + "multi_mglog")
                 .nativeLogCacheSelector(1)
                 .build();
         MGLogger.init(loggerConfig);
+        MGLogger.start();
     }
 }

@@ -94,8 +94,7 @@ public final class LoggerConfig {
             this.logcatBlackList  = new ArrayList<>(src.logcatBlackList);
         }
 
-        /* ---------- Fluent setters ---------- */
-        public Builder nativeLogCacheSelector(int seconds)                 { this.logCacheS = seconds; return this; }
+        public Builder nativeLogCacheSelector(int selector /* 0:hook 1:logcat */)                 { this.logCacheS = selector; return this; }
         public Builder maxLogFileBytes(long bytes)                    { this.maxLogFileBytes = bytes; return this; }
         public Builder maxSdCardBytes(long bytes)                  { this.maxSdCardBytes = bytes; return this; }
         public Builder maxQueueSize(int size)                     { this.maxQueue = size; return this; }

@@ -37,9 +37,10 @@
         android:layout_marginTop="20dp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"/>
+
     <Button
-        android:id="@+id/ott"
-        android:text="ott"
+        android:id="@+id/multi_process"
+        android:text="multi process"
         android:background="@drawable/bg_selector"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
@@ -47,27 +48,5 @@
         android:layout_marginTop="20dp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"/>
-    <Button
-        android:id="@+id/ott2"
-        android:text="ottH265"
-        android:background="@drawable/bg_selector"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/ott"
-        android:layout_marginTop="20dp"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"/>
-    <Button
-        android:id="@+id/multi_process"
-        android:text="multi process"
-        android:background="@drawable/bg_selector"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/ott2"
-        android:layout_marginTop="20dp"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"/>
-
-
 
 </androidx.constraintlayout.widget.ConstraintLayout>
