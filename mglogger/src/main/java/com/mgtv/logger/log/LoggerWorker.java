@@ -147,6 +147,7 @@ final class LoggerWorker implements Runnable {
     }
 
     private void doWrite(WriteAction action) {
+        Log.i(TAG, "doWrite");
         if (action == null) return;
 
         if (logDir == null) logDir = new File(logPath);
@@ -177,7 +178,9 @@ final class LoggerWorker implements Runnable {
     }
 
     private void flushInternal() {
+        Log.i(TAG, "Flushing logs to disk...");
         if (protocol != null) {
+            Log.i(TAG, "Flushing logs to disk...");
             protocol.loggerFlush();
         }
     }

@@ -22,7 +22,7 @@ public class MGLogger {
     }
 
 
-    public static void start() {
+    private void start() {
         if (loggerControlCenter == null) {
             throw new RuntimeException("Please initialize MGLogger first");
         }
@@ -119,9 +119,13 @@ public class MGLogger {
     }
 
     static void onListenerLogWriteStatus(String name, int status) {
-        if (name.equals(MGLoggerStatus.MGLOGGER_INIT_STATUS) && status != MGLoggerStatus.MGLOGGER_OK) {
-            //todo 处理初始化失败的情况，可切换java层收集log模式
-            Log.d(TAG, "MGLogger init failed with status: " + status);
+        if (name.equals(MGLoggerStatus.MGLOGGER_INIT_STATUS)) {
+            if (status != MGLoggerStatus.MGLOGGER_OK){
+                //todo 处理初始化失败的情况，可切换java层收集log模式
+//                Log.e(TAG, "MGLogger init failed with status: " + status);
+            } else {
+//                Log.i(TAG, "MGLogger init success");
+            }
         }
 
         if (statusListener != null) {

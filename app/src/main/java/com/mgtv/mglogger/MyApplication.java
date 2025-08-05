@@ -8,6 +8,7 @@ import android.util.Log;
 
 import com.mgtv.logger.log.LoggerConfig;
 import com.mgtv.logger.log.MGLogger;
+import com.mgtv.logger.log.MGLoggerStatus;
 import com.mgtv.logger.mglog.LogService;
 import com.mgtv.mglogger.log.MGLog;
 import com.mgtv.mglogger.log.utils.ContextProvider;
@@ -20,18 +21,13 @@ public class MyApplication extends Application {
     private static final String TAG = "MyApplication";
     private static final String FILE_NAME = "mglog";
 
-    private String path;
-
     private Thread readThread;
 
     @Override
     public void onCreate() {
         super.onCreate();
-        path = Environment.getExternalStorageDirectory().getAbsolutePath()
-                + File.separator + "mgtv" + File.separator + FILE_NAME;
-        initLogan(true);
-        Log.i(TAG, "Logan path: " + path);
-//        readThread = AssetReader.logTextFileAsync(this); // 默认路径
+//        readThread = AssetReader.logTextFileAsync(this);
+        initLogan(true); // true: native , false: java
     }
 
     private void initLogan(boolean isNative) {
@@ -55,9 +51,16 @@ public class MyApplication extends Application {
                     .nativeLogCacheSelector(1) // 0: hook, 1: logcat
                     .logcatBlackList(blackList)
                     .build();
-            MGLogger.setStatusListener((cmd, code) -> Log.i(TAG, "Logger::" + cmd + " | " + "code : " + code));
+            MGLogger.setStatusListener((code, msg) -> {
+                Log.i(TAG, "Logger:: code=" + code + " | " + "msg : " + msg);
+                if (msg.equals(MGLoggerStatus.MGLOGGER_INIT_STATUS)) {
+                    Log.i(TAG, "Logger initialized successfully");
+//                    MGLogger.start();
+                } else {
+                    Log.e(TAG, "Logger initialization failed with code: " + code);
+                }
+            });
             MGLogger.init(loggerConfig);
-
             MGLogger.write("write from app ", 1);
 
         } else {

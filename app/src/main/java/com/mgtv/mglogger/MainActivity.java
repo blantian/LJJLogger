@@ -20,6 +20,7 @@ public class MainActivity extends AppCompatActivity {
         findViewById(R.id.flush).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                Log.i(TAG, "flush log");
                 MGLogger.flush();
             }
         });
