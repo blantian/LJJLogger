@@ -20,11 +20,12 @@ android {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
             externalNativeBuild {
-                cmake {
-                    cppFlags "-Os -ffunction-sections -fdata-sections -fvisibility=hidden -flto"
-                    ldFlags "-Wl,--gc-sections"
-                    arguments "-DCMAKE_BUILD_TYPE=Release"
+                ndk {
+                    debugSymbolLevel "none"
                 }
+//                cmake {
+//                    cppFlags "-Os -ffunction-sections -fdata-sections -fvisibility=hidden -flto"
+//                }
             }
         }
 
@@ -80,6 +81,26 @@ afterEvaluate {
 
         tasks.named("externalNativeBuild${capitalized}").configure {
             finalizedBy(copyTask)
+        }
+
+        if (variant.buildType.name == "release") {
+            def extraStripTask = tasks.register("extraStrip${capitalized}") {
+                doLast {
+                    def osName = org.gradle.internal.os.OperatingSystem.current()
+                    def host = osName.isMacOsX() ? "darwin-x86_64" : (osName.isWindows() ? "windows-x86_64" : "linux-x86_64")
+                    def llvmStrip = "${android.ndkDirectory}/toolchains/llvm/prebuilt/${host}/bin/llvm-strip"
+                    ["armeabi-v7a", "arm64-v8a"].each { abi ->
+                        def soFile = file("$buildDir/intermediates/cmake/${variant.name}/obj/${abi}/libmglogger.so")
+                        if (soFile.exists()) {
+                            project.exec { commandLine llvmStrip, "--strip-all", soFile }
+                        }
+                    }
+                }
+            }
+
+            tasks.named("strip${capitalized}DebugSymbols").configure {
+                finalizedBy(extraStripTask)
+            }
         }
     }
 }

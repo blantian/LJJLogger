@@ -195,7 +195,7 @@ EOF
     echo "========================================"
 
     # ---------- 预构建并投放 playercore AAR ----------
-    local LIB_DIR="/Users/skyblue/imgo/code/MGLogger/app/libs"
+    local LIB_DIR="/Users/skyblue/imgo/code/Logger/MGLogger/app/libs"
     local AAR_NAME="mglogger_1.0.0.aar"
 
     echo "📦 预构建 playercore → $LIB_DIR ($AAR_NAME)"

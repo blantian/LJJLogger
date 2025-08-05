@@ -463,8 +463,8 @@ namespace MGLogger {
         }
         // 判断日志是否来自主线程
         int is_main = (log->tid == getpid()) ? 1 : 0;
-        // 写入日志到 CLogan（日志类型 flag=0 表示普通日志）
-        int code = clogan_write(0,
+        // 写入日志到 CLogan（日志类型 flag=2 表示代码日志）
+        int code = clogan_write(2,
                                 log->msg,
                                 log->ts,
                                 const_cast<char *>(log->tag),
