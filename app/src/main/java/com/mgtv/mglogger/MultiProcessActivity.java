@@ -1,6 +1,8 @@
 package com.mgtv.mglogger;
 
 import android.os.Bundle;
+import android.util.Log;
+import android.view.View;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -16,7 +18,28 @@ public class MultiProcessActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_multi_process);
         initLogger();
-        MGLogger.write("write from multi process activity ", 1);
+
+        findViewById(R.id.flush).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.i("MultiProcessActivity", "flush log");
+                MGLogger.flush();
+            }
+        });
+
+        findViewById(R.id.write).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                MGLogger.write("write from multi process activity ", 1);
+                Log.i("MultiProcessActivity", "hello world");
+            }
+        });
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        MGLogger.flush();
     }
 
     private void initLogger() {
