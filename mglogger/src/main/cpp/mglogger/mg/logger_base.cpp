@@ -1,12 +1,21 @@
-//
-// Created by sky blue on 2025/7/22.
-//
-
 #include "logger_base.h"
 #include "logger_hook.h"
 #include "logger_fork.h"
+/**
+ * Description: hook/fork 日志采集器的基类实现
+ * Created by lantian
+ * Date： 2025/7/22
+ * Time： 10:20
+ */
 
 using namespace MGLogger;
+
+/**
+ * 创建日志采集器实例
+ * @param type 0 - Hook 方式, 1 - Fork 方式
+ * @return
+ */
+
 std::shared_ptr<BaseLogger> BaseLogger::CreateLogger(const int type) {
     ALOGD("%s: create %d", __func__, type);
     std::shared_ptr<BaseLogger> logger = nullptr;
@@ -64,6 +73,10 @@ BaseLogger::~BaseLogger() {
     ALOGD("BaseLogger::~BaseLogger - shut down");
 }
 
+/**
+ * 初始化日志队列，消息队列
+ * @return
+ */
 int BaseLogger::init() {
     ALOGD("BaseLogger::init - initializing logger");
     m_loggerQueue = std::make_shared<LoggerQueue>(500);
@@ -84,6 +97,11 @@ int BaseLogger::init() {
     return MG_OK;
 }
 
+/**
+ * log入队列
+ * @param log
+ * @param tag
+ */
 void BaseLogger::enqueue(MGLog *log, int tag) {
     if (!m_loggerQueue) {
         ALOGE("BaseLogger::enqueue - LoggerQueue not initialized");
@@ -92,7 +110,9 @@ void BaseLogger::enqueue(MGLog *log, int tag) {
     m_loggerQueue->enqueue(log, static_cast<LogSourceType>(tag));
 }
 
-
+/**
+ * 阻塞队列
+ */
 void BaseLogger::stop() {
     ALOGD("BaseLogger::stop - stopping logger queue and message queue");
     if (m_loggerQueue) {

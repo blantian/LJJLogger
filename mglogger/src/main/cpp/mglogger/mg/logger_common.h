@@ -1,12 +1,14 @@
-//
-// Created by sky blue on 2025/7/18.
-//
+/**
+ * Description:
+ * Created by lantian
+ * Date： 2025/7/18
+ * Time： 15:30
+ */
 
 #ifndef MGLOGGER_LOGGER_COMMON_H
 #define MGLOGGER_LOGGER_COMMON_H
 
-#define MG_LOGGER_VERSION "1.0.0"
-#define DEBUG_LOG 0
+#define DEBUG_LOG 0 // 是否开启调试日志,只对hook有效
 
 #define LOGGER_TYPE_HOOK 0 // 使用 Hook 方式记录日志
 #define LOGGER_TYPE_FORK 1 // 使用 Fork 方式记录日志
@@ -54,8 +56,6 @@
 #define TWO_HOURS_MS 2ULL * 60 * 60 * 1000
 
 
-
-#define LOG_READ_TIME_OUT 20 // ms
 #define LOGCAT_OUTPUT_TIMEOUT_MS 3000
 
 

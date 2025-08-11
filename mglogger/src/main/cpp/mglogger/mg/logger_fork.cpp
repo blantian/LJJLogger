@@ -1,10 +1,4 @@
-/**
- * Description:
- * Created by lantian
- * Date： 2025/7/20
- * Time： 13:43
- *
- */
+
 #include <sys/wait.h>
 #include <cstdio>
 #include <cstring>
@@ -12,9 +6,18 @@
 #include <unistd.h>
 #include <poll.h>
 #include "logger_fork.h"
-
+/**
+ * Description:
+ * Created by lantian
+ * Date： 2025/7/20
+ * Time： 13:43
+ *
+ */
 using namespace MGLogger;
-
+/**
+ * 检查 logcat 是否可用
+ * @return
+ */
 static bool isLogcatAvailable() {
     const char *paths[] = {"/system/bin/logcat", "/system/xbin/logcat", nullptr};
     for (int i = 0; paths[i] != nullptr; ++i) {
@@ -41,6 +44,10 @@ int LoggerFork::init() {
     return BaseLogger::init();
 }
 
+/**
+ * 启动日志分叉线程
+ * @return
+ */
 int LoggerFork::start() {
     ALOGD("LoggerFork::start - starting logger fork");
     s_running = true;
@@ -52,12 +59,20 @@ int LoggerFork::start() {
     return MG_OK;
 }
 
+/**
+ * 设置日志过滤器黑名单
+ * @param blackList
+ */
 void LoggerFork::setBlackList(const std::list<std::string> &blackList) {
     ALOGD("LoggerFork::setBlackList - setting black list");
     m_blackList.clear();
     m_blackList.insert(blackList.begin(), blackList.end());
 }
 
+/**
+ * logcat 参数设置
+ * @param args
+ */
 void LoggerFork::setLogcatArgs(const std::vector<std::string> &args) {
     ALOGD("LoggerFork::setLogcatArgs - setting logcat args");
     m_args_str.clear();
@@ -67,6 +82,10 @@ void LoggerFork::setLogcatArgs(const std::vector<std::string> &args) {
     }
 }
 
+/**
+ * 获取日志消息
+ * @return
+ */
 std::shared_ptr<MGMessage> LoggerFork::getMessage() {
     if (!messageQueue) {
         ALOGE("LoggerHook::getMessage - LoggerQueue not initialized");
@@ -75,13 +94,21 @@ std::shared_ptr<MGMessage> LoggerFork::getMessage() {
     return messageQueue->getMessage();
 }
 
-
+/**
+ * 创建日志分叉线程
+ * @return
+ */
 SDL_Thread *LoggerFork::createForkThread() {
     ALOGD("LoggerFork::createForkThread - creating fork thread");
     return SDL_CreateThreadEx(&_forkThread, &LoggerFork::forkThreadFunc, this,
                               "logger_fork_thread");
 }
 
+/**
+ * 分叉线程函数
+ * @param arg
+ * @return
+ */
 int LoggerFork::forkThreadFunc(void *arg) {
     ALOGD("LoggerFork::forkThreadFunc - starting fork thread");
     auto *loggerFork = static_cast<LoggerFork *>(arg);
@@ -92,6 +119,10 @@ int LoggerFork::forkThreadFunc(void *arg) {
     return MG_ERROR;
 }
 
+/**
+ * 处理日志分叉
+ * @return
+ */
 int LoggerFork::handleForkLogs() {
     ALOGD("LoggerFork::handleForkLogs - handling fork logs");
     if (!isLogcatAvailable()) {
@@ -211,6 +242,11 @@ int LoggerFork::handleForkLogs() {
     return MG_OK;
 }
 
+/**
+ * 解析日志行
+ * @param line 日志行
+ * @param out 输出的 MGLog 结构体
+ */
 void LoggerFork::parseThreadTimeLine(const char *line, MGLog *out) {
     if (!line || !out) {
         return;
@@ -274,6 +310,10 @@ void LoggerFork::parseThreadTimeLine(const char *line, MGLog *out) {
     out->ts = utils::LoggerUtils::nowMs();
 }
 
+/**
+ * 入日志队列
+ * @param log 日志
+ */
 void LoggerFork::writeLog(MGLog *log, int sourceType) {
     if (!m_loggerQueue) {
         ALOGE("LoggerFork::writeLog - LoggerQueue not initialized");
@@ -285,7 +325,10 @@ void LoggerFork::writeLog(MGLog *log, int sourceType) {
     BaseLogger::enqueue(log, sourceType);
 }
 
-
+/**
+ * 出日志队列
+ * @param log 日志
+ */
 int LoggerFork::dequeue(MGLog *log) {
     if (!m_loggerQueue) {
         ALOGE("LoggerFork::dequeue - LoggerQueue not initialized");
@@ -294,6 +337,9 @@ int LoggerFork::dequeue(MGLog *log) {
     return m_loggerQueue->dequeue(log);
 }
 
+/**
+ * 停止日志分叉,清理资源
+ */
 void LoggerFork::stop() {
     ALOGD("LoggerFork::stop - stopping logger fork");
     s_running = false;

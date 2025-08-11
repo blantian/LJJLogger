@@ -1,14 +1,12 @@
+#include "logger_hook.h"
 /**
  * Description: LoggerHook 类用于拦截 Android 日志输出
- * Created by lantian 
+ * Created by lantian
  * Date： 2025/7/14
  * Time： 23:58
  *
  *
  */
-
-
-#include "logger_hook.h"
 
 using namespace MGLogger;
 
@@ -108,6 +106,10 @@ int LoggerHook::init() {
     return BaseLogger::init();
 }
 
+/**
+ * 设置日志过滤器黑名单
+ * @param blackList
+ */
 void LoggerHook::setBlackList(const std::list<std::string> &blackList) {
     ALOGD("LoggerHook::setBlackList - setting black list");
     m_blackList.clear();
@@ -118,6 +120,11 @@ void LoggerHook::setLogcatArgs(const std::vector<std::string> &args) {
     ALOGD("LoggerHook::setLogcatArgs - setting logcat args do nothing");
 }
 
+/**
+ * 入日志队列
+ * @param log
+ * @param sourceType
+ */
 void LoggerHook::writeLog(MGLog *log, int sourceType) {
     if (!m_loggerQueue) {
         ALOGE("LoggerHook::writeLog - LoggerQueue not initialized");
@@ -130,7 +137,10 @@ void LoggerHook::writeLog(MGLog *log, int sourceType) {
     BaseLogger::enqueue(log, sourceType);
 }
 
-
+/**
+ * 获取日志消息
+ * @return
+ */
 std::shared_ptr<MGMessage> LoggerHook::getMessage() {
     if (!messageQueue) {
         ALOGE("LoggerHook::getMessage - LoggerQueue not initialized");
@@ -139,6 +149,10 @@ std::shared_ptr<MGMessage> LoggerHook::getMessage() {
     return messageQueue->getMessage();
 }
 
+/**
+ * 出日志队列
+ * @param log 日志
+ */
 int LoggerHook::dequeue(MGLog *log) {
     if (!m_loggerQueue) {
         ALOGE("BaseLogger::dequeue - LoggerQueue not initialized");
@@ -147,6 +161,9 @@ int LoggerHook::dequeue(MGLog *log) {
     return m_loggerQueue->dequeue(log);
 }
 
+/**
+ * Write 钩子
+ */
 #if OPEN_WRITE
 int LoggerHook::hookLogWrite(int prio, const char *tag, const char *buf) {
         if (buf) {
@@ -177,8 +194,10 @@ int LoggerHook::hookLogWrite(int prio, const char *tag, const char *buf) {
     }
 #endif
 
+/**
+ * Print 钩子
+ */
 #if OPEN_PRINT
-
 int LoggerHook::hookLogPrint(int prio, const char *tag, const char *fmt, ...) {
     char msgBuf[LOG_MAX_LENGTH];
     va_list args;
@@ -247,6 +266,9 @@ int LoggerHook::hookLogPrint(int prio, const char *tag, const char *fmt, ...) {
 
 #endif
 
+/**
+ * VPrint 钩子
+ */
 #if OPEN_VPRINT
 int LoggerHook::hookLogVPrint(int prio, const char *tag, const char *fmt, va_list ap) {
         char msgBuf[LOG_MAX_LENGTH];
@@ -277,8 +299,10 @@ int LoggerHook::hookLogVPrint(int prio, const char *tag, const char *fmt, va_lis
     }
 #endif
 
+/**
+ * BufWrite 钩子
+ */
 #if OPEN_BUF_WRITE
-
 int LoggerHook::hookLogBufWrite(int bufID, int prio, const char *tag, const char *text) {
     if (text) {
         MGLog log{};
@@ -351,6 +375,9 @@ int LoggerHook::hookLogBufWrite(int bufID, int prio, const char *tag, const char
 
 #endif
 
+/**
+ * Assert 钩子
+ */
 #if OPEN_ASSERT
 void LoggerHook::hookLogAssert(const char *cond, const char *tag, const char *fmt, ...) {
         // 格式化断言日志消息

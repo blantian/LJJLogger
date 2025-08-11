@@ -3,15 +3,14 @@ package com.mgtv.mglogger;
 import android.app.Application;
 import android.content.Intent;
 import android.os.Build;
-import android.os.Environment;
 import android.util.Log;
 
-import com.mgtv.logger.log.LoggerConfig;
-import com.mgtv.logger.log.MGLogger;
-import com.mgtv.logger.log.MGLoggerStatus;
-import com.mgtv.logger.mglog.LogService;
+import com.mgtv.logger.LoggerConfig;
+import com.mgtv.logger.MGLogger;
+import com.mgtv.logger.MGLoggerStatus;
 import com.mgtv.mglogger.log.MGLog;
 import com.mgtv.mglogger.log.utils.ContextProvider;
+import com.mgtv.tv.base.core.log.LogService;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -20,6 +19,8 @@ public class MyApplication extends Application {
 
     private static final String TAG = "MyApplication";
     private static final String FILE_NAME = "mglog";
+
+    public static boolean isNativeLogan = false; // 是否使用Native Logan
 
     private Thread readThread;
 
@@ -48,21 +49,22 @@ public class MyApplication extends Application {
 
             LoggerConfig loggerConfig = LoggerConfig
                     .builder(internalDir.getAbsolutePath(), internalDir.getAbsolutePath() + File.separator + FILE_NAME)
-                    .nativeLogCacheSelector(1) // 0: hook, 1: logcat
+                    .nativeLogCacheSelector(0) // 0: hook, 1: logcat
                     .logcatBlackList(blackList)
                     .build();
             MGLogger.setStatusListener((code, msg) -> {
                 Log.i(TAG, "Logger:: code=" + code + " | " + "msg : " + msg);
-                if (msg.equals(MGLoggerStatus.MGLOGGER_INIT_STATUS)) {
+                if (msg.equals(MGLoggerStatus.MGLOGGER_INIT_STATUS) && code == MGLoggerStatus.MGLOGGER_OK) {
                     Log.i(TAG, "Logger initialized successfully");
-//                    MGLogger.start();
+                    isNativeLogan = true;
+//                    MGLogger.start(); // 如果底层已经hook或者logcat已经开启，这里不需要再调用 start
                 } else {
                     Log.e(TAG, "Logger initialization failed with code: " + code);
+                    isNativeLogan = false;
                 }
             });
             MGLogger.init(loggerConfig);
-            MGLogger.write("write from app ", 1);
-
+//            MGLogger.write("write from app ", 1);
         } else {
             ContextProvider.init(this);
             MGLog.initLogManager();

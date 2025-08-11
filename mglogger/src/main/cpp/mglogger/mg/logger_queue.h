@@ -1,11 +1,3 @@
-/**
- * Description:
- * Created by lantian 
- * Date： 2025/7/11
- * Time： 15:16
- */
-
-
 #ifndef MGLOGGER_LOGGER_QUEUE_H
 #define MGLOGGER_LOGGER_QUEUE_H
 
@@ -20,6 +12,12 @@ extern "C" {
 #ifdef __cplusplus
 }
 #endif
+/**
+ * Description:
+ * Created by lantian
+ * Date： 2025/7/11
+ * Time： 15:16
+ */
 
 constexpr size_t MAX_TAG_LENGTH = 64;
 constexpr size_t MAX_MSG_LENGTH = 2050;

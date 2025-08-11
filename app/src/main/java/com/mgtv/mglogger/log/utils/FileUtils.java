@@ -16,7 +16,7 @@ public class FileUtils {
      */
     public static File getExternalCacheDir(Context context) {
         boolean isSDCardExist = Environment.getExternalStorageState()
-                .equals(android.os.Environment.MEDIA_MOUNTED);
+                .equals(Environment.MEDIA_MOUNTED);
         if (!isSDCardExist) {
             return null;
         }

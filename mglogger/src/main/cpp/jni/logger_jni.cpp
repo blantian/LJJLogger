@@ -6,6 +6,7 @@
 #include "logger_core.h"
 #include "logger_listener.h"
 #include "logger_common.h"
+#include <jni.h>
 
 static JavaVM *g_vm = nullptr;
 
@@ -15,7 +16,7 @@ namespace MGLogger {
 
     extern "C"
     JNIEXPORT jint JNICALL
-    Java_com_mgtv_logger_log_LoggerNativeBridge_initLogger(JNIEnv *env,
+    Java_com_mgtv_logger_LoggerNativeBridge_initLogger(JNIEnv *env,
                                                            jobject thiz,
                                                            jstring cache_path,
                                                            jstring dir_path,
@@ -54,7 +55,7 @@ namespace MGLogger {
 
     extern "C"
     JNIEXPORT jint JNICALL
-    Java_com_mgtv_logger_log_LoggerNativeBridge_LoggerOpen(JNIEnv *env, jobject thiz,
+    Java_com_mgtv_logger_LoggerNativeBridge_open4Logger(JNIEnv *env, jobject thiz,
                                                            jstring file_name) {
         const char *file_name_ = env->GetStringUTFChars(file_name, nullptr);
 
@@ -65,7 +66,7 @@ namespace MGLogger {
     }
     extern "C"
     JNIEXPORT void JNICALL
-    Java_com_mgtv_logger_log_LoggerNativeBridge_LoggerDebug(JNIEnv *env, jobject thiz,
+    Java_com_mgtv_logger_LoggerNativeBridge_debug4Logger(JNIEnv *env, jobject thiz,
                                                             jboolean is_debug) {
         int i = 1;
         if (!is_debug) {
@@ -75,7 +76,7 @@ namespace MGLogger {
     }
     extern "C"
     JNIEXPORT jint JNICALL
-    Java_com_mgtv_logger_log_LoggerNativeBridge_LoggerWrite(JNIEnv *env, jobject thiz, jint flag,
+    Java_com_mgtv_logger_LoggerNativeBridge_write4Logger(JNIEnv *env, jobject thiz, jint flag,
                                                             jstring log, jlong local_time,
                                                             jstring thread_name, jlong thread_id,
                                                             jint is_main) {
@@ -95,12 +96,12 @@ namespace MGLogger {
     }
     extern "C"
     JNIEXPORT void JNICALL
-    Java_com_mgtv_logger_log_LoggerNativeBridge_LoggerFlush(JNIEnv *env, jobject thiz) {
+    Java_com_mgtv_logger_LoggerNativeBridge_flush4Logger(JNIEnv *env, jobject thiz) {
         logger->flush();
     }
     extern "C"
     JNIEXPORT void JNICALL
-    Java_com_mgtv_logger_log_LoggerNativeBridge_LoggerSetBlackList(JNIEnv *env, jobject thiz,
+    Java_com_mgtv_logger_LoggerNativeBridge_LoggerSetBlackList(JNIEnv *env, jobject thiz,
                                                                    jobjectArray list) {
         if (logger == nullptr) {
             return;
@@ -117,6 +118,19 @@ namespace MGLogger {
             }
         }
         logger->setBlackList(vec);
+    }
+
+    extern "C"
+    JNIEXPORT jint JNICALL
+    Java_com_mgtv_logger_LoggerNativeBridge_exportLog4Logger(JNIEnv *env, jobject thiz,
+                                                             jstring file_name) {
+        if (logger == nullptr) {
+            return MG_ERROR;
+        }
+        const char *file_name_ = env->GetStringUTFChars(file_name, nullptr);
+        int code = logger->exportLogs(file_name_);
+        env->ReleaseStringUTFChars(file_name, file_name_);
+        return code;
     }
 }
 

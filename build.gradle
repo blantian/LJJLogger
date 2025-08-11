@@ -35,7 +35,7 @@ ext {
     compileSdkVersion = 33 // <-- 从 28 更新
     buildToolsVersion = '33.0.2' // <-- 建议更新，或移除让 AGP 自动选择
 
-    useLocalMgloggerAar = true
+    useLocalMgloggerAar = false
 }
 
 tasks.register('clean', Delete) {

@@ -1,9 +1,13 @@
-//
-// Created by sky blue on 2025/7/22.
-//
-
 #ifndef MGLOGGER_LOGGER_STATUS_H
 #define MGLOGGER_LOGGER_STATUS_H
+
+/**
+ * Description:
+ * Created by lantian
+ * Date： 2025/7/25
+ * Time： 16:22
+ *
+ */
 
 constexpr const int MG_LOGGER_STATUS_OK = 200;
 constexpr const int MG_LOGGER_STATUS_ERROR = 400;

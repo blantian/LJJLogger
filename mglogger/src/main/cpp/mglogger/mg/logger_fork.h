@@ -1,11 +1,3 @@
-/**
- * Description:
- * Created by lantian
- * Date： 2025/7/20
- * Time： 14:50
- *
- */
-
 #ifndef MGLOGGER_LOGGER_FORK_H
 #define MGLOGGER_LOGGER_FORK_H
 
@@ -13,6 +5,13 @@
 #include "logger_common.h"
 #include "vector"
 #include <atomic>
+/**
+ * Description:
+ * Created by lantian
+ * Date： 2025/7/20
+ * Time： 14:50
+ *
+ */
 
 namespace MGLogger {
 

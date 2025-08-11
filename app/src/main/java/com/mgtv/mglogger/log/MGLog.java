@@ -3,14 +3,13 @@ package com.mgtv.mglogger.log;
 import android.content.Context;
 import android.util.Log;
 
-
-import com.mgtv.logger.mglog.ILogListener;
-import com.mgtv.logger.mglog.ILogProxy;
-import com.mgtv.logger.mglog.LogManager;
 import com.mgtv.mglogger.log.utils.ContextProvider;
 import com.mgtv.mglogger.log.utils.FileUtils;
 import com.mgtv.mglogger.log.utils.StringUtils;
 import com.mgtv.mglogger.log.utils.ThreadUtils;
+import com.mgtv.tv.base.core.log.ILogListener;
+import com.mgtv.tv.base.core.log.ILogProxy;
+import com.mgtv.tv.base.core.log.LogManager;
 
 import java.io.File;
 import java.io.OutputStream;
@@ -114,7 +113,7 @@ public class MGLog {
 
             @Override
             public void runInThread(Runnable runnable) {
-                ThreadUtils.startRunInThread(runnable);
+                ThreadUtils.startRunLogWriteSingleThread(runnable);
             }
         };
         LogManager.getInstance().init(proxy);

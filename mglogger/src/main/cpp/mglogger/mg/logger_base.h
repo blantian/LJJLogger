@@ -1,7 +1,3 @@
-//
-// Created by sky blue on 2025/7/22.
-//
-
 #ifndef MGLOGGER_LOGGER_BASE_H
 #define MGLOGGER_LOGGER_BASE_H
 
@@ -10,6 +6,12 @@
 #include "logger_status.h"
 #include "logger_utils.h"
 #include "vector"
+/**
+ * Description:
+ * Created by lantian
+ * Date： 2025/7/22
+ * Time： 10:20
+ */
 
 namespace MGLogger {
     /**

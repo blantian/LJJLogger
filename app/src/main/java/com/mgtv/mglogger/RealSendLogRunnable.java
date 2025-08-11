@@ -25,8 +25,9 @@ package com.mgtv.mglogger;
 import android.text.TextUtils;
 import android.util.Log;
 
+import androidx.annotation.NonNull;
 
-import com.mgtv.logger.log.SendLogRunnable;
+import com.mgtv.logger.SendLogRunnable;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -51,15 +52,17 @@ import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLSession;
 
 public class RealSendLogRunnable extends SendLogRunnable {
-    private String mUploadLogUrl = "http://localhost:3000/logupload";
+    private String mUploadLogUrl = "http://10.2.14.88:8888/logan-web/logan/upload.json";
+    private static final String TAG = "RealSendLogRunnable";
 
     @Override
-    public void sendLog(File logFile) {
+    public void sendLog(@NonNull File logFile) {
+        Log.i(TAG,"send path=" + logFile.getAbsolutePath());
         boolean success = doSendFileByAction(logFile);
         Log.d("上传日志测试", "日志上传测试结果：" + success);
         // Must Call finish after send log
-//        finish();
-        if (logFile.getName().contains(".copy")) {
+        finish(STATUS_FINISHED);
+        if (logFile.getName().contains(".gz")) {
             logFile.delete();
         }
     }

@@ -1,6 +1,10 @@
-//
-// Created by sky blue on 2025/7/16.
-//
+/**
+ * Description:
+ * Created by lantian
+ * Date： 2025/7/14
+ * Time： 23:58
+ *
+ */
 
 #ifndef MGLOGGER_LOGGER_HOOK_H
 #define MGLOGGER_LOGGER_HOOK_H

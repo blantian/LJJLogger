@@ -1,7 +1,3 @@
-//
-// Created by sky blue on 2025/7/17.
-//
-
 #ifndef MGLOGGER_LOGGER_CORE_H
 #define MGLOGGER_LOGGER_CORE_H
 
@@ -20,6 +16,12 @@
 #include "logger_utils.h"
 #include <chrono>
 #include <cstdint>
+/**
+ * Description:
+ * Created by lantian
+ * Date： 2025/7/17
+ * Time： 20:20
+ */
 
 namespace MGLogger {
 
@@ -50,6 +52,8 @@ namespace MGLogger {
         void debug(int debug);
 
         void stop();
+
+        int  exportLogs(const char *file_name);
 
         void setBlackList(const std::list<std::string> &blackList);
 

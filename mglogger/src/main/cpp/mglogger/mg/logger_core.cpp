@@ -1,15 +1,14 @@
-/**
- * Description:
- * Created by lantian
- * Date： 2025/7/11
- * Time： 14:50
- */
-
 #include "logger_core.h"
 
 #include <utility>
 #include <algorithm>
 #include <cstdio>
+/**
+ * Description:
+ * Created by lantian
+ * Date： 2025/7/17
+ * Time： 20:20
+ */
 
 namespace MGLogger {
 
@@ -30,6 +29,17 @@ namespace MGLogger {
         stop();
     }
 
+    /**
+     * 初始化
+     * @param cache_path  缓存路径
+     * @param dir_path    日志存储路径
+     * @param log_cache_s 日志采集方式
+     * @param max_file    单个文件最大大小
+     * @param max_sdcard_size  sdCard 最大文件大小
+     * @param key16  加密密钥16字节
+     * @param iv16   加密向量16字节
+     * @return
+     */
     int MGLogger::init(const char *cache_path,
                        const char *dir_path,
                        int log_cache_s,
@@ -150,7 +160,10 @@ namespace MGLogger {
         return result;
     }
 
-
+    /**
+     * 设置黑名单
+     * @param blackList 黑名单列表
+     */
     void MGLogger::setBlackList(const std::list<std::string> &blackList) {
         ALOGD("MGLogger::setBlackList - Setting blacklist with %zu items", blackList.size());
         SDL_LockMutex(m_mutex);
@@ -164,17 +177,28 @@ namespace MGLogger {
     }
 
 
+    /**
+     * 创建日志处理线程
+     * @return
+     */
     SDL_Thread *MGLogger::createEnqueueTh() {
         running = true;
         return SDL_CreateThreadEx(&_m_worker_thread, &threadFunc, this, "logan_worker");
     }
 
+    /**
+     * 创建消息处理线程
+     * @return
+     */
     SDL_Thread *MGLogger::createMessageTh() {
         alive = true;
         return SDL_CreateThreadEx(&_m_message_thread, &messageThreadFunc, this,
                                   "logan_message_worker");
     }
 
+    /**
+     * 停止线程
+     */
     void MGLogger::stopThreads() {
         ALOGD("MGLogger::stopThreads - Stopping logger threads");
         running = false;
@@ -206,6 +230,10 @@ namespace MGLogger {
         }
     }
 
+    /**
+     * 启动线程
+     * @return
+     */
     bool MGLogger::startThreads() {
         ALOGD("MGLogger::startThreads - Starting logger threads");
         m_worker_tid = createEnqueueTh();
@@ -427,6 +455,11 @@ namespace MGLogger {
         }
     }
 
+    /**
+     *  打开日志文件
+     * @param file_name
+     * @return
+     */
     int MGLogger::open(const char *file_name) {
         SDL_LockMutex(m_mutex);
         int code = clogan_open(file_name ? file_name : "");
@@ -434,7 +467,16 @@ namespace MGLogger {
         return code;
     }
 
-
+    /**
+     * 写入日志到 CLogan
+     * @param flag
+     * @param log
+     * @param local_time
+     * @param thread_name
+     * @param thread_id
+     * @param is_main
+     * @return
+     */
     int MGLogger::write(int flag, const char *log, long long local_time,
                         const char *thread_name, long long thread_id, int is_main) {
         std::string logStr(log ? log : "");
@@ -448,6 +490,11 @@ namespace MGLogger {
         return code;
     }
 
+    /**
+     * 写入日志
+     * @param log 日志结构体
+     * @return MG_OK 成功，其他错误码失败
+     */
     int MGLogger::write(MGLog *log) {
         if (!log) {
             ALOGE("MGLogger::write - Invalid log (null)");
@@ -473,6 +520,11 @@ namespace MGLogger {
         return code;
     }
 
+    /**
+     * 切换到 Hook 模式
+     * 停止当前线程，释放资源，重新创建 Hook 模式的日志记录器
+     * @return MG_OK 成功，其他错误码失败
+     */
     int MGLogger::switchToHookMode() {
         ALOGI("MGLogger::switchToHookMode - Switching to Hook mode");
         stopThreads();
@@ -507,6 +559,11 @@ namespace MGLogger {
         return MG_OK;
     }
 
+    /**
+     * 重写日志
+     * @param log 日志结构体
+     * @return MG_OK 成功，其他错误码失败
+     */
     int MGLogger::reWrite(MGLog *log) {
         if (!log) {
             ALOGE("MGLogger::write - Invalid log (null)");
@@ -566,6 +623,10 @@ namespace MGLogger {
         return code;
     }
 
+    /**
+     * 刷新日志缓存到文件
+     * @return MG_OK 成功，其他错误码失败
+     */
     int MGLogger::flush() {
         ALOGI("MGLogger::handleMessage - Flush requested");
         SDL_LockMutex(m_mutex);
@@ -579,12 +640,32 @@ namespace MGLogger {
         return code;
     }
 
+    /**
+     * 合并压缩文件
+     * @param file_name 合并压缩文件
+     * @return MG_OK 成功，其他错误码失败
+     */
+    int MGLogger::exportLogs(const char *file_name) {
+        ALOGI("MGLogger::exportLogs - Exporting logs to %s", file_name ? file_name : "null");
+        SDL_LockMutex(m_mutex);
+        char *logs_path = const_cast<char *>(mCacheFilePath.c_str());
+        return utils::LoggerUtils::mergeCompressedFiles(logs_path, file_name);
+        SDL_UnlockMutex(m_mutex);
+    }
+
+    /**
+     * 设置调试级别
+     * @param debug
+     */
     void MGLogger::debug(int debug) {
         SDL_LockMutex(m_mutex);
         clogan_debug(debug);
         SDL_UnlockMutex(m_mutex);
     }
 
+    /**
+     * 释放所有资源，停止线程
+     */
     void MGLogger::stop() {
         ALOGI("MGLogger::stop - Stopping logger");
         flush();

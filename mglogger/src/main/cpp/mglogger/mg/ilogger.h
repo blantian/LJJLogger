@@ -1,7 +1,3 @@
-//
-// Created by sky blue on 2025/7/17.
-//
-
 #ifndef MGLOGGER_ILOGGER_H
 #define MGLOGGER_ILOGGER_H
 
@@ -20,6 +16,12 @@ extern "C" {
 #ifdef __cplusplus
 }
 #endif
+/**
+ * Description:
+ * Created by lantian
+ * Date： 2025/7/17
+ * Time： 21:50
+ */
 
 namespace MGLogger {
 

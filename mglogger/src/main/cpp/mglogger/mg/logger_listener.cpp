@@ -1,5 +1,4 @@
 #include "logger_listener.h"
-
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -9,9 +8,18 @@ extern "C" {
 }
 #endif
 
+/**
+ * Description:
+ * Created by lantian
+ * Date： 2025/7/27
+ * Time： 10:58
+ *
+ */
 
 namespace MGLogger {
-
+/**
+ * 事件监听器实现
+ */
 class JniEventListener : public OnEventListener {
 public:
     JniEventListener(JNIEnv *env, jobject thiz) {

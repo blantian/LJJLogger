@@ -1,13 +1,13 @@
+
+#include "logger_queue.h"
+#include <memory>
 /**
- * Description:
+ * Description: MGLog 队列
  * Created by lantian
  * Date： 2025/7/11
  * Time： 15:16
  *
  */
-
-#include "logger_queue.h"
-#include <memory>
 
 using namespace MGLogger;
 
@@ -42,7 +42,11 @@ LoggerQueue::~LoggerQueue() {
     }
 }
 
-
+/**
+ * 入日志队列
+ * @param log
+ * @param sourceType
+ */
 void LoggerQueue::enqueue(const MGLog *log, LogSourceType sourceType) {
     SDL_LockMutex(m_mutex);
     if (abort_request) {
@@ -67,6 +71,11 @@ void LoggerQueue::enqueue(const MGLog *log, LogSourceType sourceType) {
     SDL_UnlockMutex(m_mutex);
 }
 
+/**
+ * 出日志队列
+ * @param outLog 输出日志
+ * @return 返回日志来源类型，-1 表示队列已中止且无日志可用
+ */
 int LoggerQueue::dequeue(MGLog *outLog) {
     SDL_LockMutex(m_mutex);
     // 等待日志到来或收到中止通知
@@ -88,7 +97,9 @@ int LoggerQueue::dequeue(MGLog *outLog) {
     return static_cast<int>(sourceType);
 }
 
-
+/**
+ * 中止日志队列
+ */
 void LoggerQueue::abort() {
     ALOGD("LoggerQueue::abort - Aborting logger queue");
     SDL_LockMutex(m_mutex);
@@ -99,6 +110,9 @@ void LoggerQueue::abort() {
     ALOGD("LoggerQueue::abort - Logger queue aborted");
 }
 
+/**
+ * 清空日志队列
+ */
 void LoggerQueue::clear() {
     SDL_LockMutex(m_mutex);
     logList.clear();

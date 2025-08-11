@@ -1,6 +1,6 @@
 /**
- * Description:
- * Created by lantian 
+ * Description:消息队列，线程间通信
+ * Created by lantian
  * Date: 2025/7/14
  * Time: 15:56
  *

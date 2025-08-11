@@ -13,7 +13,7 @@ public class CustomThreadFactory implements ThreadFactory {
     CustomThreadFactory() {
         SecurityManager s = System.getSecurityManager();
         group = (s != null) ? s.getThreadGroup() : Thread.currentThread().getThreadGroup();
-        namePrefix = "mgtv-" + poolNumber.getAndIncrement() + "-thread-";
+        namePrefix = "mgtvLog-" + poolNumber.getAndIncrement() + "-thread-";
     }
 
     public Thread newThread(Runnable r) {

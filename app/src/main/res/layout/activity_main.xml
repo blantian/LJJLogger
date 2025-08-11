@@ -18,7 +18,7 @@
 
     <Button
         android:id="@+id/flush"
-        android:text="flush log"
+        android:text="Flush Log"
         android:layout_marginTop="20dp"
         app:layout_constraintRight_toRightOf="parent"
         android:background="@drawable/bg_selector"
@@ -29,7 +29,7 @@
 
     <Button
         android:id="@+id/write"
-        android:text="write log"
+        android:text="Write Log"
         android:background="@drawable/bg_selector"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
@@ -40,7 +40,7 @@
 
     <Button
         android:id="@+id/multi_process"
-        android:text="multi process"
+        android:text="Multi Process"
         android:background="@drawable/bg_selector"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
@@ -48,5 +48,29 @@
         android:layout_marginTop="20dp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"/>
+
+    <Button
+        android:id="@+id/test_exception"
+        android:text="Exception Test"
+        android:background="@drawable/bg_selector"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/multi_process"
+        android:layout_marginTop="20dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
+
+
+    <Button
+        android:id="@+id/print_log"
+        android:text="Print Log"
+        android:background="@drawable/bg_selector"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/test_exception"
+        android:layout_marginTop="20dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>
