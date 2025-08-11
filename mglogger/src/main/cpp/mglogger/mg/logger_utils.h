@@ -163,14 +163,6 @@ namespace utils {
             return merged;
         }
 
-        // Android NDK 可能没有 htonll，需要自实现
-        static inline uint64_t htonll_android(uint64_t value) {
-#if __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
-            return ((uint64_t)htonl(value & 0xFFFFFFFF) << 32) | htonl(value >> 32);
-#else
-            return value;
-#endif
-        }
 
         static inline uint64_t nowMs() {
             using namespace std::chrono;
