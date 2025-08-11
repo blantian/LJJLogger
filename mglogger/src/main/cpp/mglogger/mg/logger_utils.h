@@ -114,89 +114,53 @@ namespace utils {
             return result;
         }
 
-        static inline int mergeCompressedFiles(const char* dirPath, const char* outName) {
-            if (!dirPath || !outName) {
+        static inline int mergeCompressedFiles(const char* dir_path, const char* out_path) {
+            if (!dir_path || !out_path) {
                 ALOGE("mergeCompressedFiles - Invalid arguments");
                 return MG_ERROR;
             }
 
-            auto files = collectFileInfo(dirPath);
-            if (files.empty()) {
-                ALOGE("mergeCompressedFiles - No files found in directory: %s", dirPath);
-                return -2;
+            auto infos = collectFileInfo(dir_path);
+            if (infos.empty()) {
+                return MG_ERROR;
             }
 
-            // 创建输出文件
-            FILE* outFile = std::fopen(outName, "wb");
-            if (!outFile) {
-                ALOGE("mergeCompressedFiles - Failed to create output file: %s", outName);
-                return -3;
+            FILE* out = std::fopen(out_path, "wb");
+            if (!out) {
+                ALOGE("mergeCacheFiles: failed to open output %s", out_path);
+                return MG_ERROR;
             }
 
-            int status = 0;
-            for (const auto &kv : files) {
-                std::string fullPath;
-                if (dirPath[strlen(dirPath)-1] == '/') {
-                    fullPath = std::string(dirPath) + kv.first;
-                } else {
-                    fullPath = std::string(dirPath) + "/" + kv.first;
+            bool merged = false;
+            char buffer[4096];
+            char fullPath[PATH_MAX];
+
+            for (const auto& kv : infos) {
+                std::snprintf(fullPath, sizeof(fullPath), "%s/%s",
+                              dir_path, kv.first.c_str());
+                FILE* in = std::fopen(fullPath, "rb");
+                if (!in) {
+                    ALOGE("mergeCacheFiles: failed to open input %s", fullPath);
+                    continue;
                 }
-
-                FILE* inFile = std::fopen(fullPath.c_str(), "rb");
-                if (!inFile) {
-                    ALOGE("mergeCompressedFiles - Failed to open file: %s", fullPath.c_str());
-                    status = -4;
-                    break;
-                }
-
-                // 写入文件头信息（使用网络字节序保证兼容性）
-                uint32_t nameLen = htonl(static_cast<uint32_t>(kv.first.size()));
-
-                // 合并后的格式需要兼容旧的解包逻辑，这里使用 32 位存储文件大小。
-                // 如果单个文件超过 4GB，则返回错误避免截断。
-                if (kv.second > std::numeric_limits<uint32_t>::max()) {
-                    ALOGE("mergeCompressedFiles - File too large: %s", kv.first.c_str());
-                    status = -5;
-                    std::fclose(inFile);
-                    break;
-                }
-
-                uint32_t fileLen = htonl(static_cast<uint32_t>(kv.second));
-
-                if (std::fwrite(&nameLen, sizeof(nameLen), 1, outFile) != 1 ||
-                    std::fwrite(kv.first.data(), ntohl(nameLen), 1, outFile) != 1 ||
-                    std::fwrite(&fileLen, sizeof(fileLen), 1, outFile) != 1) {
-                    ALOGE("mergeCompressedFiles - Failed to write file header for: %s", kv.first.c_str());
-                    status = -5;
-                    std::fclose(inFile);
-                    break;
-                }
-
-                // 直接复制已压缩的文件内容
-                char buffer[64 * 1024];  // 增大缓冲区提高性能
-                size_t bytesRead;
-                while ((bytesRead = std::fread(buffer, 1, sizeof(buffer), inFile)) > 0) {
-                    if (std::fwrite(buffer, 1, bytesRead, outFile) != bytesRead) {
-                        ALOGE("mergeCompressedFiles - Failed to write file data for: %s", kv.first.c_str());
-                        status = -6;
-                        break;
+                size_t n;
+                while ((n = std::fread(buffer, 1, sizeof(buffer), in)) > 0) {
+                    if (std::fwrite(buffer, 1, n, out) != n) {
+                        std::fclose(in);
+                        std::fclose(out);
+                        ALOGE("mergeCacheFiles: write failed");
+                        return MG_ERROR;
                     }
                 }
-
-                // 检查读取错误
-                if (ferror(inFile)) {
-                    ALOGE("mergeCompressedFiles - File read error: %s", fullPath.c_str());
-                    status = -7;
-                }
-
-                std::fclose(inFile);
-                if (status != 0) {
-                    break;
-                }
+                std::fclose(in);
+                merged = true;
             }
 
-            std::fclose(outFile);
-            return status;
+            std::fclose(out);
+            if (!merged) {
+                std::remove(out_path);
+            }
+            return merged;
         }
 
         // Android NDK 可能没有 htonll，需要自实现
