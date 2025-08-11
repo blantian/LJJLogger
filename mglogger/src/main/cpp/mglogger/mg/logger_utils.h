@@ -12,6 +12,7 @@
 #include <dirent.h>
 #include <sys/stat.h>
 #include <chrono>
+#include <cstdio>
 #include <cstdint>
 #ifdef __cplusplus
 extern "C" {
@@ -99,6 +100,60 @@ namespace utils {
             }
             closedir(dir);
             return result;
+        }
+
+        // Merge all log cache files in the given directory into a single
+        // output file. Files are concatenated in ascending order of file name.
+        // Returns true on success and false if no files were merged or an
+        // error occurred.
+        static inline bool mergeCacheFiles(const char* dir_path,
+                                           const char* out_path) {
+            if (!dir_path || !out_path) {
+                ALOGD("mergeCacheFiles: invalid param");
+                return false;
+            }
+
+            auto infos = collectFileInfo(dir_path);
+            if (infos.empty()) {
+                return false;
+            }
+
+            FILE* out = std::fopen(out_path, "wb");
+            if (!out) {
+                ALOGD("mergeCacheFiles: failed to open output %s", out_path);
+                return false;
+            }
+
+            bool merged = false;
+            char buffer[4096];
+            char fullPath[PATH_MAX];
+
+            for (const auto& kv : infos) {
+                std::snprintf(fullPath, sizeof(fullPath), "%s/%s",
+                              dir_path, kv.first.c_str());
+                FILE* in = std::fopen(fullPath, "rb");
+                if (!in) {
+                    ALOGD("mergeCacheFiles: failed to open input %s", fullPath);
+                    continue;
+                }
+                size_t n;
+                while ((n = std::fread(buffer, 1, sizeof(buffer), in)) > 0) {
+                    if (std::fwrite(buffer, 1, n, out) != n) {
+                        std::fclose(in);
+                        std::fclose(out);
+                        ALOGD("mergeCacheFiles: write failed");
+                        return false;
+                    }
+                }
+                std::fclose(in);
+                merged = true;
+            }
+
+            std::fclose(out);
+            if (!merged) {
+                std::remove(out_path);
+            }
+            return merged;
         }
 
         static inline uint64_t nowMs() {
