@@ -151,7 +151,17 @@ namespace utils {
 
                 // 写入文件头信息（使用网络字节序保证兼容性）
                 uint32_t nameLen = htonl(static_cast<uint32_t>(kv.first.size()));
-                uint64_t fileLen = htonll_android(static_cast<uint64_t>(kv.second));
+
+                // 合并后的格式需要兼容旧的解包逻辑，这里使用 32 位存储文件大小。
+                // 如果单个文件超过 4GB，则返回错误避免截断。
+                if (kv.second > std::numeric_limits<uint32_t>::max()) {
+                    ALOGE("mergeCompressedFiles - File too large: %s", kv.first.c_str());
+                    status = -5;
+                    std::fclose(inFile);
+                    break;
+                }
+
+                uint32_t fileLen = htonl(static_cast<uint32_t>(kv.second));
 
                 if (std::fwrite(&nameLen, sizeof(nameLen), 1, outFile) != 1 ||
                     std::fwrite(kv.first.data(), ntohl(nameLen), 1, outFile) != 1 ||
