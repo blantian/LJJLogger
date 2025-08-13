@@ -37,7 +37,7 @@ public class LoggerUtils {
     }
 
     // 获取SDCard路径
-    public static File getExternalCacheDir(Context context) {
+    private static File getExternalDir(Context context) {
         boolean isSDCardExist = false;
         try{
             isSDCardExist = Environment.getExternalStorageState()
@@ -66,5 +66,23 @@ public class LoggerUtils {
             Log.d(TAG,"mkExternalCacheDir failed !reMake,result:"+ externalCacheDir.exists());
         }
         return externalCacheDir;
+    }
+
+
+    /**
+     * 获取外部缓存目录路径
+     */
+    public static String getExternalCacheDirPath(Context context) {
+        if (context == null) {
+            return "";
+        }
+        File dir = getExternalDir(context);
+        if (dir == null) {
+            return "";
+        }
+        if (!dir.exists() && !dir.mkdirs()) {
+            return "";
+        }
+        return dir.getAbsolutePath();
     }
 }

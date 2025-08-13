@@ -1,6 +1,7 @@
 package com.mgtv.logger;
 
 
+import android.content.Context;
 import android.util.Log;
 
 import com.mgtv.logger.i.ILoggerStatus;
@@ -49,12 +50,12 @@ public class MGLogger {
      * 发送日志到服务器
      * @param sendLogRunnable 发送日志的Runnable
      */
-    public static void sendLog(SendLogRunnable sendLogRunnable) {
+    public static void sendLog(Context context,SendLogRunnable sendLogRunnable) {
         Log.i(TAG, "sendLog");
         if (loggerControlCenter == null) {
             throw new RuntimeException("Please initialize MGLogger first");
         }
-        loggerControlCenter.send(sendLogRunnable);
+        loggerControlCenter.send(context,sendLogRunnable);
     }
 
     /**

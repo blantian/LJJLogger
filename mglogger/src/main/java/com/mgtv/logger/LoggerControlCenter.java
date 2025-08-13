@@ -1,5 +1,6 @@
 package com.mgtv.logger;
 
+import android.content.Context;
 import android.os.Looper;
 import android.text.TextUtils;
 import android.util.Log;
@@ -117,13 +118,14 @@ public final class LoggerControlCenter {
     /**
      * 发送日志
      */
-    public void send(SendLogRunnable runnable) {
-        if (TextUtils.isEmpty(logPath)) return;
+    public void send(Context context, SendLogRunnable runnable) {
+        String logsPath = LoggerUtils.getExternalCacheDirPath(context);
+        if (TextUtils.isEmpty(logsPath)) return;
         LoggerModel model = new LoggerModel();
         model.action = LoggerModel.Action.SEND;
         SendAction action = new SendAction();
         action.sendLogRunnable = runnable;
-        action.uploadPath = logPath + "/logs";
+        action.uploadPath = logsPath + "/log" + System.currentTimeMillis();
         model.sendAction = action;
         enqueue(model);
     }

@@ -63,7 +63,7 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
 //                LogPrinter.start();
                 RealSendLogRunnable realSendLogRunnable = new RealSendLogRunnable();
-                MGLogger.sendLog(realSendLogRunnable);
+                MGLogger.sendLog(MainActivity.this,realSendLogRunnable);
                 Log.i(TAG, "LogPrinter started");
             }
         });
