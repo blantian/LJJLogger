@@ -9,7 +9,8 @@ repositories {
 }
 
 android {
-    compileSdkVersion rootProject.ext.compileSdkVersion
+    namespace "com.lt.mglogger"
+    compileSdk rootProject.ext.compileSdk
 
     signingConfigs {
         release {
@@ -22,8 +23,8 @@ android {
 
     defaultConfig {
         applicationId "com.mgtv.mglogger"
-        minSdkVersion rootProject.ext.minSdkVersion
-        targetSdkVersion rootProject.ext.targetSdkVersion
+        minSdk rootProject.ext.minSdk
+        targetSdk rootProject.ext.targetSdk
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
