@@ -78,7 +78,7 @@ int J4A_loadClass__J4AC_com_mgtv_logger_kt_log_MGLoggerJni(JNIEnv *env)
     if (class_J4AC_com_mgtv_logger_kt_log_MGLoggerJni.id != NULL)
         return 0;
 
-    sign = "com/mgtv/logger/LoggerNativeBridge";
+    sign = "com/lt/logger/LoggerNativeBridge";
     class_J4AC_com_mgtv_logger_kt_log_MGLoggerJni.id = J4A_FindClass__asGlobalRef__catchAll(env, sign);
     if (class_J4AC_com_mgtv_logger_kt_log_MGLoggerJni.id == NULL)
         goto fail;
