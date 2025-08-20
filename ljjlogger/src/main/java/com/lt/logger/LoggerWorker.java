@@ -22,14 +22,16 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * Date： 2025/7/31
  * Time： 14:40
  * 后台日志处理线程。
- * 负责 WRITE / FLUSH / SEND 三种动作。
+ * 负责 WRITE / FLUSH / SEND / MERGER  四种动作。
  */
 final class LoggerWorker implements Runnable {
 
     private static final String TAG = "LoggerWorker";
     private static final int MINUTE = 60 * 1000;
-    private static final int CACHE_SIZE = 1024;
 
+    private static final long ONE_DAY = 24L * 60 * MINUTE;
+
+    private static final long ONE_WEEK = 7 * ONE_DAY;
 
     private final BlockingQueue<LoggerModel> queue;
     private final String cachePath;
@@ -192,13 +194,10 @@ final class LoggerWorker implements Runnable {
      */
     private void rotateAndCleanupIfNeeded() {
         long nowDay = LoggerUtils.getCurrentTime();
-        long oneDay = 24L * 60 * 60 * 1000;
-        // 默认保存7天
-        long saveTimeMs = 7 * 24 * 60 * 60 * 1000L;
-        if (currentDay >= nowDay && currentDay + oneDay > System.currentTimeMillis()) {
+        if (currentDay >= nowDay && currentDay + ONE_DAY > System.currentTimeMillis()) {
             return;
         }
-        long deleteTime = nowDay - saveTimeMs;
+        long deleteTime = nowDay - ONE_WEEK;
         deleteExpiredFiles(deleteTime);
         currentDay = nowDay;
         protocol.loggerOpen(String.valueOf(currentDay));
@@ -211,6 +210,11 @@ final class LoggerWorker implements Runnable {
         }
     }
 
+    /**
+     * 发送日志
+     *
+     * @param action 发送动作
+     */
     private void doSend(LoggerModel action) {
         Log.i(TAG, "doSend: " + action.sendAction.uploadPath);
         synchronized (sendLock) {
@@ -243,37 +247,22 @@ final class LoggerWorker implements Runnable {
         }
     }
 
+    /**
+     * 准备上传文件,底层会把所有的日志文件合并成一个压缩文件。
+     *
+     * @param action 发送动作
+     * @return 是否准备成功
+     */
     private boolean prepareUploadFile(SendAction action) {
         Log.i(TAG, "Preparing upload file for action path" + action.uploadPath);
         if (TextUtils.isEmpty(action.uploadPath)) return false;
         flushInternal();
-        int ret  = protocol.exportLog(action.uploadPath);
+        int ret = protocol.mergeCompressedAllLogs(action.uploadPath);
         if (ret != LJJLoggerStatus.MGLOGGER_ERROR) {
-            Log.i(TAG, "Log export successful, ret: " + ret);
+            Log.i(TAG, "Log mergeCompressed successful, ret: " + ret);
             return true;
         } else {
-            Log.e(TAG, "Log export failed, ret: " + ret);
-            return false;
-        }
-    }
-
-    /* **************** utils **************** */
-
-    private boolean copyFileFast(String src, String des) {
-        if (src == null || des == null) {
-            Log.e(TAG, "copyFileFast: src or dest is null");
-            return false;
-        }
-
-        try (FileInputStream fis = new FileInputStream(src); FileOutputStream fos = new FileOutputStream(des)) {
-            byte[] buffer = new byte[CACHE_SIZE];
-            int bytesRead;
-            while ((bytesRead = fis.read(buffer)) != -1) {
-                fos.write(buffer, 0, bytesRead);
-            }
-            return true;
-        } catch (IOException e) {
-            Log.e(TAG, "copyFileFast error", e);
+            Log.e(TAG, "Log mergeCompressed failed, ret: " + ret);
             return false;
         }
     }
@@ -294,12 +283,13 @@ final class LoggerWorker implements Runnable {
         return isSdWritable;
     }
 
-    private boolean exists(String name) {
-        if (TextUtils.isEmpty(logPath)) return false;
-        File f = new File(logPath, name);
-        return f.exists() && f.isFile();
-    }
 
+    /**
+     * 删除过期的日志文件,仅限于打点日志。
+     * 删除超过一周的日志文件。
+     *
+     * @param deleteTime 删除时间戳
+     */
     private void deleteExpiredFiles(long deleteTime) {
         File dir = new File(logPath);
         if (!dir.isDirectory()) return;

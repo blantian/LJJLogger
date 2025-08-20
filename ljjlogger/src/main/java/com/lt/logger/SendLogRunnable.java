@@ -5,7 +5,6 @@ import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-
 import java.io.File;
 
 public abstract class SendLogRunnable implements Runnable {

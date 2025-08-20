@@ -107,9 +107,9 @@ public class LoggerNativeBridge implements ILogger {
 
     private native void flush4Logger();
 
-    private native void LoggerSetBlackList(String[] list);
+    private native void setBlackList4Logger(String[] list);
 
-    private native int exportLog4Logger(String fileName);
+    private native int mergeCompressedLogs(String fileName);
 
 
     @Override
@@ -122,19 +122,18 @@ public class LoggerNativeBridge implements ILogger {
         Log.d(TAG, "setBlackList called with size: " + blackList.size());
         if (!isMGLoggerOk) return;
         try {
-            LoggerSetBlackList(blackList.toArray(new String[0]));
+            setBlackList4Logger(blackList.toArray(new String[0]));
         } catch (UnsatisfiedLinkError e) {
             Log.e(TAG, "Failed to set black list", e);
         }
     }
 
     @Override
-    public int exportLog(String fileName) {
-        Log.i(TAG, "exportLog called with fileName: " + fileName);
+    public int mergeCompressedAllLogs(String fileName) {
         if (!isMGLoggerOk) {
             return -1;
         }
-        return exportLog4Logger(fileName);
+        return mergeCompressedLogs(fileName);
     }
 
 

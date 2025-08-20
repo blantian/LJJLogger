@@ -1,11 +1,6 @@
 
 package com.lt.logger;
 
-import android.content.Context;
-import android.os.Environment;
-import android.util.Log;
-
-import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -28,59 +23,5 @@ public class LoggerUtils {
             e.printStackTrace();
         }
         return tempTime;
-    }
-
-    public static String getDateStr(long time) {
-        return sDateFormat.format(new Date(time));
-    }
-
-    // 获取SDCard路径
-    private static File getExternalDir(Context context) {
-        boolean isSDCardExist = false;
-        try{
-            isSDCardExist = Environment.getExternalStorageState()
-                    .equals(android.os.Environment.MEDIA_MOUNTED);
-        }catch (Exception e){
-            e.printStackTrace();
-            /**
-             * java.lang.RuntimeException: android.os.DeadSystemException
-             * 	at android.os.storage.StorageManager.getVolumeList(StorageManager.java:1171)
-             * 	at android.os.Environment$UserEnvironment.getExternalDirs(Environment.java:91)
-             * 	at android.os.Environment.getExternalStorageState(Environment.java:896)
-             * 	at com.mgtv.tv.base.core.k.b(FileUtils.java:133)
-             */
-        }
-        if (!isSDCardExist || context == null) {
-            return null;
-        }
-        final File externalCacheDir = new File(Environment.getExternalStorageDirectory(),
-                "/Android/data/" + context.getPackageName() + "/cache/");
-        if (!externalCacheDir.exists()) {
-            externalCacheDir.mkdirs();
-        }
-        // externalCacheDir.mkdirs 失败的情况下使用系统自带方法重新创建
-        // context.getExternalCacheDir 会自动调用系统方法创建外部SD卡缓存文件夹
-        if (!externalCacheDir.exists() && context.getExternalCacheDir() != null){
-            Log.d(TAG,"mkExternalCacheDir failed !reMake,result:"+ externalCacheDir.exists());
-        }
-        return externalCacheDir;
-    }
-
-
-    /**
-     * 获取外部缓存目录路径
-     */
-    public static String getExternalCacheDirPath(Context context) {
-        if (context == null) {
-            return "";
-        }
-        File dir = getExternalDir(context);
-        if (dir == null) {
-            return "";
-        }
-        if (!dir.exists() && !dir.mkdirs()) {
-            return "";
-        }
-        return dir.getAbsolutePath();
     }
 }

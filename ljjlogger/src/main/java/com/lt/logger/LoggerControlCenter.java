@@ -27,6 +27,10 @@ import java.util.concurrent.LinkedBlockingQueue;
 public final class LoggerControlCenter {
 
     private static volatile LoggerControlCenter sInstance;
+    private final BlockingQueue<LoggerModel> logQueue;
+    private final String logPath;
+    private final LoggerWorker loggerWorker;
+
 
     public static LoggerControlCenter getInstance(LoggerConfig config) {
         if (sInstance == null) {
@@ -39,28 +43,13 @@ public final class LoggerControlCenter {
         return sInstance;
     }
 
-    /* **********   成员变量   ********** */
-    private final BlockingQueue<LoggerModel> logQueue;
-    private final String logPath;
-    private final LoggerWorker loggerWorker;
-
-    /**
-     * 线程安全的日期解析器
-     */
-    private static final ThreadLocal<SimpleDateFormat> DATE_FORMATTER = new ThreadLocal<SimpleDateFormat>() {
-        @Override
-        protected SimpleDateFormat initialValue() {
-            return new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
-        }
-    };
-
     /* **********   构造   ********** */
     private LoggerControlCenter(LoggerConfig config) {
         if (config == null || !config.isValid()) {
             throw new IllegalArgumentException("LoganConfig is null or invalid.");
         }
 
-        this.logPath = config.getLogDir();
+        logPath = config.getLogDir();
         String cachePath = config.getCachePath();
         long maxSdCardSpace = config.getMaxSdCardBytes();
         long maxLogFileSize = config.getMaxLogFileBytes();
@@ -95,7 +84,10 @@ public final class LoggerControlCenter {
     /* **********   对外 API   ********** */
 
     /**
-     * 写日志
+     * 写入日志,业务打点日志专用
+     *
+     * @param log  日志内容
+     * @param flag 日志标记
      */
     public void write(String log, int flag) {
         if (TextUtils.isEmpty(log)) return;
@@ -118,14 +110,16 @@ public final class LoggerControlCenter {
     /**
      * 发送日志
      */
-    public void send(Context context, SendLogRunnable runnable) {
-        String logsPath = LoggerUtils.getExternalCacheDirPath(context);
-        if (TextUtils.isEmpty(logsPath)) return;
+    public void send(SendLogRunnable runnable) {
+        if (TextUtils.isEmpty(logPath)) {
+            Log.w("LoggerControlCenter", "Log path is empty, cannot send logs.");
+            return;
+        }
         LoggerModel model = new LoggerModel();
         model.action = LoggerModel.Action.SEND;
         SendAction action = new SendAction();
         action.sendLogRunnable = runnable;
-        action.uploadPath = logsPath + "/log" + System.currentTimeMillis();
+        action.uploadPath = logPath + "/log" + System.currentTimeMillis();
         model.sendAction = action;
         enqueue(model);
     }
@@ -159,33 +153,6 @@ public final class LoggerControlCenter {
             Log.w("LoggerControlCenter", "Log queue is full, log discarded: " + model.action);
             // 队列已满，当前日志被丢弃
             // 可在此处做降级处理，例如写入本地文件或上报统计
-        }
-    }
-
-    private long parseDateMillis(String date) {
-        try {
-            if (TextUtils.isEmpty(date)) {
-                return -1L;
-            }
-            // 使用线程安全的 SimpleDateFormat 解析日期字符串
-            SimpleDateFormat formatter = DATE_FORMATTER.get();
-            if (formatter == null) {
-                DATE_FORMATTER.set(new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()));
-            }
-
-            if (formatter == null) {
-                return -1L; // 解析器初始化失败
-            }
-
-            Date dateIn = formatter.parse(date);
-
-            if (dateIn == null) {
-                return -1L; // 解析失败
-            }
-
-            return dateIn.getTime();
-        } catch (ParseException e) {
-            return -1L;
         }
     }
 }

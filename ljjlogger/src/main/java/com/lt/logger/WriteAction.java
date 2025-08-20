@@ -2,7 +2,7 @@ package com.lt.logger;
 
 import android.text.TextUtils;
 
-class WriteAction {
+public class WriteAction {
 
     String log; //日志
 

@@ -67,7 +67,7 @@ public interface ILogger {
     /**
      * 获取日志目录
      */
-    int exportLog(String fileName);
+    int mergeCompressedAllLogs(String fileName);
 
     /**
      * 设置日志状态监听器

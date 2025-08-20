@@ -113,13 +113,12 @@ public class LJJLoggerProtocol implements ILogger {
     }
 
     @Override
-    public int exportLog(String fileName) {
-        Log.i(TAG, "exportLog called with fileName=" + fileName);
+    public int mergeCompressedAllLogs(String fileName) {
         ensureInitialised();
         if (sDebug) {
             Log.d(TAG, "exportLog called fileName=" + fileName);
         }
-        return delegate.exportLog(fileName);
+        return delegate.mergeCompressedAllLogs(fileName);
     }
 
     @Override
@@ -192,7 +191,7 @@ public class LJJLoggerProtocol implements ILogger {
         }
 
         @Override
-        public int exportLog(String fileName) {
+        public int mergeCompressedAllLogs(String fileName) {
             if (sDebug) {
                 Log.d(TAG, "NoOpProtocol: exportLog called with fileName=" + fileName);
             }

@@ -9,6 +9,7 @@ import com.lt.logger.i.ILoggerStatus;
 import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
+
 /**
  * Description:
  * Created by lantian
@@ -48,18 +49,20 @@ public class LJJLogger {
 
     /**
      * 发送日志到服务器
+     *
      * @param sendLogRunnable 发送日志的Runnable
      */
-    public static void sendLog(Context context,SendLogRunnable sendLogRunnable) {
+    public static void sendLog(SendLogRunnable sendLogRunnable) {
         Log.i(TAG, "sendLog");
         if (loggerControlCenter == null) {
             throw new RuntimeException("Please initialize MGLogger first");
         }
-        loggerControlCenter.send(context,sendLogRunnable);
+        loggerControlCenter.send(sendLogRunnable);
     }
 
     /**
      * 获取所有日志文件的信息
+     *
      * @return 包含文件名和大小的Map，文件名为日期字符串，大小为文件长度
      */
     public static Map<String, Long> getAllFilesInfo() {
@@ -77,7 +80,7 @@ public class LJJLogger {
         Map<String, Long> allFilesInfo = new HashMap<>();
         for (File file : files) {
             try {
-                allFilesInfo.put(LoggerUtils.getDateStr(Long.parseLong(file.getName())), file.length());
+                allFilesInfo.put(file.getName(), file.length());
             } catch (NumberFormatException e) {
                 // ignore
             }
@@ -95,7 +98,7 @@ public class LJJLogger {
         }
 
         if (statusListener != null) {
-            statusListener.loggerStatus(status,name);
+            statusListener.loggerStatus(status, name);
         }
     }
 
