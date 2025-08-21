@@ -16,7 +16,7 @@ namespace MGLogger {
 
     extern "C"
     JNIEXPORT jint JNICALL
-    Java_com_lt_logger_LoggerNativeBridge_initLogger(JNIEnv *env,
+    Java_com_lt_ljjlogger_LoggerNativeBridge_initLogger(JNIEnv *env,
                                                            jobject thiz,
                                                            jstring cache_path,
                                                            jstring dir_path,
@@ -55,7 +55,7 @@ namespace MGLogger {
 
     extern "C"
     JNIEXPORT jint JNICALL
-    Java_com_lt_logger_LoggerNativeBridge_open4Logger(JNIEnv *env, jobject thiz,
+    Java_com_lt_ljjlogger_LoggerNativeBridge_open4Logger(JNIEnv *env, jobject thiz,
                                                            jstring file_name) {
         const char *file_name_ = env->GetStringUTFChars(file_name, nullptr);
 
@@ -66,7 +66,7 @@ namespace MGLogger {
     }
     extern "C"
     JNIEXPORT void JNICALL
-    Java_com_lt_logger_LoggerNativeBridge_debug4Logger(JNIEnv *env, jobject thiz,
+    Java_com_lt_ljjlogger_LoggerNativeBridge_debug4Logger(JNIEnv *env, jobject thiz,
                                                             jboolean is_debug) {
         int i = 1;
         if (!is_debug) {
@@ -76,7 +76,7 @@ namespace MGLogger {
     }
     extern "C"
     JNIEXPORT jint JNICALL
-    Java_com_lt_logger_LoggerNativeBridge_write4Logger(JNIEnv *env, jobject thiz, jint flag,
+    Java_com_lt_ljjlogger_LoggerNativeBridge_write4Logger(JNIEnv *env, jobject thiz, jint flag,
                                                             jstring log, jlong local_time,
                                                             jstring thread_name, jlong thread_id,
                                                             jint is_main) {
@@ -96,12 +96,12 @@ namespace MGLogger {
     }
     extern "C"
     JNIEXPORT void JNICALL
-    Java_com_lt_logger_LoggerNativeBridge_flush4Logger(JNIEnv *env, jobject thiz) {
+    Java_com_lt_ljjlogger_LoggerNativeBridge_flush4Logger(JNIEnv *env, jobject thiz) {
         logger->flush();
     }
     extern "C"
     JNIEXPORT void JNICALL
-    Java_com_lt_logger_LoggerNativeBridge_setBlackList4Logger(JNIEnv *env, jobject thiz,
+    Java_com_lt_ljjlogger_LoggerNativeBridge_setBlackList4Logger(JNIEnv *env, jobject thiz,
                                                               jobjectArray list) {
         if (logger == nullptr) {
             return;
@@ -122,7 +122,7 @@ namespace MGLogger {
 
     extern "C"
     JNIEXPORT jint JNICALL
-    Java_com_lt_logger_LoggerNativeBridge_mergeCompressedLogs(JNIEnv *env, jobject thiz,
+    Java_com_lt_ljjlogger_LoggerNativeBridge_mergeCompressedLogs(JNIEnv *env, jobject thiz,
                                                               jstring file_name) {
         if (logger == nullptr) {
             return MG_ERROR;

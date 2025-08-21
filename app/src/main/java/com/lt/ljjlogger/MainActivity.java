@@ -10,6 +10,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.lt.ljjlogger.log.utils.LogPrinter;
+import com.lt.mglogger.R;
 
 import java.util.Map;
 

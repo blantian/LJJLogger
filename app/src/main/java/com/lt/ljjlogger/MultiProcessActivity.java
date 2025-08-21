@@ -7,6 +7,8 @@ import android.view.View;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.lt.mglogger.R;
+
 import java.io.File;
 
 public class MultiProcessActivity extends AppCompatActivity {
