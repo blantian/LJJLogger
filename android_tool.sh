@@ -4,8 +4,6 @@
 # 用法：android_tool.sh <command> [options]
 #
 # command:
-#   screenshot    截图并拉取到本地  ./android_tool.sh screenshot -s <serial> -d <save_dir>
-#   log           抓取 AV_MGLOGGER 日志 ./android_tool.sh log start -s <serial> -o <output_file> -t <tag>
 #   install       构建 / 安装 / 启动 APK  ./android_tool.sh install -s debug -i put
 #
 
@@ -23,123 +21,13 @@ cat <<EOF
 Usage: $0 <command> [options]
 
 Commands:
-  screenshot   adb 截图并拉取到本地
-  log          过滤 AV_MGLOGGER 日志到文件
   install      构建 / 安装 / 启动 APP
-  playercore   构建 playercore 模块 AAR 并复制到指定目录
+  build_aar    构建 build_aar 模块 AAR 并复制到指定目录
 
 运行 $0 <command> -h 查看子命令帮助
 EOF
 exit 1
 }
-
-#--------------------------------------
-# screenshot 子命令
-#--------------------------------------
-cmd_screenshot() {
-    # 默认值
-    local serial="$DEFAULT_SERIAL"
-    local save_dir="$HOME/Desktop"
-
-    # 解析参数
-    while [[ $# -gt 0 ]]; do
-        case "$1" in
-            -s|--serial) serial="$2"; shift 2;;
-            -d|--dir)    save_dir="$2"; shift 2;;
-            -h|--help) cat <<EOF
-Usage: $0 screenshot [-s SERIAL] [-d DIR]
-
-  -s SERIAL   设备序列号或 IP:port，默认 ${DEFAULT_SERIAL}
-  -d DIR      本地保存目录，默认 ~/Desktop
-EOF
-            return ;;
-            *) echo "未知参数 $1"; return 1;;
-        esac
-    done
-
-    local remote="/sdcard/screenshot.png"
-    local local_path="${save_dir}/screenshot_${NOW}.png"
-
-    mkdir -p "$save_dir"
-
-    echo "📸 设备($serial) 开始截图..."
-    adb -s "$serial" shell screencap -p "$remote"
-
-    echo "⬇️  拉取到本地: $local_path"
-    adb -s "$serial" pull "$remote" "$local_path"
-
-    echo "🧹 删除设备端临时文件"
-    adb -s "$serial" shell rm "$remote" || true
-
-    echo "✅ 完成: $local_path"
-}
-
-#--------------------------------------
-# log 子命令
-#--------------------------------------
-cmd_log_start() {
-    local serial="$DEFAULT_SERIAL"
-    local outfile="$HOME/Desktop/mgtv_log_${NOW}.txt"
-    local tag="AV_MGLOGGER"
-
-    # 解析参数
-    while [[ $# -gt 0 ]]; do
-        case "$1" in
-            -s|--serial) serial="$2"; shift 2;;
-            -o|--output) outfile="$2"; shift 2;;
-            -t|--tag)    tag="$2"; shift 2;;
-            -h|--help)
-cat <<EOF
-Usage: $0 log start [options]
-
-  -s SERIAL   设备序列号，默认 $DEFAULT_SERIAL
-  -o FILE     保存文件，默认 ~/Desktop/mgtv_log_<time>.txt
-  -t TAGS     Tag 过滤(逗号分隔)，all/* 为全量，默认 AV_MGLOGGER
-EOF
-            return;;
-            *) echo "未知参数 $1"; return 1;;
-        esac
-    done
-
-    if [[ -f "$PID_FILE" ]] && kill -0 "$(cat "$PID_FILE")" 2>/dev/null; then
-        echo "⚠️ 已有日志会话在运行(PID $(cat "$PID_FILE"))，请先执行 '$0 log stop'"
-        exit 1
-    fi
-
-    echo "🧹 清空 logcat 缓冲区"; adb -s "$serial" logcat -c
-
-    echo "🚩 后台抓取日志 -> $outfile"
-    echo "PID 将记录在 $PID_FILE"
-
-    (
-        if [[ "$tag" == "all" || "$tag" == "*" ]]; then
-            adb -s "$serial" logcat -v threadtime
-        else
-            IFS=',' read -ra TAGS <<< "$tag"
-            adb -s "$serial" logcat -v threadtime $(printf -- '-s %s ' "${TAGS[@]}")
-        fi
-    ) | tee "$outfile" &
-
-    echo $! > "$PID_FILE"
-    disown
-    echo "✅ 开始抓取，使用 '$0 log stop' 终止"
-}
-
-cmd_log_stop() {
-    if [[ ! -f "$PID_FILE" ]]; then
-        echo "❌ 未找到 PID 文件，可能未在后台抓日志"
-        exit 1
-    fi
-    local pid="$(cat "$PID_FILE")"
-    if kill -0 "$pid" 2>/dev/null; then
-        kill "$pid"
-        echo "🛑 已停止抓日志 (PID $pid)"
-    else
-        echo "⚠️ 进程 $pid 不存在"
-    fi
-    rm -f "$PID_FILE"
-}
-
 
 #--------------------------------------
 # install 子命令
@@ -149,8 +37,8 @@ cmd_install() {
     local build_type="debug"   # debug / release
     local custom_path=""
     local flavor=""
-    local pkg="com.mgtv.mglogger"
-    local activity="com.mgtv.mglogger.MainActivity"
+    local pkg="com.lt.ljjlogger"
+    local activity="com.lt.ljjlogger.MainActivity"
     local install_method="install"  # install / put
 
     # 解析参数
@@ -174,7 +62,7 @@ Usage: $0 install [options]
   --pkg NAME       包名 (默认 $pkg)
   --activity CLS   主 Activity (默认 $activity)
 
-说明：执行 install 前会先构建并投放 playercore AAR 到 /Users/skyblue/imgo/code/MGLogger/app/libs
+说明：执行 install 前会先构建并投放 ljjlogger AAR 到 app/libs
 EOF
             return ;;
             *) echo "未知参数 $1"; return 1;;
