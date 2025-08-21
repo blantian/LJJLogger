@@ -250,16 +250,8 @@ if (USE_STATIC_MBEDTLS_LIBRARY AND USE_SHARED_MBEDTLS_LIBRARY)
     add_dependencies(lib mbedcrypto_static mbedx509_static mbedtls_static)
 endif ()
 
-#add_library(xhook SHARED IMPORTED)
-#set_target_properties(xhook
-#        PROPERTIES
-#        IMPORTED_LOCATION
-#        ${CMAKE_CURRENT_SOURCE_DIR}/../jniLibs/${CMAKE_ANDROID_ARCH_ABI}/libxhook.so
-#        IMPORTED_NO_SONAME TRUE  # 禁止携带路径
-#)
-
-# Build main mglogger library
-add_library(mglogger SHARED
+# Build main ljjlogger library
+add_library(ljjlogger SHARED
         ${SOURCE_LOGGER}
         ${CLOGAN_FILES}
         ${SRC_J4A}
@@ -268,7 +260,7 @@ add_library(mglogger SHARED
         jni/logger_jni.cpp
 )
 
-target_link_libraries(mglogger
+target_link_libraries(ljjlogger
         ${log-lib}
         z
         ${mbedcrypto_static_target}

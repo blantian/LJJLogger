@@ -645,8 +645,8 @@ namespace MGLogger {
      * @param file_name 合并压缩文件
      * @return MG_OK 成功，其他错误码失败
      */
-    int MGLogger::exportLogs(const char *file_name) {
-        ALOGI("MGLogger::exportLogs - Exporting logs to %s", file_name ? file_name : "null");
+    int MGLogger::mergeCompressedLogs(const char *file_name) {
+        ALOGI("MGLogger::mergeCompressedLogs - Exporting logs to %s", file_name ? file_name : "null");
         SDL_LockMutex(m_mutex);
         char *logs_path = const_cast<char *>(mCacheFilePath.c_str());
         int code = utils::LoggerUtils::mergeCompressedFiles(logs_path, file_name);

@@ -20,6 +20,6 @@
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
 
- -keep class com.lt.logger.LoggerNativeBridge { *; }
- -keep class com.lt.logger.LoggerConfig { *; }
- -keep class com.lt.logger.LJJLogger { *; }
+ -keep class com.lt.ljjlogger.LoggerNativeBridge { *; }
+ -keep class com.lt.ljjlogger.LoggerConfig { *; }
+ -keep class com.lt.ljjlogger.LJJLogger { *; }

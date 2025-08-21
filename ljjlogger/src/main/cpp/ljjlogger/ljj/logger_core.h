@@ -51,7 +51,7 @@ namespace MGLogger {
 
         void stop();
 
-        int  exportLogs(const char *file_name);
+        int  mergeCompressedLogs(const char *file_name);
 
         void setBlackList(const std::list<std::string> &blackList);
 
