@@ -1,4 +1,4 @@
-package com.lt.mglogger.log.utils;
+package com.lt.ljjlogger.log.utils;
 
 import android.util.Log;
 

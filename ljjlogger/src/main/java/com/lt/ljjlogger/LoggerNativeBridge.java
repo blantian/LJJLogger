@@ -1,4 +1,4 @@
-package com.lt.logger;
+package com.lt.ljjlogger;
 
 import android.os.Handler;
 import android.os.Looper;
@@ -7,8 +7,8 @@ import android.util.Log;
 
 import androidx.annotation.Keep;
 
-import com.lt.logger.i.ILogger;
-import com.lt.logger.i.ILoggerStatus;
+import com.lt.ljjlogger.i.ILogger;
+import com.lt.ljjlogger.i.ILoggerStatus;
 
 import java.util.Collections;
 import java.util.HashSet;

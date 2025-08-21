@@ -1,5 +1,5 @@
 
-package com.lt.logger;
+package com.lt.ljjlogger;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;

@@ -1,11 +1,7 @@
-package com.lt.mglogger;
+package com.lt.ljjlogger;
 
 import android.app.Application;
 import android.util.Log;
-
-import com.lt.logger.LoggerConfig;
-import com.lt.logger.LJJLogger;
-import com.lt.logger.LJJLoggerStatus;
 
 import java.io.File;
 import java.util.ArrayList;

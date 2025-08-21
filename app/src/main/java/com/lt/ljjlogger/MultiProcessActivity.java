@@ -1,4 +1,4 @@
-package com.lt.mglogger;
+package com.lt.ljjlogger;
 
 import android.os.Bundle;
 import android.util.Log;
@@ -6,10 +6,6 @@ import android.view.View;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-
-import com.lt.logger.LoggerConfig;
-import com.lt.logger.LJJLogger;
-import com.lt.logger.LJJLoggerStatus;
 
 import java.io.File;
 

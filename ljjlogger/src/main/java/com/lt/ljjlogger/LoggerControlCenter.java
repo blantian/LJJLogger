@@ -1,16 +1,11 @@
-package com.lt.logger;
+package com.lt.ljjlogger;
 
-import android.content.Context;
 import android.os.Looper;
 import android.text.TextUtils;
 import android.util.Log;
 
 import java.io.File;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.List;
-import java.util.Locale;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 

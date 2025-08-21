@@ -20,7 +20,7 @@
  * THE SOFTWARE.
  */
 
-package com.lt.logger;
+package com.lt.ljjlogger;
 
 class LoggerModel {
 

@@ -1,10 +1,9 @@
-package com.lt.logger;
+package com.lt.ljjlogger;
 
 
-import android.content.Context;
 import android.util.Log;
 
-import com.lt.logger.i.ILoggerStatus;
+import com.lt.ljjlogger.i.ILoggerStatus;
 
 import java.io.File;
 import java.util.HashMap;

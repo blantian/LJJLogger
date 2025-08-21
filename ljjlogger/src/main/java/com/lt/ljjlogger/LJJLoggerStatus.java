@@ -1,4 +1,4 @@
-package com.lt.logger;
+package com.lt.ljjlogger;
 /**
  * Description:
  * Created by lantian

@@ -1,13 +1,10 @@
-package com.lt.logger;
+package com.lt.ljjlogger;
 
 import android.os.StatFs;
 import android.text.TextUtils;
 import android.util.Log;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.BlockingQueue;

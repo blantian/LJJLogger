@@ -1,12 +1,12 @@
-package com.lt.logger;
+package com.lt.ljjlogger;
 
 import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.lt.logger.i.ILogger;
-import com.lt.logger.i.ILoggerStatus;
+import com.lt.ljjlogger.i.ILogger;
+import com.lt.ljjlogger.i.ILoggerStatus;
 
 import java.util.List;
 /**

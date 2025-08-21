@@ -1,4 +1,4 @@
-package com.lt.logger;
+package com.lt.ljjlogger;
 
 public class SendAction {
     String uploadPath; // 上传路径

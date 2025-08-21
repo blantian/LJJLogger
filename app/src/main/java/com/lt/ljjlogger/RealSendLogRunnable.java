@@ -20,14 +20,12 @@
  * THE SOFTWARE.
  */
 
-package com.lt.mglogger;
+package com.lt.ljjlogger;
 
 import android.text.TextUtils;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
-
-import com.lt.logger.SendLogRunnable;
 
 import org.json.JSONException;
 import org.json.JSONObject;

@@ -1,4 +1,4 @@
-package com.lt.mglogger;
+package com.lt.ljjlogger;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -9,10 +9,8 @@ import android.widget.TextView;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.lt.logger.LJJLogger;
-import com.lt.mglogger.log.utils.LogPrinter;
+import com.lt.ljjlogger.log.utils.LogPrinter;
 
-import java.util.HashMap;
 import java.util.Map;
 
 public class MainActivity extends AppCompatActivity {

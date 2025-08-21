@@ -1,4 +1,4 @@
-package com.lt.logger.i;
+package com.lt.ljjlogger.i;
 
 public interface ILoggerStatus {
     /**
