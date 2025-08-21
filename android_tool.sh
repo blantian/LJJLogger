@@ -10,8 +10,6 @@
 set -euo pipefail
 
 DEFAULT_SERIAL="${ANDROID_SERIAL:-$(adb devices | awk 'NR==2 {print $1}')}"
-NOW="$(date +%Y%m%d_%H%M%S)"
-PID_FILE="/tmp/android_log.pid"
 
 #--------------------------------------
 # 通用：打印帮助
@@ -22,7 +20,7 @@ Usage: $0 <command> [options]
 
 Commands:
   install      构建 / 安装 / 启动 APP
-  build_aar    构建 build_aar 模块 AAR 并复制到指定目录
+  build_aar    构建 ljjlogger 模块 AAR 并复制到指定目录
 
 运行 $0 <command> -h 查看子命令帮助
 EOF
@@ -82,17 +80,17 @@ EOF
     echo "安装方式: $install_method"
     echo "========================================"
 
-    # ---------- 预构建并投放 playercore AAR ----------
-    local LIB_DIR="/Users/skyblue/imgo/code/Logger/MGLogger/app/libs"
-    local AAR_NAME="mglogger_1.0.0.aar"
+    # ---------- 预构建并投放 ljjlogger AAR ----------
+    local LIB_DIR="app/libs"
+    local AAR_NAME="ljjlogger_1.0.0.aar"
 
-    echo "📦 预构建 playercore → $LIB_DIR ($AAR_NAME)"
+    echo "📦 预构建 ljjlogger → $LIB_DIR ($AAR_NAME)"
     mkdir -p "$LIB_DIR"
     # 清理旧 AAR，避免重复打包导致依赖冲突
-    rm -f "$LIB_DIR"/mglogger-*.aar
+    rm -f "$LIB_DIR"/ljjlogger-*.aar
 
-    # 直接调用本脚本内的 cmd_playercore
-    cmd_playercore -b "$build_type" -p "$LIB_DIR" -n "$AAR_NAME"
+    # 直接调用本脚本内的 cmd_build_aar
+    cmd_build_aar -b "$build_type" -p "$LIB_DIR" -n "$AAR_NAME"
 
     # ---------- 构建 APK ----------
     if [[ -z "$custom_path" ]]; then
@@ -140,12 +138,12 @@ EOF
 
 
 #--------------------------------------
-# playercore 子命令
+# build_aar 子命令
 #--------------------------------------
-cmd_playercore() {
+cmd_build_aar() {
     local build_type="debug"   # debug / release
-    local target_dir="$HOME/Desktop"
-    local aar_name="mglogger_1.0.0.aar"
+    local target_dir="app/libs"
+    local aar_name="ljjlogger_1.0.0.aar"
     local run_install=false
 
     # 解析参数
@@ -156,17 +154,17 @@ cmd_playercore() {
             -n|--name)       aar_name="$2"; shift 2;;
             --install)       run_install=true; shift;;
             -h|--help) cat <<EOF
-Usage: $0 playercore [options]
+Usage: $0 build_aar [options]
 
   -b TYPE          构建类型 debug/release，默认 debug
-  -p PATH          目标目录，默认 ~/Desktop
-  -n NAME          AAR文件名，默认 mglogger_1.0.0.aar
+  -p PATH          目标目录，默认 app/libs
+  -n NAME          AAR文件名，默认 ljjlogger_1.0.0.aar
   --install        构建完成后执行安装脚本
 
 示例:
-  $0 playercore -b release -p /user/lib
-  $0 playercore -b debug -p ./libs -n my-playercore.aar
-  $0 playercore -b debug --install
+  $0 build_aar -b release -p app/libs
+  $0 build_aar -b debug -p ./libs -n my-aar.aar
+  $0 build_aar -b debug --install
 EOF
             return ;;
             *) echo "未知参数 $1"; return 1;;
@@ -180,7 +178,7 @@ EOF
     fi
 
     echo "========================================"
-    echo "构建 playercore 模块"
+    echo "构建 ljjlogger 模块"
     echo "构建类型: $build_type"
     echo "目标目录: $target_dir"
     echo "文件名: $aar_name"
@@ -191,17 +189,17 @@ EOF
     mkdir -p "$target_dir"
 
     # 清理之前的构建
-    echo "🧹 清理 mglogger 模块构建残留..."
-    rm -rf mglogger/build/outputs/aar/
+    echo "🧹 清理 ljjlogger 模块构建残留..."
+    rm -rf ljjlogger/build/outputs/aar/
 
     # 构建 AAR
-    echo "🔨 开始构建 mglogger ${build_type}..."
+    echo "🔨 开始构建 ljjlogger ${build_type}..."
     if [[ "$build_type" == "debug" ]]; then
-        ./gradlew :mglogger:assembleDebug
-        source_aar="mglogger/build/outputs/aar/mglogger-debug.aar"
+        ./gradlew :ljjlogger:assembleDebug
+        source_aar="ljjlogger/build/outputs/aar/ljjlogger-debug.aar"
     else
-        ./gradlew :mglogger:assembleRelease
-        source_aar="mglogger/build/outputs/aar/mglogger-release.aar"
+        ./gradlew :ljjlogger:assembleRelease
+        source_aar="ljjlogger/build/outputs/aar/ljjlogger-release.aar"
     fi
 
     # 检查AAR文件是否生成成功
@@ -227,7 +225,7 @@ EOF
         echo "   ..."
         # 如果指定了 --install 参数，执行外部安装脚本
         if [[ "$run_install" == true ]]; then
-            local install_script="/Users/lantianbao/imgtv/code/sp/IPTV-SpecialZone-APP-Portal/install.sh"
+            local install_script="./install.sh"
             echo ""
             echo "⏱️  等待 5 秒后执行安装脚本..."
             sleep 5
@@ -256,15 +254,8 @@ EOF
 [[ $# -lt 1 ]] && usage
 
 case "$1" in
-  screenshot) shift; cmd_screenshot "$@";;
-  log)
-       case "${2-}" in
-         start) shift 2; cmd_log_start "$@";;
-         stop)  shift 2; cmd_log_stop  "$@";;
-         *)     echo "用法: $0 log {start|stop}"; exit 1;;
-       esac;;
   install) shift; cmd_install "$@";;
-  playercore) shift; cmd_playercore "$@";;
+  build_aar) shift; cmd_build_aar "$@";;
   -h|--help) usage;;
   *) echo "未知命令: $1"; usage;;
 esac
